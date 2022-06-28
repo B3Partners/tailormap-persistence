@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Category.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">Category.java</span></div><h1>Category.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Entity to categorize geo services in a tree structure. A Category is like a
+ * directory in a file system containing GeoService entities like files.
+ * &lt;p&gt;
+ * There always exists a category with id=0 and name=&quot;root&quot;. This category should
+ * not be shown in the user interface, only its children as root elements.
+ * &lt;p&gt;
+ * If the readers list is not empty, only roles listed in readers are allowed
+ * read access. Same with writers. Parent readers and writers override the lists
+ * of children.
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@Table(
+        uniqueConstraints=
+            @UniqueConstraint(columnNames={&quot;parent&quot;, &quot;name&quot;})
+)
+<span class="fc" id="L57">public class Category {</span>
+<span class="fc" id="L58">    public static final Long ROOT_CATEGORY_ID = 0L;</span>
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Basic(optional=false)
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;parent&quot;)
+    private Category parent;
+
+<span class="fc" id="L71">    @ManyToMany // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name=&quot;category_children&quot;,
+            inverseJoinColumns=@JoinColumn(name=&quot;child&quot;),
+            joinColumns=@JoinColumn(name = &quot;category&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;Category&gt; children = new ArrayList&lt;Category&gt;();
+
+<span class="fc" id="L80">    @ManyToMany // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name=&quot;category_services&quot;,
+            inverseJoinColumns=@JoinColumn(name=&quot;service&quot;),
+            joinColumns=@JoinColumn(name = &quot;category&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;GeoService&gt; services = new ArrayList&lt;GeoService&gt;();
+
+<span class="fc" id="L89">    @ElementCollection</span>
+    @Column(name=&quot;role_name&quot;)
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;category&quot;))
+    private Set&lt;String&gt; readers = new HashSet&lt;String&gt;();
+
+<span class="fc" id="L94">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;category&quot;))
+    @Column(name=&quot;role_name&quot;)
+    private Set&lt;String&gt; writers = new HashSet&lt;String&gt;();
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public List&lt;Category&gt; getChildren() {
+<span class="nc" id="L101">        return children;</span>
+    }
+
+    public void setChildren(List&lt;Category&gt; children) {
+<span class="nc" id="L105">        this.children = children;</span>
+<span class="nc" id="L106">    }</span>
+
+    public Long getId() {
+<span class="nc" id="L109">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L113">        this.id = id;</span>
+<span class="nc" id="L114">    }</span>
+
+    public String getName() {
+<span class="nc" id="L117">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L121">        this.name = name;</span>
+<span class="nc" id="L122">    }</span>
+
+    public Category getParent() {
+<span class="nc" id="L125">        return parent;</span>
+    }
+
+    public void setParent(Category parent) {
+<span class="nc" id="L129">        this.parent = parent;</span>
+<span class="nc" id="L130">    }</span>
+
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L133">        return readers;</span>
+    }
+
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L137">        this.readers = readers;</span>
+<span class="nc" id="L138">    }</span>
+
+    public Set&lt;String&gt; getWriters() {
+<span class="nc" id="L141">        return writers;</span>
+    }
+
+    public void setWriters(Set&lt;String&gt; writers) {
+<span class="nc" id="L145">        this.writers = writers;</span>
+<span class="nc" id="L146">    }</span>
+
+    public List&lt;GeoService&gt; getServices() {
+<span class="nc" id="L149">        return services;</span>
+    }
+
+    public void setServices(List&lt;GeoService&gt; services) {
+<span class="nc" id="L153">        this.services = services;</span>
+<span class="nc" id="L154">    }</span>
+    //&lt;/editor-fold&gt;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

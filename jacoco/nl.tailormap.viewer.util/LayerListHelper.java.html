@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LayerListHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.util</a> &gt; <span class="el_source">LayerListHelper.java</span></div><h1>LayerListHelper.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.util;
+
+import nl.tailormap.viewer.config.app.Application;
+import nl.tailormap.viewer.config.app.ApplicationLayer;
+import nl.tailormap.viewer.config.services.ArcGISFeatureSource;
+import nl.tailormap.viewer.config.services.ArcGISService;
+import nl.tailormap.viewer.config.services.Layer;
+import nl.tailormap.viewer.config.services.WMSService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author Meine Toonen meinetoonen@b3partners.nl
+ */
+<span class="nc" id="L23">public class LayerListHelper {</span>
+
+<span class="nc" id="L25">    private static final Log log = LogFactory.getLog(LayerListHelper.class);</span>
+
+    /**
+     * Get a list of Layers from the level and its subLevels.
+     *
+     * @param application the application
+     * @param filterable {@code true} to get filterable layers
+     * @param bufferable {@code true} to get bufferable layers
+     * @param editable {@code true} to get editable layers
+     * @param influence {@code true} to get influence map layers
+     * @param arc {@code true} to get arc layers
+     * @param wfs {@code true} to get wfs layers
+     * @param attribute {@code true} to get attribute
+     * @param hasConfiguredLayers {@code true} to get configured layers
+     * @param possibleLayers a list of layers
+     * @param em the entity manager to use
+     * @return A list of Layer objects
+     */
+    public static List&lt;ApplicationLayer&gt; getLayers(Application application, Boolean filterable, Boolean bufferable, Boolean editable, Boolean influence, Boolean arc, Boolean wfs, Boolean attribute,
+                                                   Boolean hasConfiguredLayers, List&lt;Long&gt; possibleLayers, EntityManager em) {
+<span class="nc" id="L45">        List&lt;ApplicationLayer&gt; layers = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L47">        long startTime = System.currentTimeMillis();</span>
+<span class="nc" id="L48">        Application.TreeCache tc = application.loadTreeCache(em);</span>
+
+<span class="nc" id="L50">        long end = System.currentTimeMillis();</span>
+<span class="nc" id="L51">        log.info(&quot;TreeCache load time:&quot; + (end - startTime) + &quot; millis&quot;);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        for (ApplicationLayer appLayer : tc.getApplicationLayers()) {</span>
+<span class="nc" id="L53">            Layer l = appLayer.getService().getLayer(appLayer.getLayerName(), em);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (l == null) {</span>
+<span class="nc" id="L55">                continue;</span>
+            }
+
+<span class="nc bnc" id="L58" title="All 4 branches missed.">            if(appLayer.getStartLayers().get(application) == null || appLayer.getStartLayers().get(application).isRemoved()){</span>
+<span class="nc" id="L59">                continue;</span>
+            }
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (filterable) {</span>
+                // The value of l.isFilterable() for WMS layers is not meaningful
+                // at the moment... Always assume a WMS layer is filterable if
+                // the layer has a feature type. There is a checkbox for an admin
+                // to specify manually if a layer supports SLD filtering for GetMap
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                if (l.getService() instanceof WMSService) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                    if (l.getFeatureType() == null) {</span>
+<span class="nc" id="L69">                        continue;</span>
+                    }
+                } else {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                    if (!l.isFilterable()) {</span>
+<span class="nc" id="L73">                        continue;</span>
+                    }
+                }
+            }
+
+<span class="nc bnc" id="L78" title="All 4 branches missed.">            if (bufferable &amp;&amp; !l.isBufferable()) {</span>
+<span class="nc" id="L79">                continue;</span>
+            }
+<span class="nc bnc" id="L81" title="All 4 branches missed.">            if (filterable &amp;&amp; l.getService() instanceof ArcGISService) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                if (l.getFeatureType() == null) {</span>
+<span class="nc" id="L83">                    continue;</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                } else if (!(l.getFeatureType().getFeatureSource() instanceof ArcGISFeatureSource)) {</span>
+<span class="nc" id="L85">                    continue;</span>
+                }
+            }
+
+<span class="nc bnc" id="L89" title="All 6 branches missed.">            if (editable &amp;&amp; (l.getFeatureType() == null || !l.getFeatureType().isWriteable())) {</span>
+<span class="nc" id="L90">                continue;</span>
+            }
+<span class="nc bnc" id="L92" title="All 4 branches missed.">            if (influence &amp;&amp; !appLayer.getDetails().containsKey(&quot;influenceradius&quot;)) {</span>
+<span class="nc" id="L93">                continue;</span>
+            }
+<span class="nc bnc" id="L95" title="All 4 branches missed.">            if (arc &amp;&amp; !l.getService().getProtocol().startsWith(&quot;arc&quot;)) {</span>
+<span class="nc" id="L96">                continue;</span>
+            }
+<span class="nc bnc" id="L98" title="All 6 branches missed.">            if (wfs &amp;&amp; (l.getFeatureType() == null || !l.getFeatureType().getFeatureSource().getProtocol().equals(&quot;wfs&quot;))) {</span>
+<span class="nc" id="L99">                continue;</span>
+            }
+<span class="nc bnc" id="L101" title="All 4 branches missed.">            if (attribute &amp;&amp; appLayer.getAttributes().isEmpty()) {</span>
+<span class="nc" id="L102">                continue;</span>
+            }
+<span class="nc bnc" id="L104" title="All 4 branches missed.">            if (hasConfiguredLayers &amp;&amp; !possibleLayers.contains(appLayer.getId())) {</span>
+<span class="nc" id="L105">                continue;</span>
+            }
+
+<span class="nc" id="L108">            layers.add(appLayer);</span>
+<span class="nc" id="L109">        }</span>
+<span class="nc" id="L110">        return layers;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

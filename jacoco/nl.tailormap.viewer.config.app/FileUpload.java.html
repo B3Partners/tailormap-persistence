@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FileUpload.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">FileUpload.java</span></div><h1>FileUpload.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2018-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import nl.tailormap.viewer.config.services.SimpleFeatureType;
+import org.json.JSONObject;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+
+/**
+ *
+ * @author Meine Toonen
+ */
+@Entity
+<span class="fc" id="L24">public class FileUpload {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String location;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;sft&quot;)
+    private SimpleFeatureType sft;
+
+    private String fid;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    
+    private String createdBy;
+
+    private String filename;
+
+    private String type_;
+
+    private String mimetype;
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters &amp; setters&quot;&gt;
+
+    public Long getId() {
+<span class="nc" id="L52">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L56">        this.id = id;</span>
+<span class="nc" id="L57">    }</span>
+
+
+    public SimpleFeatureType getSft() {
+<span class="nc" id="L61">        return sft;</span>
+    }
+
+    public void setSft(SimpleFeatureType sft) {
+<span class="nc" id="L65">        this.sft = sft;</span>
+<span class="nc" id="L66">    }</span>
+
+    public Date getCreatedAt() {
+<span class="nc" id="L69">        return createdAt;</span>
+    }
+
+    public void setCreatedAt(Date createdAt) {
+<span class="nc" id="L73">        this.createdAt = createdAt;</span>
+<span class="nc" id="L74">    }</span>
+
+    public String getCreatedBy() {
+<span class="nc" id="L77">        return createdBy;</span>
+    }
+
+    public void setCreatedBy(String createdBy) {
+<span class="nc" id="L81">        this.createdBy = createdBy;</span>
+<span class="nc" id="L82">    }</span>
+
+    public String getFid() {
+<span class="nc" id="L85">        return fid;</span>
+    }
+
+    public void setFid(String fid) {
+<span class="nc" id="L89">        this.fid = fid;</span>
+<span class="nc" id="L90">    }</span>
+
+    public String getType_() {
+<span class="nc" id="L93">        return type_;</span>
+    }
+
+    public void setType_(String type_) {
+<span class="nc" id="L97">        this.type_ = type_;</span>
+<span class="nc" id="L98">    }</span>
+
+    public String getFilename() {
+<span class="nc" id="L101">        return filename;</span>
+    }
+
+    public void setFilename(String filename) {
+<span class="nc" id="L105">        this.filename = filename;</span>
+<span class="nc" id="L106">    }</span>
+
+    public String getMimetype() {
+<span class="nc" id="L109">        return mimetype;</span>
+    }
+
+    public void setMimetype(String mimetype) {
+<span class="nc" id="L113">        this.mimetype = mimetype;</span>
+<span class="nc" id="L114">    }</span>
+
+    public String getLocation() {
+<span class="nc" id="L117">        return location;</span>
+    }
+
+    public void setLocation(String location) {
+<span class="nc" id="L121">        this.location = location;</span>
+<span class="nc" id="L122">    }</span>
+
+    // &lt;/editor-fold&gt;
+
+
+    public String toString(){
+<span class="nc" id="L128">        return location;</span>
+    }
+
+    public JSONObject toJSON(){
+<span class="nc" id="L132">        JSONObject obj = new JSONObject();</span>
+<span class="nc" id="L133">        obj.put(&quot;filename&quot;, filename);</span>
+<span class="nc" id="L134">        obj.put(&quot;fid&quot;, fid);</span>
+<span class="nc" id="L135">        obj.put(&quot;type&quot;, type_);</span>
+<span class="nc" id="L136">        obj.put(&quot;mimetype&quot;, mimetype);</span>
+<span class="nc" id="L137">        obj.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L138">        obj.put(&quot;sft&quot;, sft.getId());</span>
+<span class="nc" id="L139">        return obj;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,8 @@
+nl.tailormap.viewer.components
+nl.tailormap.viewer.config
+nl.tailormap.viewer.config.app
+nl.tailormap.viewer.config.forms
+nl.tailormap.viewer.config.metadata
+nl.tailormap.viewer.config.security
+nl.tailormap.viewer.config.services
+nl.tailormap.viewer.util

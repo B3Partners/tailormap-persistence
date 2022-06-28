@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeoService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">GeoService.java</span></div><h1>GeoService.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2017 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import nl.tailormap.viewer.config.ClobElement;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NoResultException;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@DiscriminatorColumn(name=&quot;protocol&quot;)
+<span class="fc" id="L64">public abstract class GeoService implements Serializable {</span>
+    public static final String PARAM_ONLINE_CHECK_ONLY = &quot;onlineCheckOnly&quot;;
+    public static final String PARAM_MUST_LOGIN = &quot;mustLogin&quot;;
+    
+    public static final String DETAIL_OVERRIDDEN_URL = &quot;overridenUrl&quot;;
+    public static final String DETAIL_ORIGINAL_NAME = &quot;originalName&quot;;
+    
+    public static final String DETAIL_USE_INTERSECT = &quot;useIntersect&quot;;
+    public static final String DETAIL_USE_PROXY = &quot;useProxy&quot;;
+
+    /** 
+    * HTTP Basic authentication username to use with pre-emptive
+     * authentication.
+     */
+    public static final String PARAM_USERNAME = &quot;username&quot;;
+
+    /**
+     * HTTP Basic authentication password to use with pre-emptive
+     * authentication.
+     */
+    public static final String PARAM_PASSWORD = &quot;password&quot;;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Basic(optional=false)
+    private String name;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = &quot;category&quot;)
+    private Category category;
+
+    @Basic(optional=false)
+    private String url;
+
+    private String username;
+    private String password;
+    
+    private String geofenceHeader;
+    private String version;
+
+    private boolean monitoringEnabled;
+    
+<span class="fc" id="L108">    private boolean monitoringStatusok = true;</span>
+
+    @OneToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = &quot;top_layer&quot;)
+    private Layer topLayer;
+
+<span class="fc" id="L114">    @ElementCollection</span>
+    @CollectionTable(
+            joinColumns = @JoinColumn(name = &quot;geo_service&quot;)
+    )
+    @Column(name=&quot;keyword&quot;)
+    private Set&lt;String&gt; keywords = new HashSet&lt;&gt;();
+    
+    @Transient
+    private List&lt;Layer&gt; layers;
+    
+<span class="fc" id="L124">    @Transient</span>
+    private Map&lt;Layer,List&lt;Layer&gt;&gt; childrenByParent = null;
+    
+<span class="fc" id="L127">    @Basic(optional=false)</span>
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date authorizationsModified = new Date();
+
+<span class="fc" id="L131">    @ElementCollection    </span>
+    @JoinTable(joinColumns=@JoinColumn(name=&quot;geoservice&quot;))
+    // Element wrapper required because of http://opensource.atlassian.com/projects/hibernate/browse/JPA-11
+    private Map&lt;String, ClobElement&gt; details = new HashMap&lt;&gt;();
+
+
+<span class="fc" id="L137">    @JoinTable(</span>
+            name = &quot;geo_service_style_libraries&quot;,
+            joinColumns = @JoinColumn(name =&quot;geo_service&quot; ),
+            inverseJoinColumns=@JoinColumn(name=&quot;style_library&quot;))
+    @OneToMany(cascade=CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;StyleLibrary&gt; styleLibraries = new ArrayList&lt;&gt;();
+    
+    
+<span class="fc" id="L146">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;geo_service&quot;))
+    @Column(name=&quot;role_name&quot;)
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+
+    /**
+     * the capabilities document of the service.
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    @Column(name=&quot;capabilities_doc&quot;)
+    private String capabilitiesDoc;
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L162">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L166">        this.id = id;</span>
+<span class="nc" id="L167">    }</span>
+
+    public String getName() {
+<span class="nc" id="L170">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L174">        this.name = name;</span>
+<span class="fc" id="L175">    }</span>
+
+    public Category getCategory() {
+<span class="nc" id="L178">        return category;</span>
+    }
+
+    public void setCategory(Category category) {
+<span class="nc" id="L182">        this.category = category;</span>
+<span class="nc" id="L183">    }</span>
+
+    public Layer getTopLayer() {
+<span class="nc" id="L186">        return topLayer;</span>
+    }
+
+    public void setTopLayer(Layer topLayer) {
+<span class="fc" id="L190">        this.topLayer = topLayer;</span>
+<span class="fc" id="L191">    }</span>
+
+    public String getPassword() {
+<span class="nc" id="L194">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="nc" id="L198">        this.password = password;</span>
+<span class="nc" id="L199">    }</span>
+
+    public String getUrl() {
+<span class="nc" id="L202">        return url;</span>
+    }
+
+    public void setUrl(String url) {
+<span class="fc" id="L206">        this.url = url;</span>
+<span class="fc" id="L207">    }</span>
+
+    public String getUsername() {
+<span class="nc" id="L210">        return username;</span>
+    }
+
+    public void setUsername(String username) {
+<span class="nc" id="L214">        this.username = username;</span>
+<span class="nc" id="L215">    }</span>
+
+    public Set&lt;String&gt; getKeywords() {
+<span class="nc" id="L218">        return keywords;</span>
+    }
+
+    public void setKeywords(Set&lt;String&gt; keywords) {
+<span class="nc" id="L222">        this.keywords = keywords;</span>
+<span class="nc" id="L223">    }</span>
+
+    public boolean isMonitoringEnabled() {
+<span class="nc" id="L226">        return monitoringEnabled;</span>
+    }
+
+    public void setMonitoringEnabled(boolean monitoringEnabled) {
+<span class="nc" id="L230">        this.monitoringEnabled = monitoringEnabled;</span>
+<span class="nc" id="L231">    }</span>
+
+    public Date getAuthorizationsModified() {
+<span class="nc" id="L234">        return authorizationsModified;</span>
+    }
+
+    public void setAuthorizationsModified(Date authorizationsModified) {
+<span class="nc" id="L238">        this.authorizationsModified = authorizationsModified;</span>
+<span class="nc" id="L239">    }</span>
+
+    public boolean isMonitoringStatusok() {
+<span class="nc" id="L242">        return monitoringStatusok;</span>
+    }
+
+    public void setMonitoringStatusok(boolean monitoringStatusOK) {
+<span class="nc" id="L246">        this.monitoringStatusok = monitoringStatusOK;</span>
+<span class="nc" id="L247">    }</span>
+
+    public Map&lt;String, ClobElement&gt; getDetails() {
+<span class="nc" id="L250">        return details;</span>
+    }
+
+    public void setDetails(Map&lt;String, ClobElement&gt; details) {
+<span class="nc" id="L254">        this.details = details;</span>
+<span class="nc" id="L255">    }</span>
+
+    public List&lt;StyleLibrary&gt; getStyleLibraries() {
+<span class="nc" id="L258">        return styleLibraries;</span>
+    }
+
+    public void setStyleLibraries(List&lt;StyleLibrary&gt; styleLibraries) {
+<span class="nc" id="L262">        this.styleLibraries = styleLibraries;</span>
+<span class="nc" id="L263">    }</span>
+
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L266">        return readers;</span>
+    }
+
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L270">        this.readers = readers;</span>
+<span class="nc" id="L271">    }</span>
+
+    public String getGeofenceHeader() {
+<span class="nc" id="L274">        return geofenceHeader;</span>
+    }
+
+    public void setGeofenceHeader(String geofenceHeader) {
+<span class="nc" id="L278">        this.geofenceHeader = geofenceHeader;</span>
+<span class="nc" id="L279">    }</span>
+
+    public String getVersion() {
+<span class="nc" id="L282">        return version;</span>
+    }
+
+    public void setVersion(String version) {
+<span class="nc" id="L286">        this.version = version;</span>
+<span class="nc" id="L287">    }</span>
+
+    public String getCapabilitiesDoc() {
+<span class="nc" id="L290">        return capabilitiesDoc;</span>
+    }
+
+    public void setCapabilitiesDoc(String capabilitiesDoc) {
+<span class="nc" id="L294">        this.capabilitiesDoc = capabilitiesDoc;</span>
+<span class="nc" id="L295">    }</span>
+
+    //&lt;/editor-fold&gt;
+
+    public String getProtocol() {
+<span class="nc" id="L300">        return getClass().getAnnotation(DiscriminatorValue.class).value();</span>
+    }
+
+
+    public void authorizationsModified() {
+<span class="nc" id="L305">        authorizationsModified = new Date();</span>
+<span class="nc" id="L306">    }    </span>
+    
+    /** To prevent a lot of SQL requests walking a tree structure of entities,
+     * load all layers using an efficient query. The Layers.children collections
+     * are not initialized, but can be reconstructed from the list of all Layers
+     * for this service returned by the query. Call Layer.getLayerChildrenCache() 
+     * to retrieve it without causing a SQL query.
+     * 
+     * The cache is not updated on changes, so will only represent the database
+     * state when loadLayerTree() was last called.
+     *
+     * @param em the entity manager to use
+     * @return the list of layers of this service
+     */
+    public List&lt;Layer&gt; loadLayerTree(EntityManager em) {
+<span class="nc bnc" id="L321" title="All 2 branches missed.">        if(layers != null) {</span>
+<span class="nc" id="L322">            return layers;</span>
+        }
+        
+<span class="nc bnc" id="L325" title="All 2 branches missed.">        if(!em.contains(this)) {</span>
+            // Not a persistent entity (for example when loading user specified 
+            // service)
+<span class="nc" id="L328">            return Collections.EMPTY_LIST;</span>
+        }
+        
+        // Retrieve layer tree structure in single query
+<span class="nc" id="L332">        layers = em.createNamedQuery(&quot;getLayerTree&quot;)</span>
+<span class="nc" id="L333">            .setParameter(&quot;rootId&quot;, topLayer.getId())</span>
+<span class="nc" id="L334">            .getResultList();   </span>
+      
+<span class="nc" id="L336">        childrenByParent = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">        for(Layer l: layers) {               </span>
+<span class="nc bnc" id="L338" title="All 2 branches missed.">            if(l.getParent() != null) {</span>
+<span class="nc" id="L339">                List&lt;Layer&gt; parentChildren = childrenByParent.get(l.getParent());</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">                if(parentChildren == null) {</span>
+<span class="nc" id="L341">                    parentChildren = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L342">                    childrenByParent.put(l.getParent(), parentChildren);</span>
+                }
+<span class="nc" id="L344">                parentChildren.add(l);</span>
+            }
+<span class="nc" id="L346">        }      </span>
+<span class="nc" id="L347">        return layers;</span>
+    }
+    
+    public List&lt;Layer&gt; getLayerChildrenCache(Layer l, EntityManager em) {
+<span class="nc bnc" id="L351" title="All 2 branches missed.">        if(childrenByParent != null) {</span>
+            
+<span class="nc bnc" id="L353" title="All 2 branches missed.">            if(!em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(l.getChildren())) {</span>
+<span class="nc" id="L354">                List&lt;Layer&gt; childrenList = childrenByParent.get(l);</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">                if(childrenList == null) {</span>
+<span class="nc" id="L356">                    return Collections.EMPTY_LIST;</span>
+                } else {
+<span class="nc" id="L358">                    return childrenList;</span>
+                }
+            } else {
+<span class="nc" id="L361">                return l.getChildren();</span>
+            }
+        } else {
+<span class="nc" id="L364">            return l.getChildren();</span>
+        }
+    }
+
+
+    /**
+     * Gets a single layer without loading all layers. If multiple layers exist
+     * with the same name, a random non-virtual layer is returned.
+     *
+     * @param layerName the name of the layer to find
+     * @param em the EntityManager to use
+     * @return the named layer
+     */
+    public Layer getSingleLayer(final String layerName, EntityManager em) {
+        try {
+<span class="nc" id="L379">            return (Layer)em.createQuery(</span>
+                      &quot;from Layer where service = :service &quot;
+                    + &quot;and name = :n order by virtual desc&quot;)
+<span class="nc" id="L382">                    .setParameter(&quot;service&quot;, this)</span>
+<span class="nc" id="L383">                    .setParameter(&quot;n&quot;, layerName)</span>
+<span class="nc" id="L384">                    .setMaxResults(1)</span>
+<span class="nc" id="L385">                    .getSingleResult();</span>
+
+<span class="nc" id="L387">        } catch (NoResultException nre) {</span>
+<span class="nc" id="L388">            return null;</span>
+        }        
+    }
+
+    /**
+     * Returns the layer with the given name in this server. The first layer in
+     * a depth-first tree traversal with the name is returned. If a child has
+     * the same name as its parent, the child is returned.
+     *
+     * @param layerName the layer name to search for
+     * @param em the entity manager to use
+     * @return the Layer or null if not found
+     */
+    public Layer getLayer(final String layerName, EntityManager em) {
+<span class="nc" id="L402">        loadLayerTree(em);</span>
+        
+<span class="nc bnc" id="L404" title="All 4 branches missed.">        if(layerName == null || topLayer == null) {</span>
+<span class="nc" id="L405">            return null;</span>
+        }
+        
+<span class="nc" id="L408">        final MutableObject&lt;Layer&gt; layer = new MutableObject&lt;&gt;(null);</span>
+        
+<span class="nc" id="L410">        topLayer.accept((l, em1) -&gt; {</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">            if(StringUtils.equals(l.getName(),layerName)) {</span>
+<span class="nc" id="L412">                layer.setValue(l);</span>
+<span class="nc" id="L413">                return false;</span>
+            }
+<span class="nc" id="L415">            return true;</span>
+        },em);
+        
+<span class="nc" id="L418">        return layer.getValue();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

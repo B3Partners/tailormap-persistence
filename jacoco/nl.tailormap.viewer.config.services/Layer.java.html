@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Layer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">Layer.java</span></div><h1>Layer.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2016 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import nl.tailormap.viewer.config.ClobElement;
+import nl.tailormap.viewer.config.RemoveEmptyMapValuesUtil;
+import nl.tailormap.viewer.config.app.ApplicationLayer;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.annotations.Type;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OrderColumn;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @author Matthijs Laan
+ */
+@Entity
+@org.hibernate.annotations.Entity(dynamicUpdate = true)
+public class Layer implements Serializable {
+<span class="fc" id="L61">    private static final Log log = LogFactory.getLog(Layer.class);</span>
+
+    public static final String EXTRA_KEY_METADATA_URL = &quot;metadata.url&quot;;
+    public static final String EXTRA_KEY_METADATA_STYLESHEET_URL = &quot;metadata.stylesheet&quot;;
+    public static final String EXTRA_KEY_DOWNLOAD_URL = &quot;download.url&quot;;
+    public static final String EXTRA_KEY_FILTERABLE = &quot;filterable&quot;;
+    public static final String EXTRA_IMAGE_EXTENSION = &quot;image_extension&quot;;
+    public static final String EXTRA_KEY_ATTRIBUTION = &quot;attribution&quot;;
+
+    /**
+     * JSON representation of wms:Style elements from capabilities for this layer
+     */
+    public static final String DETAIL_WMS_STYLES = &quot;wms.styles&quot;;
+
+    /**
+     * Layer.details map key for comma separated list of layer names of children
+     * of this layer.
+     */
+    public static final String DETAIL_ALL_CHILDREN = &quot;all_children&quot;;
+
+    public static final String DETAIL_ALTERNATE_LEGEND_IMAGE_URL = &quot;alternateLegendImageUrl&quot;;
+
+    public static final String DETAIL_USERLAYER_FILTER = &quot;userlayer_filter&quot;;
+    public static final String DETAIL_USERLAYER_ORIGINAL_LAYERNAME = &quot;userlayer_original_layername&quot;;
+    public static final String DETAIL_USERLAYER_ORIGINAL_FEATURE_TYPE_NAME = &quot;userlayer_original_feature_type_name&quot;;
+    public static final String DETAIL_USERLAYER_ORIGINAL_LAYER_ID = &quot;userlayer_original_layerid&quot;;
+    public static final String DETAIL_USERLAYER_DATE_ADDED = &quot;userlayer_date_added&quot;;
+    public static final String DETAIL_USERLAYER_USER = &quot;userlayer_user&quot;;
+
+<span class="fc" id="L90">    private static Set&lt;String&gt; interestingDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
+            EXTRA_KEY_METADATA_URL,
+            EXTRA_KEY_METADATA_STYLESHEET_URL,
+            EXTRA_KEY_DOWNLOAD_URL,
+            EXTRA_KEY_FILTERABLE,
+            EXTRA_IMAGE_EXTENSION,
+            DETAIL_ALL_CHILDREN,
+            DETAIL_WMS_STYLES,
+            DETAIL_ALTERNATE_LEGEND_IMAGE_URL,
+            EXTRA_KEY_ATTRIBUTION
+    }));
+
+<span class="fc" id="L102">    private static Set&lt;String&gt; updatableDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
+            EXTRA_KEY_METADATA_URL,
+            DETAIL_ALL_CHILDREN,
+            DETAIL_WMS_STYLES
+    }));
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;service&quot;)
+    private GeoService service;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;parent&quot;)
+    private Layer parent;
+
+    private String name;
+
+    private String title;
+
+    /**
+     * Alternative title, can be set by admin
+     */
+    private String titleAlias;
+
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String legendImageUrl;
+
+    private Double minScale;
+    private Double maxScale;
+
+<span class="fc" id="L136">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
+    private Set&lt;CoordinateReferenceSystem&gt; crsList = new HashSet&lt;&gt;();
+
+<span class="fc" id="L140">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
+    private Map&lt;CoordinateReferenceSystem, BoundingBox&gt; boundingBoxes = new HashMap&lt;&gt;();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;tileset&quot;)
+    private TileSet tileset;
+
+    /**
+     * If a service does not have a single top layer, a virtual top layer is
+     * created. A virtual layer should not be used in a request to the service.
+     * &lt;p&gt;
+     * Also a WMS layer which does not have a name is virtual.
+     */
+    private boolean virtual;
+    private boolean queryable;
+    private boolean filterable;
+
+<span class="fc" id="L158">    private Boolean userlayer = false;</span>
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = &quot;feature_type&quot;)
+    private SimpleFeatureType featureType;
+
+<span class="fc" id="L164">    @ElementCollection</span>
+    @JoinTable(
+            joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @Column(name = &quot;keyword&quot;)
+    private Set&lt;String&gt; keywords = new HashSet&lt;&gt;();
+
+<span class="fc" id="L171">    @ElementCollection</span>
+    @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
+    @Column(name = &quot;role_name&quot;)
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+
+<span class="fc" id="L176">    @ElementCollection</span>
+    @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
+    @Column(name = &quot;role_name&quot;)
+    public Set&lt;String&gt; writers = new HashSet&lt;&gt;();
+
+<span class="fc" id="L181">    @ElementCollection</span>
+    @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
+    @Column(name = &quot;role_name&quot;)
+    public Set&lt;String&gt; preventGeomEditors = new HashSet&lt;&gt;();
+
+<span class="fc" id="L186">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name = &quot;layer_children&quot;,
+            inverseJoinColumns = @JoinColumn(name = &quot;child&quot;, unique = true),
+            joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name = &quot;list_index&quot;)
+    private List&lt;Layer&gt; children = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L195">    @ElementCollection</span>
+    @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
+    // Element wrapper required because of http://opensource.atlassian.com/projects/hibernate/browse/JPA-11
+    private Map&lt;String, ClobElement&gt; details = new HashMap&lt;&gt;();
+
+
+<span class="fc" id="L201">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name = &quot;layer_matrix_sets&quot;,
+            joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;),
+            inverseJoinColumns = @JoinColumn(name = &quot;matrix_set&quot;)
+    )
+    @OrderColumn(name = &quot;list_index&quot;)
+    private List&lt;TileMatrixSet&gt; matrixSets = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L210">    public Layer() {</span>
+<span class="fc" id="L211">    }</span>
+
+    public Layer clone() throws CloneNotSupportedException {
+<span class="nc" id="L214">        return (Layer) super.clone();</span>
+    }
+
+    public void update(Layer update) {
+<span class="nc" id="L218">        update(update, null);</span>
+<span class="nc" id="L219">    }</span>
+
+    public void update(Layer update, Set&lt;String&gt; additionalUpdatableDetails) {
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (!getName().equals(update.getName())) {</span>
+<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;Cannot update layer with properties from layer with different name!&quot;);</span>
+        }
+
+<span class="nc" id="L226">        virtual = update.virtual;</span>
+<span class="nc" id="L227">        queryable = update.queryable;</span>
+<span class="nc" id="L228">        filterable = update.filterable;</span>
+<span class="nc" id="L229">        title = update.title;</span>
+<span class="nc" id="L230">        minScale = update.minScale;</span>
+<span class="nc" id="L231">        maxScale = update.maxScale;</span>
+
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (!boundingBoxes.equals(update.boundingBoxes)) {</span>
+<span class="nc" id="L234">            boundingBoxes.clear();</span>
+<span class="nc" id="L235">            boundingBoxes.putAll(update.boundingBoxes);</span>
+        }
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (!crsList.equals(update.crsList)) {</span>
+<span class="nc" id="L238">            crsList.clear();</span>
+<span class="nc" id="L239">            crsList.addAll(update.crsList);</span>
+        }
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (!keywords.equals(update.keywords)) {</span>
+<span class="nc" id="L242">            keywords.clear();</span>
+<span class="nc" id="L243">            keywords.addAll(update.keywords);</span>
+        }
+
+        // updateableDetails maps are used for clearing only details which are
+        // set by loading metadata, leave details set by other code alone
+
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        for (String s : updatableDetails) {</span>
+<span class="nc" id="L250">            details.remove(s);</span>
+<span class="nc" id="L251">        }</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (additionalUpdatableDetails != null) {</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">            for (String s : additionalUpdatableDetails) {</span>
+<span class="nc" id="L254">                details.remove(s);</span>
+<span class="nc" id="L255">            }</span>
+        }
+        // update all metadata loaded details
+<span class="nc" id="L258">        details.putAll(update.getDetails());</span>
+<span class="nc" id="L259">        RemoveEmptyMapValuesUtil.removeEmptyMapValues(details);</span>
+
+<span class="nc" id="L261">        legendImageUrl = update.legendImageUrl;</span>
+
+        // tileSet ignored -- only for tile services!
+<span class="nc" id="L264">    }</span>
+
+    /**
+     * Copy user modified properties of given layer onto this instance. Used for
+     * updating the topLayer. Not called for other layers, those instances are
+     * updated with update().
+     *
+     * @param other the source of properties to copy
+     */
+    public void copyUserModifiedProperties(Layer other) {
+<span class="nc" id="L274">        setTitleAlias(other.getTitleAlias());</span>
+<span class="nc" id="L275">        getReaders().clear();</span>
+<span class="nc" id="L276">        getReaders().addAll(other.getReaders());</span>
+<span class="nc" id="L277">        getWriters().clear();</span>
+<span class="nc" id="L278">        getWriters().addAll(other.getWriters());</span>
+<span class="nc" id="L279">    }</span>
+
+
+    /**
+     * Checks if the layer is bufferable.
+     *
+     * @return {@code true} if the layer has a featuretype, {@code false}
+     * otherwise
+     */
+    public boolean isBufferable() {
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        return this.getFeatureType() != null;</span>
+    }
+
+    public interface Visitor {
+        public boolean visit(Layer l, EntityManager em);
+    }
+
+    /**
+     * Do a depth-first traversal while the visitor returns true. Uses the call
+     * stack to save layers yet to visit.
+     *
+     * @param visitor the Layer.Visitor
+     * @param em      the entity manager to use
+     * @return {@code true} if visitor accepted all layers
+     */
+    public boolean accept(Layer.Visitor visitor, EntityManager em) {
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for (Layer child : getCachedChildren(em)) {</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">            if (!child.accept(visitor, em)) {</span>
+<span class="nc" id="L307">                return false;</span>
+            }
+<span class="nc" id="L309">        }</span>
+<span class="nc" id="L310">        return visitor.visit(this, em);</span>
+    }
+
+    public String getDisplayName() {
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        if (StringUtils.isNotBlank(titleAlias)) {</span>
+<span class="nc" id="L315">            return titleAlias;</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">        } else if (StringUtils.isNotBlank(&quot;title&quot;)) {</span>
+<span class="nc" id="L317">            return title;</span>
+        } else {
+<span class="nc" id="L319">            return name;</span>
+        }
+    }
+
+    public JSONObject toJSONObject() throws JSONException {
+<span class="nc" id="L324">        JSONObject o = new JSONObject();</span>
+
+<span class="nc" id="L326">        o.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L327">        o.put(&quot;serviceId&quot;, service.getId());</span>
+<span class="nc" id="L328">        o.put(&quot;name&quot;, name);</span>
+
+<span class="nc" id="L330">        o.put(&quot;virtual&quot;, virtual);</span>
+<span class="nc" id="L331">        o.put(&quot;queryable&quot;, queryable);</span>
+<span class="nc" id="L332">        o.put(&quot;filterable&quot;, filterable);</span>
+
+<span class="nc" id="L334">        o.put(&quot;userlayer&quot;, userlayer);</span>
+
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (title != null) {</span>
+<span class="nc" id="L337">            o.put(&quot;title&quot;, title);</span>
+        }
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (titleAlias != null) {</span>
+<span class="nc" id="L340">            o.put(&quot;titleAlias&quot;, titleAlias);</span>
+        }
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        if (legendImageUrl != null) {</span>
+<span class="nc" id="L343">            o.put(&quot;legendImageUrl&quot;, legendImageUrl);</span>
+        }
+<span class="nc bnc" id="L345" title="All 2 branches missed.">        if (minScale != null) {</span>
+<span class="nc bnc" id="L346" title="All 4 branches missed.">            if (minScale.isNaN() || minScale.isInfinite()) {</span>
+<span class="nc" id="L347">                log.error(&quot;Can't use minScale: &quot; + minScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
+            } else {
+<span class="nc" id="L349">                o.put(&quot;minScale&quot;, minScale);</span>
+            }
+        }
+<span class="nc bnc" id="L352" title="All 2 branches missed.">        if (maxScale != null) {</span>
+<span class="nc bnc" id="L353" title="All 4 branches missed.">            if (maxScale.isNaN() || maxScale.isInfinite()) {</span>
+<span class="nc" id="L354">                log.error(&quot;Can't use maxScale: &quot; + maxScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
+            } else {
+<span class="nc" id="L356">                o.put(&quot;maxScale&quot;, maxScale);</span>
+            }
+        }
+
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        o.put(&quot;hasFeatureType&quot;, featureType != null);</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">        if (featureType != null) {</span>
+<span class="nc" id="L362">            o.put(&quot;featureTypeName&quot;, featureType.getTypeName());</span>
+<span class="nc" id="L363">            o.put(&quot;featureTypeId&quot;, featureType.getId());</span>
+        }
+
+        /* Only include &quot;interesting&quot; details in JSON */
+
+<span class="nc bnc" id="L368" title="All 2 branches missed.">        if (!details.isEmpty()) {</span>
+<span class="nc" id="L369">            JSONObject d = new JSONObject();</span>
+<span class="nc" id="L370">            o.put(&quot;details&quot;, d);</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">            for (Map.Entry&lt;String, ClobElement&gt; e : details.entrySet()) {</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">                if (interestingDetails.contains(e.getKey())) {</span>
+<span class="nc" id="L373">                    d.put(e.getKey(), e.getValue().getValue());</span>
+                }
+<span class="nc" id="L375">            }</span>
+        }
+
+<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (tileset != null) {</span>
+<span class="nc" id="L379">            o.put(&quot;tileHeight&quot;, tileset.getHeight());</span>
+<span class="nc" id="L380">            o.put(&quot;tileWidth&quot;, tileset.getWidth());</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">            if (tileset.getResolutions() != null) {</span>
+<span class="nc" id="L382">                String resolutions = &quot;&quot;;</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">                for (Double d : tileset.getResolutions()) {</span>
+<span class="nc bnc" id="L384" title="All 2 branches missed.">                    if (resolutions.length() &gt; 0) {</span>
+<span class="nc" id="L385">                        resolutions += &quot;,&quot;;</span>
+                    }
+<span class="nc" id="L387">                    resolutions += d.toString();</span>
+<span class="nc" id="L388">                }</span>
+<span class="nc" id="L389">                o.put(&quot;resolutions&quot;, resolutions);</span>
+            }
+        }
+
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        if (boundingBoxes.size() == 1) {</span>
+<span class="nc" id="L394">            BoundingBox bbox = boundingBoxes.values().iterator().next();</span>
+<span class="nc" id="L395">            o.put(&quot;bbox&quot;, bbox.toJSONObject());</span>
+        }
+<span class="nc" id="L397">        JSONArray sets = new JSONArray();</span>
+<span class="nc" id="L398">        o.put(&quot;matrixSets&quot;, sets);</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">        for (TileMatrixSet matrixSet : matrixSets) {</span>
+<span class="nc" id="L400">            sets.put(matrixSet.toJSONObject());</span>
+<span class="nc" id="L401">        }</span>
+
+<span class="nc" id="L403">        return o;</span>
+    }
+
+    public List&lt;Layer&gt; getCachedChildren(EntityManager em) {
+<span class="nc" id="L407">        return service.getLayerChildrenCache(this, em);</span>
+    }
+
+    public List&lt;ApplicationLayer&gt; getApplicationLayers(EntityManager em) {
+<span class="nc" id="L411">        List&lt;ApplicationLayer&gt; appLayers = em.createQuery(&quot;from ApplicationLayer where service = :service&quot;</span>
+<span class="nc" id="L412">                + &quot; and layerName = :layerName&quot;).setParameter(&quot;service&quot;, service).setParameter(&quot;layerName&quot;, this.getName()).getResultList();</span>
+<span class="nc" id="L413">        return appLayers;</span>
+    }
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public Layer getParent() {
+<span class="nc" id="L418">        return parent;</span>
+    }
+
+    public void setParent(Layer parent) {
+<span class="fc" id="L422">        this.parent = parent;</span>
+<span class="fc" id="L423">    }</span>
+
+    public boolean isVirtual() {
+<span class="nc" id="L426">        return virtual;</span>
+    }
+
+    public void setVirtual(boolean virtual) {
+<span class="nc" id="L430">        this.virtual = virtual;</span>
+<span class="nc" id="L431">    }</span>
+
+    public String getTitle() {
+<span class="nc" id="L434">        return title;</span>
+    }
+
+    public void setTitle(String title) {
+<span class="nc" id="L438">        this.title = title;</span>
+<span class="nc" id="L439">    }</span>
+
+    public String getTitleAlias() {
+<span class="nc" id="L442">        return titleAlias;</span>
+    }
+
+    public void setTitleAlias(String titleAlias) {
+<span class="nc" id="L446">        this.titleAlias = titleAlias;</span>
+<span class="nc" id="L447">    }</span>
+
+    public GeoService getService() {
+<span class="nc" id="L450">        return service;</span>
+    }
+
+    public void setService(GeoService service) {
+<span class="fc" id="L454">        this.service = service;</span>
+<span class="fc" id="L455">    }</span>
+
+    public Set&lt;CoordinateReferenceSystem&gt; getCrsList() {
+<span class="nc" id="L458">        return crsList;</span>
+    }
+
+    public void setCrsList(Set&lt;CoordinateReferenceSystem&gt; crsList) {
+<span class="nc" id="L462">        this.crsList = crsList;</span>
+<span class="nc" id="L463">    }</span>
+
+    public SimpleFeatureType getFeatureType() {
+<span class="nc" id="L466">        return featureType;</span>
+    }
+
+    public void setFeatureType(SimpleFeatureType featureType) {
+<span class="fc" id="L470">        this.featureType = featureType;</span>
+<span class="fc" id="L471">    }</span>
+
+    public boolean isFilterable() {
+<span class="nc" id="L474">        return filterable;</span>
+    }
+
+    public void setFilterable(boolean filterable) {
+<span class="nc" id="L478">        this.filterable = filterable;</span>
+<span class="nc" id="L479">    }</span>
+
+    public Long getId() {
+<span class="nc" id="L482">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L486">        this.id = id;</span>
+<span class="nc" id="L487">    }</span>
+
+    public String getName() {
+<span class="nc" id="L490">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L494">        this.name = name;</span>
+<span class="fc" id="L495">    }</span>
+
+    public boolean isQueryable() {
+<span class="nc" id="L498">        return queryable;</span>
+    }
+
+    public void setQueryable(boolean queryable) {
+<span class="nc" id="L502">        this.queryable = queryable;</span>
+<span class="nc" id="L503">    }</span>
+
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L506">        return readers;</span>
+    }
+
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L510">        this.readers = readers;</span>
+<span class="nc" id="L511">    }</span>
+
+    public Set&lt;String&gt; getWriters() {
+<span class="nc" id="L514">        return writers;</span>
+    }
+
+    public void setWriters(Set&lt;String&gt; writers) {
+<span class="nc" id="L518">        this.writers = writers;</span>
+<span class="nc" id="L519">    }</span>
+
+    public Set&lt;String&gt; getPreventGeomEditors() {
+<span class="nc" id="L522">        return preventGeomEditors;</span>
+    }
+
+    public void setPreventGeomEditors(Set&lt;String&gt; preventGeomEditors) {
+<span class="nc" id="L526">        this.preventGeomEditors = preventGeomEditors;</span>
+<span class="nc" id="L527">    }</span>
+
+    public List&lt;Layer&gt; getChildren() {
+<span class="fc" id="L530">        return children;</span>
+    }
+
+    public void setChildren(List&lt;Layer&gt; children) {
+<span class="nc" id="L534">        this.children = children;</span>
+<span class="nc" id="L535">    }</span>
+
+    public Set&lt;String&gt; getKeywords() {
+<span class="nc" id="L538">        return keywords;</span>
+    }
+
+    public void setKeywords(Set&lt;String&gt; keywords) {
+<span class="nc" id="L542">        this.keywords = keywords;</span>
+<span class="nc" id="L543">    }</span>
+
+    public Map&lt;String, ClobElement&gt; getDetails() {
+<span class="nc" id="L546">        return details;</span>
+    }
+
+    public void setDetails(Map&lt;String, ClobElement&gt; details) {
+<span class="nc" id="L550">        this.details = details;</span>
+<span class="nc" id="L551">    }</span>
+
+    public Double getMaxScale() {
+<span class="nc" id="L554">        return maxScale;</span>
+    }
+
+    public void setMaxScale(Double maxScale) {
+<span class="nc" id="L558">        this.maxScale = maxScale;</span>
+<span class="nc" id="L559">    }</span>
+
+    public Double getMinScale() {
+<span class="nc" id="L562">        return minScale;</span>
+    }
+
+    public void setMinScale(Double minScale) {
+<span class="nc" id="L566">        this.minScale = minScale;</span>
+<span class="nc" id="L567">    }</span>
+
+    public TileSet getTileset() {
+<span class="nc" id="L570">        return tileset;</span>
+    }
+
+    public void setTileset(TileSet tileset) {
+<span class="nc" id="L574">        this.tileset = tileset;</span>
+<span class="nc" id="L575">    }</span>
+
+    public String getLegendImageUrl() {
+<span class="nc" id="L578">        return legendImageUrl;</span>
+    }
+
+    public void setLegendImageUrl(String legendImageUrl) {
+<span class="nc" id="L582">        this.legendImageUrl = legendImageUrl;</span>
+<span class="nc" id="L583">    }</span>
+
+    public Map&lt;CoordinateReferenceSystem, BoundingBox&gt; getBoundingBoxes() {
+<span class="nc" id="L586">        return boundingBoxes;</span>
+    }
+
+    public void setBoundingBoxes(Map&lt;CoordinateReferenceSystem, BoundingBox&gt; boundingBoxes) {
+<span class="nc" id="L590">        this.boundingBoxes = boundingBoxes;</span>
+<span class="nc" id="L591">    }</span>
+
+    public List&lt;TileMatrixSet&gt; getMatrixSets() {
+<span class="nc" id="L594">        return matrixSets;</span>
+    }
+
+    public void setMatrixSets(List&lt;TileMatrixSet&gt; matrixSets) {
+<span class="nc" id="L598">        this.matrixSets = matrixSets;</span>
+<span class="nc" id="L599">    }</span>
+
+    public Boolean isUserlayer() {
+<span class="nc" id="L602">        return userlayer;</span>
+    }
+
+    public void setUserlayer(boolean userlayer) {
+<span class="nc" id="L606">        this.userlayer = userlayer;</span>
+<span class="nc" id="L607">    }</span>
+
+    //&lt;/editor-fold&gt;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

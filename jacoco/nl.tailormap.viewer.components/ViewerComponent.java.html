@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ViewerComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.components</a> &gt; <span class="el_source">ViewerComponent.java</span></div><h1>ViewerComponent.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.components;
+
+import org.json.JSONObject;
+
+import java.io.File;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+public class ViewerComponent implements Comparable&lt;ViewerComponent&gt;{
+    private String path;
+    private String className;
+    private File[] sources;
+    private File[] configSources;
+    private JSONObject metadata;
+    private String group;
+
+<span class="nc" id="L22">    public ViewerComponent(String path, String className, File[] sources, File[] configSources, JSONObject metadata, String group) {</span>
+<span class="nc" id="L23">        this.path = path;</span>
+<span class="nc" id="L24">        this.className = className;</span>
+<span class="nc" id="L25">        this.sources = sources;</span>
+<span class="nc" id="L26">        this.configSources = configSources;</span>
+<span class="nc" id="L27">        this.metadata = metadata;</span>
+<span class="nc" id="L28">        this.group = group;</span>
+<span class="nc" id="L29">    }</span>
+
+    public String getClassName() {
+<span class="nc" id="L32">        return className;</span>
+    }
+
+    public JSONObject getMetadata() {
+<span class="nc" id="L36">        return metadata;</span>
+    }
+
+    public String getPath() {
+<span class="nc" id="L40">        return path;</span>
+    }
+
+    public File[] getSources() {
+<span class="nc" id="L44">        return sources;</span>
+    }
+    
+    public File[] getConfigSources(){
+<span class="nc" id="L48">        return configSources;</span>
+    }
+
+    public String getGroup() {
+<span class="nc" id="L52">        return group;</span>
+    }
+
+    public void setGroup(String group) {
+<span class="nc" id="L56">        this.group = group;</span>
+<span class="nc" id="L57">    }</span>
+
+    @Override
+    public int compareTo(ViewerComponent o) {
+<span class="nc" id="L61">        return className.compareTo(o.getClassName());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

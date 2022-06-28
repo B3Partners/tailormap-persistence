@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AttributeDescriptor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">AttributeDescriptor.java</span></div><h1>AttributeDescriptor.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2016 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+<span class="fc" id="L38">public class AttributeDescriptor {</span>
+    public static final String TYPE_STRING = &quot;string&quot;;
+    public static final String TYPE_DOUBLE = &quot;double&quot;;
+    public static final String TYPE_INTEGER = &quot;integer&quot;;
+    public static final String TYPE_BOOLEAN = &quot;boolean&quot;;
+    public static final String TYPE_GEOMETRY = &quot;geometry&quot;;    
+    public static final String TYPE_DATE = &quot;date&quot;;
+    public static final String TYPE_TIMESTAMP = &quot;timestamp&quot;;
+    public static final String TYPE_GEOMETRY_POINT = &quot;point&quot;;
+    public static final String TYPE_GEOMETRY_MPOINT = &quot;multipoint&quot;;
+    public static final String TYPE_GEOMETRY_LINESTRING = &quot;linestring&quot;;
+    public static final String TYPE_GEOMETRY_MLINESTRING = &quot;multilinestring&quot;;
+    public static final String TYPE_GEOMETRY_POLYGON = &quot;polygon&quot;;
+    public static final String TYPE_GEOMETRY_MPOLYGON = &quot;multipolygon&quot;;
+    
+<span class="fc" id="L53">    public static final Set&lt;String&gt; GEOMETRY_TYPES = Collections.unmodifiableSet(new HashSet(Arrays.asList(new String[] {</span>
+        TYPE_GEOMETRY,
+        TYPE_GEOMETRY_POINT,
+        TYPE_GEOMETRY_MPOINT,
+        TYPE_GEOMETRY_LINESTRING,
+        TYPE_GEOMETRY_MLINESTRING,
+        TYPE_GEOMETRY_POLYGON,
+        TYPE_GEOMETRY_MPOLYGON
+    })));
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Basic(optional=false)
+    private String name;
+
+    @Column(name=&quot;name_alias&quot;)
+    private String alias;
+
+    private String type;
+    
+    /**
+     * Returns the ExtJS
+     * &lt;a href=&quot;https://docs.sencha.com/extjs/5.1/5.1.0-apidocs/#!/api/Ext.data.field.Field&quot;&gt;field&lt;/a&gt;
+     * type for this attribute.
+     *
+     * @return a string representing the field type (one of
+     * auto,string,int,number,boolean,date)
+     */
+    public String getExtJSType() {
+        // default to &quot;auto&quot; field type
+<span class="nc" id="L85">        String ext_type = &quot;auto&quot;;</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (this.type.equals(TYPE_STRING)) {</span>
+<span class="nc" id="L88">            ext_type = &quot;string&quot;;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        } else if (this.type.equals(TYPE_INTEGER)) {</span>
+<span class="nc" id="L90">            ext_type = &quot;int&quot;;</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        } else if (this.type.equals(TYPE_DOUBLE)) {</span>
+<span class="nc" id="L92">            ext_type = &quot;number&quot;;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        } else if (this.type.equals(TYPE_BOOLEAN)) {</span>
+<span class="nc" id="L94">            ext_type = &quot;boolean&quot;;</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        } else if (this.type.equals(TYPE_DATE)) {</span>
+<span class="nc" id="L96">            ext_type = &quot;date&quot;;</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        } else if (this.type.equals(TYPE_TIMESTAMP)) {</span>
+<span class="nc" id="L98">            ext_type = &quot;date&quot;;</span>
+        }
+
+<span class="nc" id="L101">        return ext_type;</span>
+    }
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L106">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L110">        this.id = id;</span>
+<span class="nc" id="L111">    }</span>
+
+    public String getAlias() {
+<span class="nc" id="L114">        return alias;</span>
+    }
+
+    public void setAlias(String alias) {
+<span class="nc" id="L118">        this.alias = alias;</span>
+<span class="nc" id="L119">    }</span>
+
+    public String getName() {
+<span class="nc" id="L122">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L126">        this.name = name;</span>
+<span class="nc" id="L127">    }</span>
+
+    public String getType() {
+<span class="nc" id="L130">        return type;</span>
+    }
+
+    public void setType(String type) {
+<span class="nc" id="L134">        this.type = type;</span>
+<span class="nc" id="L135">    }</span>
+    //&lt;/editor-fold&gt;
+    
+    public JSONObject toJSONObject() throws JSONException {
+<span class="nc" id="L139">        JSONObject j = new JSONObject();</span>
+<span class="nc" id="L140">        j.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L141">        j.put(&quot;name&quot;, name);</span>
+<span class="nc" id="L142">        j.put(&quot;alias&quot;, alias);</span>
+<span class="nc" id="L143">        j.put(&quot;type&quot;, type);</span>
+<span class="nc" id="L144">        return j;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L149">        int hash = 7;</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        hash = 97 * hash + (this.alias != null ? this.alias.hashCode() : 0);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);</span>
+<span class="nc" id="L153">        return hash;</span>
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L159">            return false;</span>
+        }
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L162">            return false;</span>
+        }
+<span class="nc" id="L164">        final AttributeDescriptor other = (AttributeDescriptor) obj;</span>
+<span class="nc bnc" id="L165" title="All 6 branches missed.">        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {</span>
+<span class="nc" id="L166">            return false;</span>
+        }
+<span class="nc bnc" id="L168" title="All 6 branches missed.">        if ((this.alias == null) ? (other.alias != null) : !this.alias.equals(other.alias)) {</span>
+<span class="nc" id="L169">            return false;</span>
+        }
+<span class="nc bnc" id="L171" title="All 6 branches missed.">        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {</span>
+<span class="nc" id="L172">            return false;</span>
+        }
+<span class="nc" id="L174">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StyleLibrary.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Aggregate Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">StyleLibrary.java</span></div><h1>StyleLibrary.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2016 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.hibernate.annotations.Type;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+/**
+ * Belonging to GeoService, the configuration of a style library available for
+ * use for this service's layers.
+ * 
+ * @author Matthijs Laan
+ */
+@Entity
+<span class="fc" id="L43">public class StyleLibrary {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;    
+    
+    /**
+     * Title for display/selection.
+     */
+    @Basic(optional=false)
+    private String title;
+    
+    private boolean defaultStyle;
+    
+    @Column(length=1000)
+    private String externalUrl;
+    
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String sldBody;
+    
+    /**
+     * JSON object with per &amp;lt;NamedLayer&amp;gt; a property with an Object with title 
+     * property and a styles array of Objects with name and title properties 
+     * with the values of the &amp;lt;UserStyle&amp;gt; elements in the 
+     * &amp;lt;NamedLayer&amp;gt;. Used to find out the value of the STYLE/STYLES 
+     * parameters for GetMap/GetLegendGraphic requests, required for ArcGIS 
+     * Server. The title property can be used as display name of an 
+     * ApplicationLayer.
+     */
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String namedLayerUserStylesJson;
+    
+    /**
+     * Extra parameters for GetLegendGraphic requests for layers using this SLD.
+     */
+    private String extraLegendParameters;
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters and setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L83">        return id;</span>
+    }
+    
+    public void setId(Long id) {
+<span class="nc" id="L87">        this.id = id;</span>
+<span class="nc" id="L88">    }</span>
+    
+    public String getTitle() {
+<span class="nc" id="L91">        return title;</span>
+    }
+    
+    public void setTitle(String title) {
+<span class="nc" id="L95">        this.title = title;</span>
+<span class="nc" id="L96">    }</span>
+    
+    public boolean isDefaultStyle() {
+<span class="nc" id="L99">        return defaultStyle;</span>
+    }
+    
+    public void setDefaultStyle(boolean defaultStyle) {
+<span class="nc" id="L103">        this.defaultStyle = defaultStyle;</span>
+<span class="nc" id="L104">    }</span>
+    
+    public String getExternalUrl() {
+<span class="nc" id="L107">        return externalUrl;</span>
+    }
+    
+    public void setExternalUrl(String externalUrl) {
+<span class="nc" id="L111">        this.externalUrl = externalUrl;</span>
+<span class="nc" id="L112">    }</span>
+    
+    public String getSldBody() {
+<span class="nc" id="L115">        return sldBody;</span>
+    }
+    
+    public void setSldBody(String sldBody) {
+<span class="nc" id="L119">        this.sldBody = sldBody;</span>
+<span class="nc" id="L120">    }</span>
+    
+    public String getNamedLayerUserStylesJson() {
+<span class="nc" id="L123">        return namedLayerUserStylesJson;</span>
+    }
+    
+    public void setNamedLayerUserStylesJson(String namedLayerUserStylesJson) {
+<span class="nc" id="L127">        this.namedLayerUserStylesJson = namedLayerUserStylesJson;</span>
+<span class="nc" id="L128">    }</span>
+    
+    public String getExtraLegendParameters() {
+<span class="nc" id="L131">        return extraLegendParameters;</span>
+    }
+    
+    public void setExtraLegendParameters(String extraLegendParameters) {
+<span class="nc" id="L135">        this.extraLegendParameters = extraLegendParameters;</span>
+<span class="nc" id="L136">    }</span>
+    //&lt;/editor-fold&gt;
+
+    /** 
+     * Parse SLD XML and create the JSON object as described for the 
+     * namedLayerUserStylesJson property.
+     *
+     * @param sldBody SLD to parse
+     * @return a json representation of the sld
+     * @throws java.lang.Exception is any
+     */
+    public static JSONObject parseSLDNamedLayerUserStyles(InputSource sldBody) throws Exception {
+<span class="nc" id="L148">        JSONObject j = new JSONObject();</span>
+        
+        // parse SLD document
+        
+<span class="nc" id="L152">        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();</span>
+<span class="nc" id="L153">        dbf.setNamespaceAware(true);</span>
+<span class="nc" id="L154">        DocumentBuilder db = dbf.newDocumentBuilder();   </span>
+<span class="nc" id="L155">        org.w3c.dom.Document sld = db.parse(sldBody);</span>
+
+        // Walk all NamedLayer elements
+<span class="nc" id="L158">        NodeList namedLayers = sld.getDocumentElement().getElementsByTagName(&quot;NamedLayer&quot;);</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        for(int i = 0; i &lt; namedLayers.getLength(); i++) {</span>
+<span class="nc" id="L160">            Node namedLayer = namedLayers.item(i);</span>
+            // Find the Name child element
+<span class="nc" id="L162">            Node child = namedLayer.getFirstChild();</span>
+<span class="nc bnc" id="L163" title="All 4 branches missed.">            while(child != null &amp;&amp; !&quot;Name&quot;.equals(child.getLocalName())) {</span>
+<span class="nc" id="L164">                child = child.getNextSibling();</span>
+            }
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            if(child != null) {</span>
+<span class="nc" id="L167">                String layerName = child.getTextContent();</span>
+<span class="nc" id="L168">                JSONObject layer = new JSONObject();</span>
+<span class="nc" id="L169">                JSONArray styles = new JSONArray();</span>
+<span class="nc" id="L170">                layer.put(&quot;styles&quot;, styles);</span>
+                
+                // Find Description element, SLD 1.1.0 only
+<span class="nc" id="L173">                child = child.getNextSibling();</span>
+<span class="nc bnc" id="L174" title="All 6 branches missed.">                if(child != null &amp;&amp; !(&quot;Description&quot;.equals(child.getLocalName()) || &quot;UserStyle&quot;.equals(child.getLocalName()))) {</span>
+<span class="nc" id="L175">                    child = child.getNextSibling();</span>
+                }
+                 
+<span class="nc bnc" id="L178" title="All 4 branches missed.">                if(child != null &amp;&amp; &quot;Description&quot;.equals(child.getLocalName())) {</span>
+<span class="nc" id="L179">                    Node descNode = child.getFirstChild();</span>
+<span class="nc bnc" id="L180" title="All 4 branches missed.">                    while(descNode != null &amp;&amp; !&quot;Title&quot;.equals(descNode.getLocalName())) {</span>
+<span class="nc" id="L181">                        descNode = descNode.getNextSibling();</span>
+                    }
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                    if(descNode != null) {</span>
+<span class="nc" id="L184">                        layer.put(&quot;title&quot;, descNode.getTextContent());</span>
+                    }
+                }
+                
+                do {
+                    // Find UserStyle elements which are always following 
+                    // siblings of Name elements
+<span class="nc bnc" id="L191" title="All 4 branches missed.">                    while(child != null &amp;&amp; !&quot;UserStyle&quot;.equals(child.getLocalName())) {</span>
+<span class="nc" id="L192">                        child = child.getNextSibling();</span>
+                    }
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                    if(child != null) {</span>
+                        // Likewise find the Name child element of the UserStyle
+<span class="nc" id="L196">                        Node child2 = child.getFirstChild();</span>
+<span class="nc bnc" id="L197" title="All 4 branches missed.">                        while(child2 != null &amp;&amp; !&quot;Name&quot;.equals(child2.getLocalName())) {</span>
+<span class="nc" id="L198">                            child2 = child2.getNextSibling();</span>
+                        }
+<span class="nc" id="L200">                        JSONObject style = null;</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">                        if(child2 != null) {</span>
+<span class="nc" id="L202">                            style = new JSONObject();</span>
+<span class="nc" id="L203">                            style.put(&quot;name&quot;, child2.getTextContent());</span>
+<span class="nc" id="L204">                            styles.put(style);</span>
+                            
+                            // Find Title (SLD 1.0.0) or Title in Description (SLD 1.1.0)
+<span class="nc" id="L207">                            child2 = child2.getNextSibling();</span>
+<span class="nc bnc" id="L208" title="All 6 branches missed.">                            while(child2 != null &amp;&amp; !(&quot;Description&quot;.equals(child2.getLocalName()) || &quot;Title&quot;.equals(child2.getLocalName()))) {</span>
+<span class="nc" id="L209">                                child2 = child2.getNextSibling();</span>
+                            }
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                            if(child2 != null) {</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                                if(&quot;Title&quot;.equals(child2.getLocalName())) {</span>
+<span class="nc" id="L213">                                    style.put(&quot;title&quot;, child2.getTextContent());</span>
+                                } else {
+<span class="nc" id="L215">                                    Node descNode = child2.getFirstChild();</span>
+<span class="nc bnc" id="L216" title="All 4 branches missed.">                                    while(descNode != null &amp;&amp; !&quot;Title&quot;.equals(descNode.getLocalName())) {</span>
+<span class="nc" id="L217">                                        descNode = descNode.getNextSibling();</span>
+                                    }
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                                    if(descNode != null) {</span>
+<span class="nc" id="L220">                                        style.put(&quot;title&quot;, descNode.getTextContent());</span>
+                                    }
+                                }
+                            }
+                        }
+<span class="nc" id="L225">                        child = child.getNextSibling();</span>
+                    }
+<span class="nc bnc" id="L227" title="All 2 branches missed.">                } while(child != null);</span>
+                
+<span class="nc" id="L229">                j.put(layerName, layer);</span>
+            }
+        }        
+        
+<span class="nc" id="L233">        return j;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
