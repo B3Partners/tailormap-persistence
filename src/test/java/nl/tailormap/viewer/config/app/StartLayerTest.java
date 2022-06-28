@@ -34,7 +34,7 @@ public class StartLayerTest extends TestUtil {
 
         StartLayer test = entityManager.find(StartLayer.class, sl.getId());
         assertNotNull(test);
-        assertEquals(new Integer(16), test.getSelectedIndex());
+        assertEquals(Integer.valueOf(16), test.getSelectedIndex());
         assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
     }
 

@@ -76,9 +76,6 @@ SPDX-License-Identifier: MIT
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven-fluido-skin.version>1.11.0</maven-fluido-skin.version>
     <test.persistence.unit>viewer-config-hsqldb</test.persistence.unit>
-    <!-- skip integration tests by default, override this property from commandline
-                    or as part of a profile, see eg. 'gh-action' profile in viewer -->
-    <test.skip.integrationtests>false</test.skip.integrationtests>
     <hsqldb.version>2.6.1</hsqldb.version>
     <postgresql.version>42.4.0</postgresql.version>
     <slf4j.version>1.7.36</slf4j.version>
@@ -299,10 +296,10 @@ SPDX-License-Identifier: MIT
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <skipTests>${test.skip.integrationtests}</skipTests>
           <systemPropertyVariables>
             <test.persistence.unit>${test.persistence.unit}</test.persistence.unit>
           </systemPropertyVariables>
+          <!--suppress UnresolvedMavenProperty -->
           <argLine>${surefireArgLine}</argLine>
         </configuration>
       </plugin>
