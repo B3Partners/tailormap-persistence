@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
-Files: src/main/resources/* src/test/resources/*
+Files: src/main/resources/* src/test/resources/* src/main/java/* src/test/java/*
 Copyright: Copyright (C) 2022 B3Partners B.V.
 License: MIT
 
