@@ -42,7 +42,7 @@ public class LayerListHelper {
      */
     public static List<ApplicationLayer> getLayers(Application application, Boolean filterable, Boolean bufferable, Boolean editable, Boolean influence, Boolean arc, Boolean wfs, Boolean attribute,
                                                    Boolean hasConfiguredLayers, List<Long> possibleLayers, EntityManager em) {
-        List<ApplicationLayer> layers = new ArrayList<ApplicationLayer>();
+        List<ApplicationLayer> layers = new ArrayList<>();
 
         long startTime = System.currentTimeMillis();
         Application.TreeCache tc = application.loadTreeCache(em);

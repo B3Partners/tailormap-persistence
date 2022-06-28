@@ -121,8 +121,8 @@ public class ScriptRunner {
                         && trimmedLine.endsWith(getDelimiter())
                         || fullLineDelimiter
                         && trimmedLine.equals(getDelimiter())) {
-                    command.append(line.substring(0, line
-                            .lastIndexOf(getDelimiter())));
+                    command.append(line, 0, line
+                            .lastIndexOf(getDelimiter()));
                     command.append(" ");
                     Statement statement = conn.createStatement();
 

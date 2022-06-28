@@ -18,22 +18,15 @@ import nl.tailormap.viewer.config.services.SimpleFeatureType;
 import nl.tailormap.viewer.config.services.WFSFeatureSource;
 import nl.tailormap.viewer.config.services.WMSService;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.jdbc.Work;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +40,6 @@ import java.util.Map;
  */
 public abstract class TestUtil extends LoggingTestUtil {
 
-    private static final Log log = LogFactory.getLog(TestUtil.class);
     public static String originalVersion = null;
     protected static int TEST_VERSION_NUMBER = 666;
     public Long applicationId = 1L;
@@ -73,10 +65,10 @@ public abstract class TestUtil extends LoggingTestUtil {
     @BeforeEach
     public void setUp(TestInfo testInfo) throws Exception {
         final String persistenceUnit = System.getProperty("test.persistence.unit");
-        Map config = new HashMap();
+        Map<String,String> config = new HashMap<>();
         String testname = testInfo.getDisplayName();
         testname = testname.replaceAll(":", "-")
-                .replaceAll("[\\)\\(\\s]", "");
+                .replaceAll("[)(\\s]", "");
         String randomizer = RandomStringUtils.randomAlphabetic(8);
         // if you want to keep the database of each test in the target directory use this:
         config.put("javax.persistence.jdbc.url", "jdbc:hsqldb:file:./target/unittest-hsqldb_" + testname + "_" + randomizer + "/db;shutdown=true");
@@ -120,11 +112,8 @@ public abstract class TestUtil extends LoggingTestUtil {
     /**
      * Helper function for initializing data.
      *
-     * @throws java.net.URISyntaxException Thrown when the testdata cannot be found
-     * @throws java.io.IOException         Thrown when the testdata cannot be found
-     * @throws java.sql.SQLException       Thrown when the testdata cannot be loaded
      */
-    public void loadTestData() throws URISyntaxException, IOException, SQLException {
+    public void loadTestData() {
 
         Application app = entityManager.find(Application.class, applicationId);
         if (app == null) {
@@ -145,13 +134,10 @@ public abstract class TestUtil extends LoggingTestUtil {
         Session session = (Session) entityManager.getDelegate();
         // conn = (Connection) session.connection();
         try {
-            session.doWork(new Work() {
-                @Override
-                public void execute(Connection con) throws SQLException {
-                    ScriptRunner sr = new ScriptRunner(con, true, true);
-                    sr.runScript(f, false);
-                    con.commit();
-                }
+            session.doWork(con -> {
+                ScriptRunner sr = new ScriptRunner(con, true, true);
+                sr.runScript(f, false);
+                con.commit();
             });
         } finally {
             entityManager.flush();
