@@ -1,0 +1,45 @@
+name: 'Ubuntu QA Maven build'
+
+env:
+  MAVEN_OPTS: -Djava.awt.headless=true
+
+concurrency:
+  # More info: https://stackoverflow.com/a/68422069/253468
+  group: ${{ github.workflow }}-${{ ( github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release' ) && format('ci-master-{0}', github.sha) || format('ci-master-{0}', github.ref) }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 'QA check'
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
+
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v2
+
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+
+      - name: 'QA build with Maven'
+        run: mvn -B -V -fae -DskipQA=false -Dfmt.action=check -Dpom.fmt.action=verify -DskipTests -DskipITs clean install
+
+      - name: 'Cleanup snapshots'
+        run: |
+          find ~/.m2/repository -name "*SNAPSHOT*" -type d | xargs rm -rf {}

@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: src/main/resources/* src/test/resources/*
+Copyright: Copyright (C) 2022 B3Partners B.V.
+License: MIT
+
+Files: .github/* .mvn/* README.md .gitignore src/site/* SECURITY.md .gitattributes
+Copyright: none
+License: CC0-1.0
