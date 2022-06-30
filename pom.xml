@@ -81,7 +81,7 @@ SPDX-License-Identifier: MIT
     <project.build.targetVersion>${java.version}</project.build.targetVersion>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <maven-fluido-skin.version>1.11.0</maven-fluido-skin.version>
+    <maven-fluido-skin.version>1.11.1</maven-fluido-skin.version>
     <test.persistence.unit>viewer-config-hsqldb</test.persistence.unit>
     <hsqldb.version>2.6.1</hsqldb.version>
     <postgresql.version>42.4.0</postgresql.version>
