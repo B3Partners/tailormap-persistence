@@ -47,10 +47,8 @@ import java.util.Objects;
  */
 @Entity
 @Table(name="feature_type")
-@org.hibernate.annotations.Entity(dynamicUpdate = true)
+@org.hibernate.annotations.DynamicUpdate
 public class SimpleFeatureType {
-    private static final Log log = LogFactory.getLog(SimpleFeatureType.class);
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -172,7 +170,7 @@ public class SimpleFeatureType {
         // Does not work correctly for Arc* feature sources which set attribute
         // title in alias... Needs other field to differentiate user set title
         
-        Map<String,String> aliasesByAttributeName = new HashMap();
+        Map<String,String> aliasesByAttributeName = new HashMap<>();
         for(AttributeDescriptor ad: attributes) {
             if(StringUtils.isNotBlank(ad.getAlias())) {
                 aliasesByAttributeName.put(ad.getName(), ad.getAlias());
@@ -228,12 +226,7 @@ public class SimpleFeatureType {
         }
         
         //update.attributes ID = NULL so the attributes list is getting NULL aswell
-        //if(!attributes.equals(update.attributes)) {
-            //attributes.clear();
-            //attributes.addAll(update.attributes);
-            //changed = true;
-        //}
-        
+
         for(AttributeDescriptor ad: attributes) {
             String alias = aliasesByAttributeName.get(ad.getName());
             if(alias != null) {

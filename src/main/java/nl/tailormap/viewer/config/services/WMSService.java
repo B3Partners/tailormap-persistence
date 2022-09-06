@@ -39,8 +39,6 @@ import javax.persistence.Enumerated;
 @Entity
 @DiscriminatorValue(WMSService.PROTOCOL)
 public class WMSService extends GeoService {
-    private static final Log log = LogFactory.getLog(WMSService.class);
-    
     /**
      * JPA DiscriminatorValue for this class.
      */

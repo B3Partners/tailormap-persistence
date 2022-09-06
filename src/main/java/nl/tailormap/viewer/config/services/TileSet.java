@@ -74,8 +74,8 @@ public class TileSet {
     public void setResolutions(String res){
         this.resolutions = new ArrayList<Double>();
         String[] resTokens = res.split(",");
-        for (int i = 0; i < resTokens.length; i++){
-            this.resolutions.add(Double.parseDouble(resTokens[i].trim()));
+        for (String resToken : resTokens) {
+            this.resolutions.add(Double.parseDouble(resToken.trim()));
         }
     }
 

@@ -57,7 +57,7 @@ public class SolrConf {
           joinColumns=@JoinColumn(name="solr_conf")
     )
     @Column(name="attribute_")
-    private List<String> indexAttributes = new ArrayList();
+    private List<String> indexAttributes = new ArrayList<>();
     
     @ElementCollection
     @CollectionTable(
@@ -65,7 +65,7 @@ public class SolrConf {
           joinColumns=@JoinColumn(name="solr_conf")
     )
     @Column(name="attribute_")
-    private List<String> resultAttributes = new ArrayList();
+    private List<String> resultAttributes = new ArrayList<>();
     
     private String name;
     

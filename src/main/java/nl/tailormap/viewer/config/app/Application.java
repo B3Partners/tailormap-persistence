@@ -70,7 +70,7 @@ public class Application implements Comparable<Application>{
     public static final String DETAIL_GLOBAL_LAYOUT = "globalLayout";
     public static final String DETAIL_LAST_SPINUP_TIME = "lastSpinupTime";
 
-    public static Set adminOnlyDetails = new HashSet<>(Arrays.asList("opmerking"));
+    public static Set<String> adminOnlyDetails = new HashSet<>(List.of("opmerking"));
 
     public static final Set<String> preventClearDetails = new HashSet<>(Arrays.asList(DETAIL_IS_MASHUP,
             DETAIL_GLOBAL_LAYOUT));
@@ -352,7 +352,7 @@ public class Application implements Comparable<Application>{
         public List<Level> getChildren(Level l) {
             List<Level> children = childrenByParent.get(l);
             if (children == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             } else {
                 return children;
             }
@@ -406,22 +406,18 @@ public class Application implements Comparable<Application>{
             treeCache = new TreeCache();
 
             // Retrieve level tree structure in single query
-            treeCache.levels = em.createNamedQuery("getLevelTree")
+            treeCache.levels = em.createNamedQuery("getLevelTree", Level.class)
                     .setParameter("rootId", root.getId())
                     .getResultList();
 
-            treeCache.childrenByParent = new HashMap();
-            treeCache.applicationLayers = new ArrayList();
+            treeCache.childrenByParent = new HashMap<>();
+            treeCache.applicationLayers = new ArrayList<>();
 
             for (Level l : treeCache.levels) {
                 treeCache.applicationLayers.addAll(l.getLayers());
 
                 if (l.getParent() != null) {
-                    List<Level> parentChildren = treeCache.childrenByParent.get(l.getParent());
-                    if (parentChildren == null) {
-                        parentChildren = new ArrayList<>();
-                        treeCache.childrenByParent.put(l.getParent(), parentChildren);
-                    }
+                    List<Level> parentChildren = treeCache.childrenByParent.computeIfAbsent(l.getParent(), k -> new ArrayList<>());
                     parentChildren.add(l);
                 }
             }
@@ -577,7 +573,7 @@ public class Application implements Comparable<Application>{
     }
 
     private Map<String, Long> getIdMap() {
-        Map<String, Long> idMap = new HashMap();
+        Map<String, Long> idMap = new HashMap<>();
         for (Object e : originalToCopy.entrySet()) {
             Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) e;
             Object original = entry.getKey();

@@ -30,13 +30,7 @@ public class Group {
     public static final String SERVICE_ADMIN = "ServiceAdmin";
     public static final String EXTENDED_USER = "ExtendedUser";
     
-    public static final List<String> DEFAULT_GROUPS = Collections.unmodifiableList(Arrays.asList(
-            ADMIN, 
-            REGISTRY_ADMIN, 
-            USER_ADMIN, 
-            APPLICATION_ADMIN, 
-            EXTENDED_USER, 
-            SERVICE_ADMIN));
+    public static final List<String> DEFAULT_GROUPS = List.of(ADMIN, REGISTRY_ADMIN, USER_ADMIN, APPLICATION_ADMIN, EXTENDED_USER, SERVICE_ADMIN);
     
     @Id
     private String name;

@@ -56,7 +56,7 @@ import java.util.Set;
  * @author Matthijs Laan
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicUpdate = true)
+@org.hibernate.annotations.DynamicUpdate
 public class Layer implements Serializable {
     private static final Log log = LogFactory.getLog(Layer.class);
 
@@ -87,7 +87,7 @@ public class Layer implements Serializable {
     public static final String DETAIL_USERLAYER_DATE_ADDED = "userlayer_date_added";
     public static final String DETAIL_USERLAYER_USER = "userlayer_user";
 
-    private static Set<String> interestingDetails = new HashSet<>(Arrays.asList(new String[]{
+    private static final Set<String> interestingDetails = new HashSet<>(Arrays.asList(new String[]{
             EXTRA_KEY_METADATA_URL,
             EXTRA_KEY_METADATA_STYLESHEET_URL,
             EXTRA_KEY_DOWNLOAD_URL,
@@ -99,7 +99,7 @@ public class Layer implements Serializable {
             EXTRA_KEY_ATTRIBUTION
     }));
 
-    private static Set<String> updatableDetails = new HashSet<>(Arrays.asList(new String[]{
+    private static final Set<String> updatableDetails = new HashSet<>(Arrays.asList(new String[]{
             EXTRA_KEY_METADATA_URL,
             DETAIL_ALL_CHILDREN,
             DETAIL_WMS_STYLES
@@ -290,7 +290,7 @@ public class Layer implements Serializable {
     }
 
     public interface Visitor {
-        public boolean visit(Layer l, EntityManager em);
+        boolean visit(Layer l, EntityManager em);
     }
 
     /**
@@ -379,14 +379,14 @@ public class Layer implements Serializable {
             o.put("tileHeight", tileset.getHeight());
             o.put("tileWidth", tileset.getWidth());
             if (tileset.getResolutions() != null) {
-                String resolutions = "";
+                StringBuilder resolutions = new StringBuilder();
                 for (Double d : tileset.getResolutions()) {
                     if (resolutions.length() > 0) {
-                        resolutions += ",";
+                        resolutions.append(",");
                     }
-                    resolutions += d.toString();
+                    resolutions.append(d.toString());
                 }
-                o.put("resolutions", resolutions);
+                o.put("resolutions", resolutions.toString());
             }
         }
 
@@ -408,9 +408,9 @@ public class Layer implements Serializable {
     }
 
     public List<ApplicationLayer> getApplicationLayers(EntityManager em) {
-        List<ApplicationLayer> appLayers = em.createQuery("from ApplicationLayer where service = :service"
-                + " and layerName = :layerName").setParameter("service", service).setParameter("layerName", this.getName()).getResultList();
-        return appLayers;
+        return em.createQuery("from ApplicationLayer where service = :service"
+                + " and layerName = :layerName",ApplicationLayer.class)
+                .setParameter("service", service).setParameter("layerName", this.getName()).getResultList();
     }
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">

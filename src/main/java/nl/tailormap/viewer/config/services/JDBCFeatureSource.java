@@ -50,7 +50,7 @@ public class JDBCFeatureSource extends FeatureSource{
         super();
     }
 
-    public JDBCFeatureSource(Map params) throws JSONException {
+    public JDBCFeatureSource(Map<String, String> params) throws JSONException {
         super();
 
         JSONObject urlObj = new JSONObject();
@@ -60,8 +60,8 @@ public class JDBCFeatureSource extends FeatureSource{
         urlObj.put("database", params.get("database"));
         setUrl(urlObj.toString());
 
-        schema = (String)params.get("schema");
-        setUsername((String)params.get("user"));
-        setPassword((String)params.get("passwd"));
+        schema = params.get("schema");
+        setUsername(params.get("user"));
+        setPassword(params.get("passwd"));
     }
 }

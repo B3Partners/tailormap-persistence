@@ -4,13 +4,7 @@
 package nl.tailormap.viewer.config.app;
 
 import nl.tailormap.viewer.util.TestUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,8 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
 public class StartLevelTest extends TestUtil {
-
-    private static final Log log = LogFactory.getLog(StartLevelTest.class);
 
     @Test
     public void persistLevel() {
@@ -32,12 +24,12 @@ public class StartLevelTest extends TestUtil {
         StartLevel test = entityManager.find(StartLevel.class, sl.getId());
         assertNotNull(test);
 
-        assertEquals(new Integer(16), test.getSelectedIndex());
+        assertEquals(Integer.valueOf(16), test.getSelectedIndex());
         assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
     }
 
     @Test
-    public void deleteStartLevel() throws URISyntaxException, SQLException, IOException {
+    public void deleteStartLevel() {
         Application app = entityManager.find(Application.class, applicationId);
 
         Level level = entityManager.find(Level.class, 5L);

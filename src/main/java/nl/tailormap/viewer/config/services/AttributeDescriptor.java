@@ -50,15 +50,15 @@ public class AttributeDescriptor {
     public static final String TYPE_GEOMETRY_POLYGON = "polygon";
     public static final String TYPE_GEOMETRY_MPOLYGON = "multipolygon";
     
-    public static final Set<String> GEOMETRY_TYPES = Collections.unmodifiableSet(new HashSet(Arrays.asList(new String[] {
-        TYPE_GEOMETRY,
-        TYPE_GEOMETRY_POINT,
-        TYPE_GEOMETRY_MPOINT,
-        TYPE_GEOMETRY_LINESTRING,
-        TYPE_GEOMETRY_MLINESTRING,
-        TYPE_GEOMETRY_POLYGON,
-        TYPE_GEOMETRY_MPOLYGON
-    })));
+    public static final Set<String> GEOMETRY_TYPES = Set.of(new String[]{
+            TYPE_GEOMETRY,
+            TYPE_GEOMETRY_POINT,
+            TYPE_GEOMETRY_MPOINT,
+            TYPE_GEOMETRY_LINESTRING,
+            TYPE_GEOMETRY_MLINESTRING,
+            TYPE_GEOMETRY_POLYGON,
+            TYPE_GEOMETRY_MPOLYGON
+    });
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,18 +84,23 @@ public class AttributeDescriptor {
         // default to "auto" field type
         String ext_type = "auto";
 
-        if (this.type.equals(TYPE_STRING)) {
-            ext_type = "string";
-        } else if (this.type.equals(TYPE_INTEGER)) {
-            ext_type = "int";
-        } else if (this.type.equals(TYPE_DOUBLE)) {
-            ext_type = "number";
-        } else if (this.type.equals(TYPE_BOOLEAN)) {
-            ext_type = "boolean";
-        } else if (this.type.equals(TYPE_DATE)) {
-            ext_type = "date";
-        } else if (this.type.equals(TYPE_TIMESTAMP)) {
-            ext_type = "date";
+        switch (this.type) {
+            case TYPE_STRING:
+                ext_type = "string";
+                break;
+            case TYPE_INTEGER:
+                ext_type = "int";
+                break;
+            case TYPE_DOUBLE:
+                ext_type = "number";
+                break;
+            case TYPE_BOOLEAN:
+                ext_type = "boolean";
+                break;
+            case TYPE_DATE:
+            case TYPE_TIMESTAMP:
+                ext_type = "date";
+                break;
         }
 
         return ext_type;

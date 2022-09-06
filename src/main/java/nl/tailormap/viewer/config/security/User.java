@@ -67,9 +67,9 @@ public class User implements Principal{
 
         /* Converteer byte array naar hex-weergave */
         StringBuilder sb = new StringBuilder(digest.length*2);
-        for(int i = 0; i < digest.length; i++) {
-            sb.append(Integer.toHexString(digest[i] >> 4 & 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */
-            sb.append(Integer.toHexString(digest[i] & 0xf));
+        for (byte b : digest) {
+            sb.append(Integer.toHexString(b >> 4 & 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */
+            sb.append(Integer.toHexString(b & 0xf));
         }
         setPassword(sb.toString());
     }

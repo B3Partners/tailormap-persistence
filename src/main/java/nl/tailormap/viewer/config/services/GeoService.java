@@ -310,7 +310,7 @@ public abstract class GeoService implements Serializable {
      * are not initialized, but can be reconstructed from the list of all Layers
      * for this service returned by the query. Call Layer.getLayerChildrenCache() 
      * to retrieve it without causing a SQL query.
-     * 
+     * <p>
      * The cache is not updated on changes, so will only represent the database
      * state when loadLayerTree() was last called.
      *
@@ -325,22 +325,18 @@ public abstract class GeoService implements Serializable {
         if(!em.contains(this)) {
             // Not a persistent entity (for example when loading user specified 
             // service)
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         
         // Retrieve layer tree structure in single query
-        layers = em.createNamedQuery("getLayerTree")
+        layers = em.createNamedQuery("getLayerTree", Layer.class)
             .setParameter("rootId", topLayer.getId())
             .getResultList();   
       
         childrenByParent = new HashMap<>();
         for(Layer l: layers) {               
             if(l.getParent() != null) {
-                List<Layer> parentChildren = childrenByParent.get(l.getParent());
-                if(parentChildren == null) {
-                    parentChildren = new ArrayList<>();
-                    childrenByParent.put(l.getParent(), parentChildren);
-                }
+                List<Layer> parentChildren = childrenByParent.computeIfAbsent(l.getParent(), k -> new ArrayList<>());
                 parentChildren.add(l);
             }
         }      
@@ -353,7 +349,7 @@ public abstract class GeoService implements Serializable {
             if(!em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(l.getChildren())) {
                 List<Layer> childrenList = childrenByParent.get(l);
                 if(childrenList == null) {
-                    return Collections.EMPTY_LIST;
+                    return Collections.emptyList();
                 } else {
                     return childrenList;
                 }
