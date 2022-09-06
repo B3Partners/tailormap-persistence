@@ -400,10 +400,9 @@ public class ApplicationLayer {
            this.getStartLayers().put(app, sl.deepCopy(this, app));
         } else if (Objects.equals(app.getId(), copyFrom.getId())) {
             List<StartLayer> al = new ArrayList<>(original.startLayers.values());
-            for (int i = 0; i < al.size(); i++) {
-                StartLayer sl2 = al.get(i);
-                this.getStartLayers().put(app, sl2.deepCopy(this, app));
-            }
+           for (StartLayer sl2 : al) {
+               this.getStartLayers().put(app, sl2.deepCopy(this, app));
+           }
         }
     }
 

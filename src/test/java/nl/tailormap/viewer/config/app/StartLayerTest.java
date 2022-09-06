@@ -39,7 +39,7 @@ public class StartLayerTest extends TestUtil {
     }
 
     @Test
-    public void deleteLayer() throws URISyntaxException, SQLException, IOException {
+    public void deleteLayer() {
         Application app = entityManager.find(Application.class, 1L);
 
         ApplicationLayer appLayer = entityManager.find(ApplicationLayer.class, 2L);
@@ -62,7 +62,7 @@ public class StartLayerTest extends TestUtil {
     }
 
     @Test
-    public void deleteApplayer() throws URISyntaxException, SQLException, IOException {
+    public void deleteApplayer() {
         initData(true);
         assertNotNull(testAppLayer);
         assertNotNull(testStartLayer);
@@ -90,7 +90,7 @@ public class StartLayerTest extends TestUtil {
 
 
     @Test
-    public void deleteApplication() throws URISyntaxException, SQLException, IOException {
+    public void deleteApplication() {
         initData(true);
         assertNotNull(testAppLayer);
         assertNotNull(app);

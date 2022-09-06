@@ -42,7 +42,7 @@ public abstract class TestUtil extends LoggingTestUtil {
 
     public static String originalVersion = null;
     protected static int TEST_VERSION_NUMBER = 666;
-    public Long applicationId = 1L;
+    public final Long applicationId = 1L;
     public ApplicationLayer testAppLayer;
     public Level testLevel;
     public StartLayer testStartLayer;
@@ -50,20 +50,19 @@ public abstract class TestUtil extends LoggingTestUtil {
     public ConfiguredComponent testComponent;
     public Application app;
     protected EntityManager entityManager;
-    protected String layerName = "Test_omgeving:unittest";
-    protected String geometryAttribute = "geom";
-    protected String url = "https://flamingo5.b3p.nl/geoserver/Test_omgeving/ows";
-    protected List<ConfiguredAttribute> attributes = new ArrayList<>();
+    protected final String layerName = "Test_omgeving:unittest";
+    protected final String geometryAttribute = "geom";
+    protected final String url = "https://flamingo5.b3p.nl/geoserver/Test_omgeving/ows";
+    protected final List<ConfiguredAttribute> attributes = new ArrayList<>();
 
     /**
      * initialisatie van EntityManager {@link #entityManager} en starten
      * transactie.
      *
-     * @throws Exception if any
      * @see #entityManager
      */
     @BeforeEach
-    public void setUp(TestInfo testInfo) throws Exception {
+    public void setUp(TestInfo testInfo) {
         final String persistenceUnit = System.getProperty("test.persistence.unit");
         Map<String,String> config = new HashMap<>();
         String testname = testInfo.getDisplayName();

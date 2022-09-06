@@ -12,11 +12,11 @@ import java.io.File;
  * @author Matthijs Laan
  */
 public class ViewerComponent implements Comparable<ViewerComponent>{
-    private String path;
-    private String className;
-    private File[] sources;
-    private File[] configSources;
-    private JSONObject metadata;
+    private final String path;
+    private final String className;
+    private final File[] sources;
+    private final File[] configSources;
+    private final JSONObject metadata;
     private String group;
 
     public ViewerComponent(String path, String className, File[] sources, File[] configSources, JSONObject metadata, String group) {

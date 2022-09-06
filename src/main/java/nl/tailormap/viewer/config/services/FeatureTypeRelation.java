@@ -123,9 +123,7 @@ public class FeatureTypeRelation {
             j.put("featureTypePrimaryKeyAttribute", this.featureType.getPrimaryKeyAttribute());
             JSONArray keys = new JSONArray();
             j.put("relationKeys", keys);
-            relationKeys.forEach(key -> {
-                keys.put(key.toJSONObject());
-            });
+            relationKeys.forEach(key -> keys.put(key.toJSONObject()));
         }
         if (this.foreignFeatureType!=null){
             j.put("foreignFeatureType", this.foreignFeatureType.getId());

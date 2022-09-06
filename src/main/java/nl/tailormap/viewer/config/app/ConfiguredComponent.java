@@ -42,6 +42,7 @@ public class ConfiguredComponent implements Comparable<ConfiguredComponent> {
     /**
      * {@value #ADMIN_ONLY} magic prefix for "admin only" config attributes.
      */
+    @SuppressWarnings("JavadocDeclaration")
     public static final String ADMIN_ONLY = "adminOnly";
 
     @Id

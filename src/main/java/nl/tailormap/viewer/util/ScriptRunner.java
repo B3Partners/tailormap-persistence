@@ -39,9 +39,9 @@ public class ScriptRunner {
     private static final Log log = LogFactory.getLog(ScriptRunner.class);
     
     private static final String DEFAULT_DELIMITER = ";";
-    private Connection connection;
-    private boolean stopOnError;
-    private boolean autoCommit;
+    private final Connection connection;
+    private final boolean stopOnError;
+    private final boolean autoCommit;
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
 

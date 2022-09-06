@@ -56,7 +56,7 @@ public class Level implements Comparable<Level> {
             joinColumns=@JoinColumn(name = "level_", referencedColumnName = "id"),
             inverseJoinColumns=@JoinColumn(name="child"))
     @OrderColumn(name="list_index")
-    private List<Level> children = new ArrayList<Level>();
+    private List<Level> children = new ArrayList<>();
 
     private boolean background;
 
@@ -67,7 +67,7 @@ public class Level implements Comparable<Level> {
             inverseJoinColumns=@JoinColumn(name="layer"))
     @OrderColumn(name="list_index")
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-    private List<ApplicationLayer> layers = new ArrayList<ApplicationLayer>();
+    private List<ApplicationLayer> layers = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -76,7 +76,7 @@ public class Level implements Comparable<Level> {
             joinColumns=@JoinColumn(name = "level_", referencedColumnName = "id")
     )
     @OrderColumn(name="list_index")
-    private List<Document> documents = new ArrayList<Document>();
+    private List<Document> documents = new ArrayList<>();
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -284,10 +284,9 @@ public class Level implements Comparable<Level> {
            this.getStartLevels().put(app, sl.deepCopy(app, this));
        }else if (Objects.equals(app.getId(), copyFrom.getId())){
             List<StartLevel> sls = new ArrayList<>(original.startLevels.values());
-            for (int i = 0; i < sls.size(); i++) {
-                StartLevel value = sls.get(i);
-                this.getStartLevels().put(app, value.deepCopy(app, this));
-            }
+           for (StartLevel value : sls) {
+               this.getStartLevels().put(app, value.deepCopy(app, this));
+           }
         }
     }
 

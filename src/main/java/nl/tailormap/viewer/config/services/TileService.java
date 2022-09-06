@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import java.util.List;
 @Entity
 @DiscriminatorValue(TileService.PROTOCOL)
 public class TileService extends GeoService {
-    private static final Log log = LogFactory.getLog(TileService.class);
     public static final String PROTOCOL = "tiled";
     public static final String PARAM_RESOLUTIONS = "resolutions";
     public static final String PARAM_TILESIZE = "tileSize";
@@ -86,9 +84,5 @@ public class TileService extends GeoService {
         this.tilingProtocol = tilingProtocol;
     }
 
-    //@Override
-    public void checkOnline(EntityManager em) throws Exception {
-    }
-    
     // </editor-fold>
 }

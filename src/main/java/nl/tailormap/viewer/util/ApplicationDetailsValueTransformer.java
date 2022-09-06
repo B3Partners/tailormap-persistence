@@ -33,7 +33,7 @@ public class ApplicationDetailsValueTransformer extends BasicTransformerAdapter 
 
     /**
      * create a CaseInsensitiveMap with key/values.
-     *
+     * <p>
      * Tuples are the elements making up each "row" of the query result. The
      * contract here is to transform these elements into the final row.
      *
@@ -46,7 +46,7 @@ public class ApplicationDetailsValueTransformer extends BasicTransformerAdapter 
         Map<String, Object> map = new CaseInsensitiveMap();
         for (int i = 0; i < aliases.length; i++) {
             Object t = tuple[i];
-            if (t != null && t instanceof Clob) {
+            if (t instanceof Clob) {
                 Clob c = (Clob) tuple[i];
                 try {
                     t = c.getSubString(1, (int) c.length());

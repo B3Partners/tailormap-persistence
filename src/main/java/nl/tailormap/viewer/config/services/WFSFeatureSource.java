@@ -31,20 +31,18 @@ import java.util.Map;
 @Entity
 @DiscriminatorValue(WFSFeatureSource.PROTOCOL)
 public class WFSFeatureSource extends FeatureSource {
-
-    private static final Log log = LogFactory.getLog(WFSFeatureSource.class);
     public static final String PROTOCOL = "wfs";
 
     public WFSFeatureSource() {
         super();
     }
 
-    public WFSFeatureSource(Map params) throws JSONException {
+    public WFSFeatureSource(Map<String,String> params) throws JSONException {
         super();
 
-        setUrl(params.get("WFSDataStoreFactory:GET_CAPABILITIES_URL").toString());
-        setUsername((String) params.get("WFSDataStoreFactory:USERNAME"));
-        setPassword((String) params.get("WFSDataStoreFactory:PASSWORD"));
+        setUrl(params.get("WFSDataStoreFactory:GET_CAPABILITIES_URL"));
+        setUsername(params.get("WFSDataStoreFactory:USERNAME"));
+        setPassword(params.get("WFSDataStoreFactory:PASSWORD"));
     }
 
 }

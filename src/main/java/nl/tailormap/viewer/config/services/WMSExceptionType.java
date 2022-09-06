@@ -13,13 +13,13 @@ public enum WMSExceptionType {
     Xml("application/vnd.ogc.se_xml"),
     Inimage("application/vnd.ogc.se_inimage");
     
-    private String description;
+    private final String description;
 
     WMSExceptionType(String description) {
         this.description = description;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 }
