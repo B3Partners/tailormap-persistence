@@ -13,14 +13,14 @@ package nl.tailormap.viewer.config.services;
 <span class="fc" id="L13">    Xml(&quot;application/vnd.ogc.se_xml&quot;),</span>
 <span class="fc" id="L14">    Inimage(&quot;application/vnd.ogc.se_inimage&quot;);</span>
     
-    private String description;
+    private final String description;
 
 <span class="fc" id="L18">    WMSExceptionType(String description) {</span>
 <span class="fc" id="L19">        this.description = description;</span>
 <span class="fc" id="L20">    }</span>
 
     public String getDescription() {
-<span class="nc" id="L23">        return description;</span>
+<span class="nc" id="L23">        return this.description;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

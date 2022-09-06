@@ -39,9 +39,9 @@ public class ScriptRunner {
 <span class="fc" id="L39">    private static final Log log = LogFactory.getLog(ScriptRunner.class);</span>
     
     private static final String DEFAULT_DELIMITER = &quot;;&quot;;
-    private Connection connection;
-    private boolean stopOnError;
-    private boolean autoCommit;
+    private final Connection connection;
+    private final boolean stopOnError;
+    private final boolean autoCommit;
 <span class="fc" id="L45">    private String delimiter = DEFAULT_DELIMITER;</span>
 <span class="fc" id="L46">    private boolean fullLineDelimiter = false;</span>
 

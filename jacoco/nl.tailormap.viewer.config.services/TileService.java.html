@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -35,8 +34,7 @@ import java.util.List;
  */
 @Entity
 @DiscriminatorValue(TileService.PROTOCOL)
-<span class="fc" id="L38">public class TileService extends GeoService {</span>
-<span class="fc" id="L39">    private static final Log log = LogFactory.getLog(TileService.class);</span>
+<span class="fc" id="L37">public class TileService extends GeoService {</span>
     public static final String PROTOCOL = &quot;tiled&quot;;
     public static final String PARAM_RESOLUTIONS = &quot;resolutions&quot;;
     public static final String PARAM_TILESIZE = &quot;tileSize&quot;;
@@ -49,7 +47,7 @@ import java.util.List;
     public static final String TILING_PROTOCOL_WMTS = &quot;WMTS&quot;;
     public static final String TILING_PROTOCOL_TMS = &quot;TMS&quot;;
     
-<span class="fc" id="L52">    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy=&quot;tileService&quot;)</span>
+<span class="fc" id="L50">    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy=&quot;tileService&quot;)</span>
     private List&lt;TileMatrixSet&gt; matrixSets = new ArrayList&lt;&gt;();
 
 
@@ -60,10 +58,10 @@ import java.util.List;
      * @return the layer with tiling settings
      */
     public Layer getTilingLayer(){
-<span class="nc bnc" id="L63" title="All 4 branches missed.">        if (this.getTopLayer()!=null &amp;&amp; this.getTopLayer().getChildren().size()&gt;0){</span>
-<span class="nc" id="L64">            return this.getTopLayer().getChildren().get(0);</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">        if (this.getTopLayer()!=null &amp;&amp; this.getTopLayer().getChildren().size()&gt;0){</span>
+<span class="nc" id="L62">            return this.getTopLayer().getChildren().get(0);</span>
         }
-<span class="nc" id="L66">        return null;</span>
+<span class="nc" id="L64">        return null;</span>
     }
     
 
@@ -71,25 +69,21 @@ import java.util.List;
     // &lt;editor-fold desc=&quot;Getters and setters&quot;  defaultstate=&quot;collapsed&quot;&gt;
     
     public List&lt;TileMatrixSet&gt; getMatrixSets() {
-<span class="nc" id="L74">        return matrixSets;</span>
+<span class="nc" id="L72">        return matrixSets;</span>
     }
 
     public void setMatrixSets(List&lt;TileMatrixSet&gt; matrixSets) {
-<span class="nc" id="L78">        this.matrixSets = matrixSets;</span>
-<span class="nc" id="L79">    }</span>
+<span class="nc" id="L76">        this.matrixSets = matrixSets;</span>
+<span class="nc" id="L77">    }</span>
     
     public String getTilingProtocol() {
-<span class="nc" id="L82">        return tilingProtocol;</span>
+<span class="nc" id="L80">        return tilingProtocol;</span>
     }
 
     public void setTilingProtocol(String tilingProtocol) {
-<span class="nc" id="L86">        this.tilingProtocol = tilingProtocol;</span>
-<span class="nc" id="L87">    }</span>
+<span class="nc" id="L84">        this.tilingProtocol = tilingProtocol;</span>
+<span class="nc" id="L85">    }</span>
 
-    //@Override
-    public void checkOnline(EntityManager em) throws Exception {
-<span class="nc" id="L91">    }</span>
-    
     // &lt;/editor-fold&gt;
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -240,7 +240,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  MAP. Hibernate fails to remove map entries with a null value when calling
  clear() on a map on Oracle. This leads to duplicate key violations when
  updating layer details.
-
+ <p>
  <code>@PreUpdate</code>/<code>@PrePersist</code> nor <code>@EntityListeners</code> do
  not work consistenly with cascaded objects in Hibernate, so call this
  manually!</div>

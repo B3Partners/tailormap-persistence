@@ -56,7 +56,7 @@ import java.util.Set;
             joinColumns=@JoinColumn(name = &quot;level_&quot;, referencedColumnName = &quot;id&quot;),
             inverseJoinColumns=@JoinColumn(name=&quot;child&quot;))
     @OrderColumn(name=&quot;list_index&quot;)
-    private List&lt;Level&gt; children = new ArrayList&lt;Level&gt;();
+    private List&lt;Level&gt; children = new ArrayList&lt;&gt;();
 
     private boolean background;
 
@@ -67,7 +67,7 @@ import java.util.Set;
             inverseJoinColumns=@JoinColumn(name=&quot;layer&quot;))
     @OrderColumn(name=&quot;list_index&quot;)
     @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-    private List&lt;ApplicationLayer&gt; layers = new ArrayList&lt;ApplicationLayer&gt;();
+    private List&lt;ApplicationLayer&gt; layers = new ArrayList&lt;&gt;();
 
 <span class="fc" id="L72">    @ManyToMany</span>
     @JoinTable(
@@ -76,7 +76,7 @@ import java.util.Set;
             joinColumns=@JoinColumn(name = &quot;level_&quot;, referencedColumnName = &quot;id&quot;)
     )
     @OrderColumn(name=&quot;list_index&quot;)
-    private List&lt;Document&gt; documents = new ArrayList&lt;Document&gt;();
+    private List&lt;Document&gt; documents = new ArrayList&lt;&gt;();
 
     @Lob
     @Type(type = &quot;org.hibernate.type.TextType&quot;)
@@ -284,56 +284,55 @@ import java.util.Set;
 <span class="nc" id="L284">           this.getStartLevels().put(app, sl.deepCopy(app, this));</span>
 <span class="nc bnc" id="L285" title="All 2 branches missed.">       }else if (Objects.equals(app.getId(), copyFrom.getId())){</span>
 <span class="nc" id="L286">            List&lt;StartLevel&gt; sls = new ArrayList&lt;&gt;(original.startLevels.values());</span>
-<span class="nc bnc" id="L287" title="All 2 branches missed.">            for (int i = 0; i &lt; sls.size(); i++) {</span>
-<span class="nc" id="L288">                StartLevel value = sls.get(i);</span>
-<span class="nc" id="L289">                this.getStartLevels().put(app, value.deepCopy(app, this));</span>
-            }
+<span class="nc bnc" id="L287" title="All 2 branches missed.">           for (StartLevel value : sls) {</span>
+<span class="nc" id="L288">               this.getStartLevels().put(app, value.deepCopy(app, this));</span>
+<span class="nc" id="L289">           }</span>
         }
-<span class="nc" id="L292">    }</span>
+<span class="nc" id="L291">    }</span>
 
     public Level deepCopy(Level parent, Map originalToCopy, Application app, boolean processStartMap) throws Exception {
-<span class="nc" id="L295">        Level copy = (Level)BeanUtils.cloneBean(this);</span>
-<span class="nc" id="L296">        originalToCopy.put(this, copy);</span>
-<span class="nc" id="L297">        copy.setId(null);</span>
-<span class="nc" id="L298">        copy.setParent(parent);</span>
+<span class="nc" id="L294">        Level copy = (Level)BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L295">        originalToCopy.put(this, copy);</span>
+<span class="nc" id="L296">        copy.setId(null);</span>
+<span class="nc" id="L297">        copy.setParent(parent);</span>
         
-<span class="nc" id="L300">        copy.setChildren(new ArrayList&lt;&gt;());</span>
-<span class="nc bnc" id="L301" title="All 2 branches missed.">        for(Level child: children) {</span>
-<span class="nc" id="L302">            copy.getChildren().add(child.deepCopy(copy, originalToCopy, app,processStartMap));</span>
-<span class="nc" id="L303">        }</span>
+<span class="nc" id="L299">        copy.setChildren(new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        for(Level child: children) {</span>
+<span class="nc" id="L301">            copy.getChildren().add(child.deepCopy(copy, originalToCopy, app,processStartMap));</span>
+<span class="nc" id="L302">        }</span>
         
-<span class="nc" id="L305">        copy.setLayers(new ArrayList&lt;&gt;());</span>
-<span class="nc bnc" id="L306" title="All 2 branches missed.">        for(ApplicationLayer appLayer: layers) {</span>
-<span class="nc" id="L307">            copy.getLayers().add(appLayer.deepCopy(originalToCopy, app,processStartMap));</span>
-<span class="nc" id="L308">        }</span>
+<span class="nc" id="L304">        copy.setLayers(new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for(ApplicationLayer appLayer: layers) {</span>
+<span class="nc" id="L306">            copy.getLayers().add(appLayer.deepCopy(originalToCopy, app,processStartMap));</span>
+<span class="nc" id="L307">        }</span>
         
-<span class="nc" id="L310">        copy.setStartLevels(new HashMap&lt;&gt;());</span>
-<span class="nc bnc" id="L311" title="All 2 branches missed.">        if(processStartMap){</span>
-<span class="nc" id="L312">            copy.processStartLevels(app, this, app);</span>
+<span class="nc" id="L309">        copy.setStartLevels(new HashMap&lt;&gt;());</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if(processStartMap){</span>
+<span class="nc" id="L311">            copy.processStartLevels(app, this, app);</span>
         }
         
         // do not clone documents, only the list
-<span class="nc" id="L316">        copy.setDocuments(new ArrayList&lt;&gt;(documents));</span>
+<span class="nc" id="L315">        copy.setDocuments(new ArrayList&lt;&gt;(documents));</span>
         
-<span class="nc" id="L318">        copy.setReaders(new HashSet&lt;&gt;(readers));</span>
+<span class="nc" id="L317">        copy.setReaders(new HashSet&lt;&gt;(readers));</span>
         
-<span class="nc" id="L320">        copy.setInfo(info);</span>
+<span class="nc" id="L319">        copy.setInfo(info);</span>
         
-<span class="nc" id="L322">        copy.setUrl(url);</span>
+<span class="nc" id="L321">        copy.setUrl(url);</span>
         
-<span class="nc" id="L324">        return copy;</span>
+<span class="nc" id="L323">        return copy;</span>
     }
     
     @Override
     public String toString() {
-<span class="nc" id="L329">        return String.format(&quot;Level [id=%d, name=%s, parent=%d]&quot;,</span>
+<span class="nc" id="L328">        return String.format(&quot;Level [id=%d, name=%s, parent=%d]&quot;,</span>
                 id,
                 name,
-<span class="nc bnc" id="L332" title="All 2 branches missed.">                parent == null ? null : parent.getId());</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">                parent == null ? null : parent.getId());</span>
     }    
 
     public int compareTo(Level level) {
-<span class="nc" id="L336">        return this.getName().compareTo(level.getName());</span>
+<span class="nc" id="L335">        return this.getName().compareTo(level.getName());</span>
     }
 
 }

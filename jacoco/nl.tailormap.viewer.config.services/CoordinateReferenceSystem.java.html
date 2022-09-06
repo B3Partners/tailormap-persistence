@@ -63,10 +63,7 @@ public class CoordinateReferenceSystem implements Cloneable {
 <span class="nc" id="L63">            return false;</span>
         }
 <span class="nc" id="L65">        final CoordinateReferenceSystem other = (CoordinateReferenceSystem) obj;</span>
-<span class="nc bnc" id="L66" title="All 6 branches missed.">        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {</span>
-<span class="nc" id="L67">            return false;</span>
-        }
-<span class="nc" id="L69">        return true;</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">        return (this.name == null) ? (other.name == null) : this.name.equals(other.name);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

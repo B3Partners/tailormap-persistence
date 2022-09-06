@@ -57,7 +57,7 @@ import java.util.List;
           joinColumns=@JoinColumn(name=&quot;solr_conf&quot;)
     )
     @Column(name=&quot;attribute_&quot;)
-    private List&lt;String&gt; indexAttributes = new ArrayList();
+    private List&lt;String&gt; indexAttributes = new ArrayList&lt;&gt;();
     
 <span class="fc" id="L62">    @ElementCollection</span>
     @CollectionTable(
@@ -65,7 +65,7 @@ import java.util.List;
           joinColumns=@JoinColumn(name=&quot;solr_conf&quot;)
     )
     @Column(name=&quot;attribute_&quot;)
-    private List&lt;String&gt; resultAttributes = new ArrayList();
+    private List&lt;String&gt; resultAttributes = new ArrayList&lt;&gt;();
     
     private String name;
     

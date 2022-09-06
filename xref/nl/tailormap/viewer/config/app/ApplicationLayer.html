@@ -408,43 +408,42 @@
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>            <strong class="jxr_keyword">this</strong>.getStartLayers().put(app, sl.deepCopy(<strong class="jxr_keyword">this</strong>, app));
 <a class="jxr_linenumber" name="L401" href="#L401">401</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Objects.equals(app.getId(), copyFrom.getId())) {
 <a class="jxr_linenumber" name="L402" href="#L402">402</a>             List&lt;StartLayer&gt; al = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(original.startLayers.values());
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; al.size(); i++) {
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>                 <a name="StartLayer" href="../../../../../nl/tailormap/viewer/config/app/StartLayer.html#StartLayer">StartLayer</a> sl2 = al.get(i);
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>                 <strong class="jxr_keyword">this</strong>.getStartLayers().put(app, sl2.deepCopy(<strong class="jxr_keyword">this</strong>, app));
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>             }
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>         }
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     }
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>     <a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a> deepCopy(Map originalToCopy, Application app, <strong class="jxr_keyword">boolean</strong> processStartLayers) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         <a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a> copy = (<a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a>) BeanUtils.cloneBean(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         originalToCopy.put(<strong class="jxr_keyword">this</strong>, copy);
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         copy.setId(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <em class="jxr_comment">// service reference is not deep copied, of course</em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>         copy.setReaders(<strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(readers));
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>         copy.setWriters(<strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(writers));
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>         copy.setDetails(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(details));
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>         copy.setAttributes( <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;());
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>         <strong class="jxr_keyword">for</strong>(<a name="ConfiguredAttribute" href="../../../../../nl/tailormap/viewer/config/app/ConfiguredAttribute.html#ConfiguredAttribute">ConfiguredAttribute</a> a: attributes) {
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             copy.getAttributes().add(a.deepCopy());
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>         }
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         copy.setStartLayers(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;());
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>         <strong class="jxr_keyword">if</strong>(processStartLayers){
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>             copy.processStartLayers(app,<strong class="jxr_keyword">this</strong>, app);
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         }
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>         
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>         <strong class="jxr_keyword">return</strong> copy;
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>     }
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>     @Override
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>         <strong class="jxr_keyword">return</strong> String.format(<span class="jxr_string">"Application layer [id=%d, service id=%d, layer=%s]"</span>,
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 id,
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>                 service == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : service.getId(),
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>                 layerName);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>     }
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> }
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>            <strong class="jxr_keyword">for</strong> (<a name="StartLayer" href="../../../../../nl/tailormap/viewer/config/app/StartLayer.html#StartLayer">StartLayer</a> sl2 : al) {
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>                <strong class="jxr_keyword">this</strong>.getStartLayers().put(app, sl2.deepCopy(<strong class="jxr_keyword">this</strong>, app));
+<a class="jxr_linenumber" name="L405" href="#L405">405</a>            }
+<a class="jxr_linenumber" name="L406" href="#L406">406</a>         }
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     }
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a> deepCopy(Map originalToCopy, Application app, <strong class="jxr_keyword">boolean</strong> processStartLayers) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a> copy = (<a name="ApplicationLayer" href="../../../../../nl/tailormap/viewer/config/app/ApplicationLayer.html#ApplicationLayer">ApplicationLayer</a>) BeanUtils.cloneBean(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>         originalToCopy.put(<strong class="jxr_keyword">this</strong>, copy);
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>         copy.setId(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <em class="jxr_comment">// service reference is not deep copied, of course</em>
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         copy.setReaders(<strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(readers));
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>         copy.setWriters(<strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(writers));
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         copy.setDetails(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(details));
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>         
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         copy.setAttributes( <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;());
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">for</strong>(<a name="ConfiguredAttribute" href="../../../../../nl/tailormap/viewer/config/app/ConfiguredAttribute.html#ConfiguredAttribute">ConfiguredAttribute</a> a: attributes) {
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>             copy.getAttributes().add(a.deepCopy());
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         }
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>         copy.setStartLayers(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;());
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>         <strong class="jxr_keyword">if</strong>(processStartLayers){
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>             copy.processStartLayers(app,<strong class="jxr_keyword">this</strong>, app);
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>         }
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>         
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>         <strong class="jxr_keyword">return</strong> copy;
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>     }
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>     @Override
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>     <strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         <strong class="jxr_keyword">return</strong> String.format(<span class="jxr_string">"Application layer [id=%d, service id=%d, layer=%s]"</span>,
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>                 id,
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>                 service == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : service.getId(),
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>                 layerName);
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     }
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2022 <a href="https://www.b3partners.nl/">B3Partners B.V.</a>. All rights reserved.</div>

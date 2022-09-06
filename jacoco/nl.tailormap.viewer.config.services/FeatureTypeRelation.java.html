@@ -123,23 +123,21 @@ import java.util.List;
 <span class="nc" id="L123">            j.put(&quot;featureTypePrimaryKeyAttribute&quot;, this.featureType.getPrimaryKeyAttribute());</span>
 <span class="nc" id="L124">            JSONArray keys = new JSONArray();</span>
 <span class="nc" id="L125">            j.put(&quot;relationKeys&quot;, keys);</span>
-<span class="nc" id="L126">            relationKeys.forEach(key -&gt; {</span>
-<span class="nc" id="L127">                keys.put(key.toJSONObject());</span>
-<span class="nc" id="L128">            });</span>
+<span class="nc" id="L126">            relationKeys.forEach(key -&gt; keys.put(key.toJSONObject()));</span>
         }
-<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (this.foreignFeatureType!=null){</span>
-<span class="nc" id="L131">            j.put(&quot;foreignFeatureType&quot;, this.foreignFeatureType.getId());</span>
-<span class="nc" id="L132">            j.put(&quot;foreignFeatureTypeName&quot;, this.foreignFeatureType.getTypeName());</span>
-<span class="nc" id="L133">            j.put(&quot;foreignFeatureTypePrimaryKeyAttribute&quot;, this.foreignFeatureType.getPrimaryKeyAttribute());</span>
-<span class="nc" id="L134">            JSONArray jRel = new JSONArray();</span>
-<span class="nc bnc" id="L135" title="All 6 branches missed.">            if (!this.foreignFeatureType.getRelations().isEmpty() &amp;&amp; this.isSearchNextRelation() &amp;&amp; !head.getTypeName().equals(this.foreignFeatureType.getTypeName())){</span>
-<span class="nc" id="L136">                j.put(&quot;relations&quot;,jRel);</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">                for (FeatureTypeRelation rel : this.foreignFeatureType.getRelations()){</span>
-<span class="nc" id="L138">                    jRel.put(rel.toJSONObject(head));</span>
-<span class="nc" id="L139">                }</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (this.foreignFeatureType!=null){</span>
+<span class="nc" id="L129">            j.put(&quot;foreignFeatureType&quot;, this.foreignFeatureType.getId());</span>
+<span class="nc" id="L130">            j.put(&quot;foreignFeatureTypeName&quot;, this.foreignFeatureType.getTypeName());</span>
+<span class="nc" id="L131">            j.put(&quot;foreignFeatureTypePrimaryKeyAttribute&quot;, this.foreignFeatureType.getPrimaryKeyAttribute());</span>
+<span class="nc" id="L132">            JSONArray jRel = new JSONArray();</span>
+<span class="nc bnc" id="L133" title="All 6 branches missed.">            if (!this.foreignFeatureType.getRelations().isEmpty() &amp;&amp; this.isSearchNextRelation() &amp;&amp; !head.getTypeName().equals(this.foreignFeatureType.getTypeName())){</span>
+<span class="nc" id="L134">                j.put(&quot;relations&quot;,jRel);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                for (FeatureTypeRelation rel : this.foreignFeatureType.getRelations()){</span>
+<span class="nc" id="L136">                    jRel.put(rel.toJSONObject(head));</span>
+<span class="nc" id="L137">                }</span>
             }
         }
-<span class="nc" id="L142">        return j;</span>
+<span class="nc" id="L140">        return j;</span>
     }
 
 }

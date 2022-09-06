@@ -67,9 +67,9 @@ import java.util.Set;
 
         /* Converteer byte array naar hex-weergave */
 <span class="nc" id="L69">        StringBuilder sb = new StringBuilder(digest.length*2);</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">        for(int i = 0; i &lt; digest.length; i++) {</span>
-<span class="nc" id="L71">            sb.append(Integer.toHexString(digest[i] &gt;&gt; 4 &amp; 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */</span>
-<span class="nc" id="L72">            sb.append(Integer.toHexString(digest[i] &amp; 0xf));</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (byte b : digest) {</span>
+<span class="nc" id="L71">            sb.append(Integer.toHexString(b &gt;&gt; 4 &amp; 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */</span>
+<span class="nc" id="L72">            sb.append(Integer.toHexString(b &amp; 0xf));</span>
         }
 <span class="nc" id="L74">        setPassword(sb.toString());</span>
 <span class="nc" id="L75">    }</span>

@@ -70,7 +70,7 @@ import java.util.Set;
     public static final String DETAIL_GLOBAL_LAYOUT = &quot;globalLayout&quot;;
     public static final String DETAIL_LAST_SPINUP_TIME = &quot;lastSpinupTime&quot;;
 
-<span class="fc" id="L73">    public static Set adminOnlyDetails = new HashSet&lt;&gt;(Arrays.asList(&quot;opmerking&quot;));</span>
+<span class="fc" id="L73">    public static Set&lt;String&gt; adminOnlyDetails = new HashSet&lt;&gt;(List.of(&quot;opmerking&quot;));</span>
 
 <span class="fc" id="L75">    public static final Set&lt;String&gt; preventClearDetails = new HashSet&lt;&gt;(Arrays.asList(DETAIL_IS_MASHUP,</span>
             DETAIL_GLOBAL_LAYOUT));
@@ -352,7 +352,7 @@ import java.util.Set;
         public List&lt;Level&gt; getChildren(Level l) {
 <span class="nc" id="L353">            List&lt;Level&gt; children = childrenByParent.get(l);</span>
 <span class="nc bnc" id="L354" title="All 2 branches missed.">            if (children == null) {</span>
-<span class="nc" id="L355">                return Collections.EMPTY_LIST;</span>
+<span class="nc" id="L355">                return Collections.emptyList();</span>
             } else {
 <span class="nc" id="L357">                return children;</span>
             }
@@ -406,33 +406,29 @@ import java.util.Set;
 <span class="nc" id="L406">            treeCache = new TreeCache();</span>
 
             // Retrieve level tree structure in single query
-<span class="nc" id="L409">            treeCache.levels = em.createNamedQuery(&quot;getLevelTree&quot;)</span>
+<span class="nc" id="L409">            treeCache.levels = em.createNamedQuery(&quot;getLevelTree&quot;, Level.class)</span>
 <span class="nc" id="L410">                    .setParameter(&quot;rootId&quot;, root.getId())</span>
 <span class="nc" id="L411">                    .getResultList();</span>
 
-<span class="nc" id="L413">            treeCache.childrenByParent = new HashMap();</span>
-<span class="nc" id="L414">            treeCache.applicationLayers = new ArrayList();</span>
+<span class="nc" id="L413">            treeCache.childrenByParent = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L414">            treeCache.applicationLayers = new ArrayList&lt;&gt;();</span>
 
 <span class="nc bnc" id="L416" title="All 2 branches missed.">            for (Level l : treeCache.levels) {</span>
 <span class="nc" id="L417">                treeCache.applicationLayers.addAll(l.getLayers());</span>
 
 <span class="nc bnc" id="L419" title="All 2 branches missed.">                if (l.getParent() != null) {</span>
-<span class="nc" id="L420">                    List&lt;Level&gt; parentChildren = treeCache.childrenByParent.get(l.getParent());</span>
-<span class="nc bnc" id="L421" title="All 2 branches missed.">                    if (parentChildren == null) {</span>
-<span class="nc" id="L422">                        parentChildren = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L423">                        treeCache.childrenByParent.put(l.getParent(), parentChildren);</span>
-                    }
-<span class="nc" id="L425">                    parentChildren.add(l);</span>
+<span class="nc" id="L420">                    List&lt;Level&gt; parentChildren = treeCache.childrenByParent.computeIfAbsent(l.getParent(), k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L421">                    parentChildren.add(l);</span>
                 }
-<span class="nc" id="L427">            }</span>
+<span class="nc" id="L423">            }</span>
 
         }
-<span class="nc" id="L430">        return treeCache;</span>
+<span class="nc" id="L426">        return treeCache;</span>
     }
 
     public void authorizationsModified() {
-<span class="nc" id="L434">        authorizationsModified = new Date();</span>
-<span class="nc" id="L435">    }</span>
+<span class="nc" id="L430">        authorizationsModified = new Date();</span>
+<span class="nc" id="L431">    }</span>
 
     /**
      * keep a cached copy of our mashup status.
@@ -448,13 +444,13 @@ import java.util.Set;
      * @see #isMashup(org.hibernate.Session)
      */
     public Boolean isMashup() {
-<span class="pc bpc" id="L451" title="1 of 2 branches missed.">        if (this.getDetails().containsKey(Application.DETAIL_IS_MASHUP)) {</span>
-<span class="nc" id="L452">            String mashupValue = this.getDetails().get(Application.DETAIL_IS_MASHUP).getValue();</span>
-<span class="nc" id="L453">            this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
-<span class="nc" id="L454">        } else {</span>
-<span class="fc" id="L455">            this.isMashup_cached = Boolean.FALSE;</span>
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">        if (this.getDetails().containsKey(Application.DETAIL_IS_MASHUP)) {</span>
+<span class="nc" id="L448">            String mashupValue = this.getDetails().get(Application.DETAIL_IS_MASHUP).getValue();</span>
+<span class="nc" id="L449">            this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
+<span class="nc" id="L450">        } else {</span>
+<span class="fc" id="L451">            this.isMashup_cached = Boolean.FALSE;</span>
         }
-<span class="fc" id="L457">        return this.isMashup_cached;</span>
+<span class="fc" id="L453">        return this.isMashup_cached;</span>
     }
 
     /**
@@ -466,134 +462,134 @@ import java.util.Set;
      * @see #isMashup()
      */
     public Boolean isMashup(Session sess) {
-<span class="nc bnc" id="L469" title="All 2 branches missed.">        if (this.isMashup_cached == null) {</span>
-<span class="nc" id="L470">            this.isMashup_cached = Boolean.FALSE;</span>
-<span class="nc" id="L471">            List&lt;Map&lt;String, Object&gt;&gt; items = sess.createSQLQuery(&quot;select d.value from application_details d where d.details_key = '&quot; + Application.DETAIL_IS_MASHUP + &quot;' and d.application =  :appId&quot;)</span>
-<span class="nc" id="L472">                    .setParameter(&quot;appId&quot;, this.getId())</span>
-<span class="nc" id="L473">                    .setResultTransformer(ApplicationDetailsValueTransformer.INSTANCE)</span>
-<span class="nc" id="L474">                    .list();</span>
-<span class="nc bnc" id="L475" title="All 2 branches missed.">            if (items.size() &gt; 0) {</span>
-<span class="nc" id="L476">                String mashupValue = items.get(0).get(&quot;value&quot;).toString();</span>
-<span class="nc" id="L477">                this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">        if (this.isMashup_cached == null) {</span>
+<span class="nc" id="L466">            this.isMashup_cached = Boolean.FALSE;</span>
+<span class="nc" id="L467">            List&lt;Map&lt;String, Object&gt;&gt; items = sess.createSQLQuery(&quot;select d.value from application_details d where d.details_key = '&quot; + Application.DETAIL_IS_MASHUP + &quot;' and d.application =  :appId&quot;)</span>
+<span class="nc" id="L468">                    .setParameter(&quot;appId&quot;, this.getId())</span>
+<span class="nc" id="L469">                    .setResultTransformer(ApplicationDetailsValueTransformer.INSTANCE)</span>
+<span class="nc" id="L470">                    .list();</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">            if (items.size() &gt; 0) {</span>
+<span class="nc" id="L472">                String mashupValue = items.get(0).get(&quot;value&quot;).toString();</span>
+<span class="nc" id="L473">                this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
             }
         }
-<span class="nc" id="L480">        return this.isMashup_cached;</span>
+<span class="nc" id="L476">        return this.isMashup_cached;</span>
     }
 
 
     public ApplicationLayer findLayer(ApplicationLayer oldLayer) {
-<span class="nc" id="L485">        List&lt;ApplicationLayer&gt; appLayers = treeCache.applicationLayers;</span>
-<span class="nc bnc" id="L486" title="All 2 branches missed.">        for (ApplicationLayer appLayer : appLayers) {</span>
-<span class="nc bnc" id="L487" title="All 4 branches missed.">            if (appLayer.getService().equals(oldLayer.getService()) &amp;&amp; appLayer.getLayerName().equals(oldLayer.getLayerName())) {</span>
-<span class="nc" id="L488">                return appLayer;</span>
+<span class="nc" id="L481">        List&lt;ApplicationLayer&gt; appLayers = treeCache.applicationLayers;</span>
+<span class="nc bnc" id="L482" title="All 2 branches missed.">        for (ApplicationLayer appLayer : appLayers) {</span>
+<span class="nc bnc" id="L483" title="All 4 branches missed.">            if (appLayer.getService().equals(oldLayer.getService()) &amp;&amp; appLayer.getLayerName().equals(oldLayer.getLayerName())) {</span>
+<span class="nc" id="L484">                return appLayer;</span>
             }
-<span class="nc" id="L490">        }</span>
-<span class="nc" id="L491">        return null;</span>
+<span class="nc" id="L486">        }</span>
+<span class="nc" id="L487">        return null;</span>
     }
 
     public Level findLevel(Level oldLevel) {
-<span class="nc" id="L495">        List&lt;Level&gt; levels = treeCache.levels;</span>
-<span class="nc bnc" id="L496" title="All 2 branches missed.">        for (Level level : levels) {</span>
-<span class="nc bnc" id="L497" title="All 2 branches missed.">            if (level.getName().equals(oldLevel.getName())) {</span>
-<span class="nc" id="L498">                return level;</span>
+<span class="nc" id="L491">        List&lt;Level&gt; levels = treeCache.levels;</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">        for (Level level : levels) {</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">            if (level.getName().equals(oldLevel.getName())) {</span>
+<span class="nc" id="L494">                return level;</span>
             }
-<span class="nc" id="L500">        }</span>
-<span class="nc" id="L501">        return null;</span>
+<span class="nc" id="L496">        }</span>
+<span class="nc" id="L497">        return null;</span>
     }
 
     @PostPersist
     public void postPersist() {
-<span class="pc bpc" id="L506" title="1 of 2 branches missed.">        if (isMashup()) {</span>
-<span class="nc" id="L507">            log.debug(&quot;postPersist(): mashup&quot;);</span>
-<span class="nc" id="L508">            return;</span>
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (isMashup()) {</span>
+<span class="nc" id="L503">            log.debug(&quot;postPersist(): mashup&quot;);</span>
+<span class="nc" id="L504">            return;</span>
         }
-<span class="fc" id="L510">        processCopyMap();</span>
-<span class="fc" id="L511">    }</span>
+<span class="fc" id="L506">        processCopyMap();</span>
+<span class="fc" id="L507">    }</span>
 
     @Transient
     public Map&lt;String, Long&gt; idMap;
 
     public void processCopyMap() {
-<span class="pc bpc" id="L517" title="1 of 2 branches missed.">        if (originalToCopy == null) {</span>
-<span class="fc" id="L518">            log.debug(&quot;postPersist(): not a copy&quot;);</span>
-<span class="fc" id="L519">            return;</span>
+<span class="pc bpc" id="L513" title="1 of 2 branches missed.">        if (originalToCopy == null) {</span>
+<span class="fc" id="L514">            log.debug(&quot;postPersist(): not a copy&quot;);</span>
+<span class="fc" id="L515">            return;</span>
         }
-<span class="nc" id="L521">        idMap = getIdMap();</span>
+<span class="nc" id="L517">        idMap = getIdMap();</span>
 
-<span class="nc" id="L523">        originalToCopy = null;</span>
+<span class="nc" id="L519">        originalToCopy = null;</span>
 
-<span class="nc" id="L525">        log.debug(&quot;Updating component configs&quot;);</span>
-<span class="nc bnc" id="L526" title="All 2 branches missed.">        for (ConfiguredComponent comp : components) {</span>
-<span class="nc bnc" id="L527" title="All 2 branches missed.">            if (comp.getConfig() == null) {</span>
-<span class="nc" id="L528">                continue;</span>
+<span class="nc" id="L521">        log.debug(&quot;Updating component configs&quot;);</span>
+<span class="nc bnc" id="L522" title="All 2 branches missed.">        for (ConfiguredComponent comp : components) {</span>
+<span class="nc bnc" id="L523" title="All 2 branches missed.">            if (comp.getConfig() == null) {</span>
+<span class="nc" id="L524">                continue;</span>
             }
-<span class="nc" id="L530">            log.debug(String.format(&quot;Checking component class %s, name %s&quot;, comp.getClassName(), comp.getName()));</span>
-<span class="nc" id="L531">            boolean changed = false;</span>
+<span class="nc" id="L526">            log.debug(String.format(&quot;Checking component class %s, name %s&quot;, comp.getClassName(), comp.getName()));</span>
+<span class="nc" id="L527">            boolean changed = false;</span>
             try {
-<span class="nc" id="L533">                JSONObject cfg = new JSONObject(comp.getConfig());</span>
-<span class="nc bnc" id="L534" title="All 2 branches missed.">                if (cfg.has(&quot;layers&quot;)) {</span>
-<span class="nc" id="L535">                    JSONArray layers = cfg.getJSONArray(&quot;layers&quot;);</span>
-<span class="nc bnc" id="L536" title="All 2 branches missed.">                    for (int i = 0; i &lt; layers.length(); i++) {</span>
-<span class="nc" id="L537">                        Long newId = idMap.get(ApplicationLayer.class + &quot;_&quot; + layers.getInt(i));</span>
-<span class="nc bnc" id="L538" title="All 2 branches missed.">                        if (newId != null) {</span>
-<span class="nc" id="L539">                            log.debug(String.format(&quot;Index %d: new id for application layer %d is %d&quot;, i, layers.getInt(i), newId));</span>
-<span class="nc" id="L540">                            layers.put(i, newId.longValue());</span>
+<span class="nc" id="L529">                JSONObject cfg = new JSONObject(comp.getConfig());</span>
+<span class="nc bnc" id="L530" title="All 2 branches missed.">                if (cfg.has(&quot;layers&quot;)) {</span>
+<span class="nc" id="L531">                    JSONArray layers = cfg.getJSONArray(&quot;layers&quot;);</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">                    for (int i = 0; i &lt; layers.length(); i++) {</span>
+<span class="nc" id="L533">                        Long newId = idMap.get(ApplicationLayer.class + &quot;_&quot; + layers.getInt(i));</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">                        if (newId != null) {</span>
+<span class="nc" id="L535">                            log.debug(String.format(&quot;Index %d: new id for application layer %d is %d&quot;, i, layers.getInt(i), newId));</span>
+<span class="nc" id="L536">                            layers.put(i, newId.longValue());</span>
                         } else {
-<span class="nc" id="L542">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid application layer in original&quot;, i, layers.getInt(i)));</span>
-<span class="nc" id="L543">                            layers.put(i, -1);</span>
+<span class="nc" id="L538">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid application layer in original&quot;, i, layers.getInt(i)));</span>
+<span class="nc" id="L539">                            layers.put(i, -1);</span>
                         }
-<span class="nc" id="L545">                        changed = true;</span>
+<span class="nc" id="L541">                        changed = true;</span>
                     }
                 }
-<span class="nc bnc" id="L548" title="All 2 branches missed.">                if (cfg.has(&quot;levels&quot;)) {</span>
-<span class="nc" id="L549">                    JSONArray levels = cfg.getJSONArray(&quot;levels&quot;);</span>
-<span class="nc bnc" id="L550" title="All 2 branches missed.">                    for (int i = 0; i &lt; levels.length(); i++) {</span>
-<span class="nc" id="L551">                        Long newId = idMap.get(Level.class + &quot;_&quot; + levels.getInt(i));</span>
-<span class="nc bnc" id="L552" title="All 2 branches missed.">                        if (newId != null) {</span>
-<span class="nc" id="L553">                            log.debug(String.format(&quot;Index %d: new id for level %d is %d&quot;, i, levels.getInt(i), newId));</span>
-<span class="nc" id="L554">                            levels.put(i, newId.longValue());</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">                if (cfg.has(&quot;levels&quot;)) {</span>
+<span class="nc" id="L545">                    JSONArray levels = cfg.getJSONArray(&quot;levels&quot;);</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">                    for (int i = 0; i &lt; levels.length(); i++) {</span>
+<span class="nc" id="L547">                        Long newId = idMap.get(Level.class + &quot;_&quot; + levels.getInt(i));</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">                        if (newId != null) {</span>
+<span class="nc" id="L549">                            log.debug(String.format(&quot;Index %d: new id for level %d is %d&quot;, i, levels.getInt(i), newId));</span>
+<span class="nc" id="L550">                            levels.put(i, newId.longValue());</span>
                         } else {
-<span class="nc" id="L556">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid level in original&quot;, i, levels.getInt(i)));</span>
-<span class="nc" id="L557">                            levels.put(i, -1);</span>
+<span class="nc" id="L552">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid level in original&quot;, i, levels.getInt(i)));</span>
+<span class="nc" id="L553">                            levels.put(i, -1);</span>
                         }
-<span class="nc" id="L559">                        changed = true;</span>
+<span class="nc" id="L555">                        changed = true;</span>
                     }
                 }
-<span class="nc bnc" id="L562" title="All 2 branches missed.">                if (changed) {</span>
-<span class="nc" id="L563">                    log.debug(&quot;Old config: &quot; + comp.getConfig());</span>
-<span class="nc" id="L564">                    comp.setConfig(cfg.toString());</span>
-<span class="nc" id="L565">                    log.debug(&quot;New config: &quot; + comp.getConfig());</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">                if (changed) {</span>
+<span class="nc" id="L559">                    log.debug(&quot;Old config: &quot; + comp.getConfig());</span>
+<span class="nc" id="L560">                    comp.setConfig(cfg.toString());</span>
+<span class="nc" id="L561">                    log.debug(&quot;New config: &quot; + comp.getConfig());</span>
                 }
 
-<span class="nc" id="L568">            } catch (Exception ex) {</span>
-<span class="nc" id="L569">                log.error(String.format(&quot;Cannot update persistent object id's &quot;</span>
+<span class="nc" id="L564">            } catch (Exception ex) {</span>
+<span class="nc" id="L565">                log.error(String.format(&quot;Cannot update persistent object id's &quot;</span>
                         + &quot;in component config on application copy, &quot;
                         + &quot;copied application=%s, component class=%s, component name=%s&quot;,
-<span class="nc" id="L572">                        getNameWithVersion(),</span>
-<span class="nc" id="L573">                        comp.getClassName(),</span>
-<span class="nc" id="L574">                        comp.getName()), ex);</span>
-<span class="nc" id="L575">            }</span>
-<span class="nc" id="L576">        }</span>
-<span class="nc" id="L577">    }</span>
+<span class="nc" id="L568">                        getNameWithVersion(),</span>
+<span class="nc" id="L569">                        comp.getClassName(),</span>
+<span class="nc" id="L570">                        comp.getName()), ex);</span>
+<span class="nc" id="L571">            }</span>
+<span class="nc" id="L572">        }</span>
+<span class="nc" id="L573">    }</span>
 
     private Map&lt;String, Long&gt; getIdMap() {
-<span class="nc" id="L580">        Map&lt;String, Long&gt; idMap = new HashMap();</span>
-<span class="nc bnc" id="L581" title="All 2 branches missed.">        for (Object e : originalToCopy.entrySet()) {</span>
-<span class="nc" id="L582">            Map.Entry&lt;Object, Object&gt; entry = (Map.Entry&lt;Object, Object&gt;) e;</span>
-<span class="nc" id="L583">            Object original = entry.getKey();</span>
-<span class="nc" id="L584">            Object copy = entry.getValue();</span>
-<span class="nc" id="L585">            log.debug(String.format(&quot;postPersist(): original=%s, copy=%s&quot;, original, copy));</span>
-<span class="nc bnc" id="L586" title="All 2 branches missed.">            if (original instanceof Level) {</span>
-<span class="nc" id="L587">                Level oL = (Level) original;</span>
-<span class="nc" id="L588">                Level cL = (Level) copy;</span>
-<span class="nc" id="L589">                idMap.put(original.getClass() + &quot;_&quot; + oL.getId(), cL.getId());</span>
-<span class="nc bnc" id="L590" title="All 2 branches missed.">            } else if (original instanceof ApplicationLayer) {</span>
-<span class="nc" id="L591">                ApplicationLayer oAl = (ApplicationLayer) original;</span>
-<span class="nc" id="L592">                ApplicationLayer cAl = (ApplicationLayer) copy;</span>
-<span class="nc" id="L593">                idMap.put(original.getClass() + &quot;_&quot; + oAl.getId(), cAl.getId());</span>
+<span class="nc" id="L576">        Map&lt;String, Long&gt; idMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L577" title="All 2 branches missed.">        for (Object e : originalToCopy.entrySet()) {</span>
+<span class="nc" id="L578">            Map.Entry&lt;Object, Object&gt; entry = (Map.Entry&lt;Object, Object&gt;) e;</span>
+<span class="nc" id="L579">            Object original = entry.getKey();</span>
+<span class="nc" id="L580">            Object copy = entry.getValue();</span>
+<span class="nc" id="L581">            log.debug(String.format(&quot;postPersist(): original=%s, copy=%s&quot;, original, copy));</span>
+<span class="nc bnc" id="L582" title="All 2 branches missed.">            if (original instanceof Level) {</span>
+<span class="nc" id="L583">                Level oL = (Level) original;</span>
+<span class="nc" id="L584">                Level cL = (Level) copy;</span>
+<span class="nc" id="L585">                idMap.put(original.getClass() + &quot;_&quot; + oL.getId(), cL.getId());</span>
+<span class="nc bnc" id="L586" title="All 2 branches missed.">            } else if (original instanceof ApplicationLayer) {</span>
+<span class="nc" id="L587">                ApplicationLayer oAl = (ApplicationLayer) original;</span>
+<span class="nc" id="L588">                ApplicationLayer cAl = (ApplicationLayer) copy;</span>
+<span class="nc" id="L589">                idMap.put(original.getClass() + &quot;_&quot; + oAl.getId(), cAl.getId());</span>
             }
-<span class="nc" id="L595">        }</span>
-<span class="nc" id="L596">        return idMap;</span>
+<span class="nc" id="L591">        }</span>
+<span class="nc" id="L592">        return idMap;</span>
     }
 
 
@@ -601,31 +597,31 @@ import java.util.Set;
         // In previous versions maxHeight and maxWidth where assigned to details directly
         // Now these settings are saved in globalLayout. We are removing these settings from
         // details (when present) to migrate from old layout to new layout
-<span class="nc bnc" id="L604" title="All 2 branches missed.">        if (this.details.containsKey(&quot;maxWidth&quot;)) {</span>
-<span class="nc" id="L605">            this.details.remove(&quot;maxWidth&quot;);</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">        if (this.details.containsKey(&quot;maxWidth&quot;)) {</span>
+<span class="nc" id="L601">            this.details.remove(&quot;maxWidth&quot;);</span>
         }
-<span class="nc bnc" id="L607" title="All 2 branches missed.">        if (this.details.containsKey(&quot;maxHeight&quot;)) {</span>
-<span class="nc" id="L608">            this.details.remove(&quot;maxHeight&quot;);</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">        if (this.details.containsKey(&quot;maxHeight&quot;)) {</span>
+<span class="nc" id="L604">            this.details.remove(&quot;maxHeight&quot;);</span>
         }
-<span class="nc" id="L610">    }</span>
+<span class="nc" id="L606">    }</span>
 
     public void setGlobalLayout(String globalLayout) {
-<span class="nc" id="L613">        this.details.put(&quot;globalLayout&quot;, new ClobElement(globalLayout));</span>
-<span class="nc" id="L614">    }</span>
+<span class="nc" id="L609">        this.details.put(&quot;globalLayout&quot;, new ClobElement(globalLayout));</span>
+<span class="nc" id="L610">    }</span>
 
     public JSONObject getGlobalLayout() throws JSONException {
-<span class="nc" id="L617">        JSONObject globalLayout = new JSONObject();</span>
-<span class="nc bnc" id="L618" title="All 2 branches missed.">        if (this.getDetails().containsKey(&quot;globalLayout&quot;)) {</span>
-<span class="nc" id="L619">            globalLayout = new JSONObject(this.getDetails().get(&quot;globalLayout&quot;).getValue());</span>
+<span class="nc" id="L613">        JSONObject globalLayout = new JSONObject();</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">        if (this.getDetails().containsKey(&quot;globalLayout&quot;)) {</span>
+<span class="nc" id="L615">            globalLayout = new JSONObject(this.getDetails().get(&quot;globalLayout&quot;).getValue());</span>
         }
         // Legacy properties
-<span class="nc bnc" id="L622" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxWidth&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxWidth&quot;)) {</span>
-<span class="nc" id="L623">            globalLayout.put(&quot;maxWidth&quot;, this.getDetails().get(&quot;maxWidth&quot;).getValue());</span>
+<span class="nc bnc" id="L618" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxWidth&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxWidth&quot;)) {</span>
+<span class="nc" id="L619">            globalLayout.put(&quot;maxWidth&quot;, this.getDetails().get(&quot;maxWidth&quot;).getValue());</span>
         }
-<span class="nc bnc" id="L625" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxHeight&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxHeight&quot;)) {</span>
-<span class="nc" id="L626">            globalLayout.put(&quot;maxHeight&quot;, this.getDetails().get(&quot;maxHeight&quot;).getValue());</span>
+<span class="nc bnc" id="L621" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxHeight&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxHeight&quot;)) {</span>
+<span class="nc" id="L622">            globalLayout.put(&quot;maxHeight&quot;, this.getDetails().get(&quot;maxHeight&quot;).getValue());</span>
         }
-<span class="nc" id="L628">        return globalLayout;</span>
+<span class="nc" id="L624">        return globalLayout;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

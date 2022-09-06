@@ -310,7 +310,7 @@ import java.util.Set;
      * are not initialized, but can be reconstructed from the list of all Layers
      * for this service returned by the query. Call Layer.getLayerChildrenCache() 
      * to retrieve it without causing a SQL query.
-     * 
+     * &lt;p&gt;
      * The cache is not updated on changes, so will only represent the database
      * state when loadLayerTree() was last called.
      *
@@ -325,43 +325,39 @@ import java.util.Set;
 <span class="nc bnc" id="L325" title="All 2 branches missed.">        if(!em.contains(this)) {</span>
             // Not a persistent entity (for example when loading user specified 
             // service)
-<span class="nc" id="L328">            return Collections.EMPTY_LIST;</span>
+<span class="nc" id="L328">            return Collections.emptyList();</span>
         }
         
         // Retrieve layer tree structure in single query
-<span class="nc" id="L332">        layers = em.createNamedQuery(&quot;getLayerTree&quot;)</span>
+<span class="nc" id="L332">        layers = em.createNamedQuery(&quot;getLayerTree&quot;, Layer.class)</span>
 <span class="nc" id="L333">            .setParameter(&quot;rootId&quot;, topLayer.getId())</span>
 <span class="nc" id="L334">            .getResultList();   </span>
       
 <span class="nc" id="L336">        childrenByParent = new HashMap&lt;&gt;();</span>
 <span class="nc bnc" id="L337" title="All 2 branches missed.">        for(Layer l: layers) {               </span>
 <span class="nc bnc" id="L338" title="All 2 branches missed.">            if(l.getParent() != null) {</span>
-<span class="nc" id="L339">                List&lt;Layer&gt; parentChildren = childrenByParent.get(l.getParent());</span>
-<span class="nc bnc" id="L340" title="All 2 branches missed.">                if(parentChildren == null) {</span>
-<span class="nc" id="L341">                    parentChildren = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L342">                    childrenByParent.put(l.getParent(), parentChildren);</span>
-                }
-<span class="nc" id="L344">                parentChildren.add(l);</span>
+<span class="nc" id="L339">                List&lt;Layer&gt; parentChildren = childrenByParent.computeIfAbsent(l.getParent(), k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L340">                parentChildren.add(l);</span>
             }
-<span class="nc" id="L346">        }      </span>
-<span class="nc" id="L347">        return layers;</span>
+<span class="nc" id="L342">        }      </span>
+<span class="nc" id="L343">        return layers;</span>
     }
     
     public List&lt;Layer&gt; getLayerChildrenCache(Layer l, EntityManager em) {
-<span class="nc bnc" id="L351" title="All 2 branches missed.">        if(childrenByParent != null) {</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">        if(childrenByParent != null) {</span>
             
-<span class="nc bnc" id="L353" title="All 2 branches missed.">            if(!em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(l.getChildren())) {</span>
-<span class="nc" id="L354">                List&lt;Layer&gt; childrenList = childrenByParent.get(l);</span>
-<span class="nc bnc" id="L355" title="All 2 branches missed.">                if(childrenList == null) {</span>
-<span class="nc" id="L356">                    return Collections.EMPTY_LIST;</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">            if(!em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(l.getChildren())) {</span>
+<span class="nc" id="L350">                List&lt;Layer&gt; childrenList = childrenByParent.get(l);</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">                if(childrenList == null) {</span>
+<span class="nc" id="L352">                    return Collections.emptyList();</span>
                 } else {
-<span class="nc" id="L358">                    return childrenList;</span>
+<span class="nc" id="L354">                    return childrenList;</span>
                 }
             } else {
-<span class="nc" id="L361">                return l.getChildren();</span>
+<span class="nc" id="L357">                return l.getChildren();</span>
             }
         } else {
-<span class="nc" id="L364">            return l.getChildren();</span>
+<span class="nc" id="L360">            return l.getChildren();</span>
         }
     }
 
@@ -376,16 +372,16 @@ import java.util.Set;
      */
     public Layer getSingleLayer(final String layerName, EntityManager em) {
         try {
-<span class="nc" id="L379">            return (Layer)em.createQuery(</span>
+<span class="nc" id="L375">            return (Layer)em.createQuery(</span>
                       &quot;from Layer where service = :service &quot;
                     + &quot;and name = :n order by virtual desc&quot;)
-<span class="nc" id="L382">                    .setParameter(&quot;service&quot;, this)</span>
-<span class="nc" id="L383">                    .setParameter(&quot;n&quot;, layerName)</span>
-<span class="nc" id="L384">                    .setMaxResults(1)</span>
-<span class="nc" id="L385">                    .getSingleResult();</span>
+<span class="nc" id="L378">                    .setParameter(&quot;service&quot;, this)</span>
+<span class="nc" id="L379">                    .setParameter(&quot;n&quot;, layerName)</span>
+<span class="nc" id="L380">                    .setMaxResults(1)</span>
+<span class="nc" id="L381">                    .getSingleResult();</span>
 
-<span class="nc" id="L387">        } catch (NoResultException nre) {</span>
-<span class="nc" id="L388">            return null;</span>
+<span class="nc" id="L383">        } catch (NoResultException nre) {</span>
+<span class="nc" id="L384">            return null;</span>
         }        
     }
 
@@ -399,23 +395,23 @@ import java.util.Set;
      * @return the Layer or null if not found
      */
     public Layer getLayer(final String layerName, EntityManager em) {
-<span class="nc" id="L402">        loadLayerTree(em);</span>
+<span class="nc" id="L398">        loadLayerTree(em);</span>
         
-<span class="nc bnc" id="L404" title="All 4 branches missed.">        if(layerName == null || topLayer == null) {</span>
-<span class="nc" id="L405">            return null;</span>
+<span class="nc bnc" id="L400" title="All 4 branches missed.">        if(layerName == null || topLayer == null) {</span>
+<span class="nc" id="L401">            return null;</span>
         }
         
-<span class="nc" id="L408">        final MutableObject&lt;Layer&gt; layer = new MutableObject&lt;&gt;(null);</span>
+<span class="nc" id="L404">        final MutableObject&lt;Layer&gt; layer = new MutableObject&lt;&gt;(null);</span>
         
-<span class="nc" id="L410">        topLayer.accept((l, em1) -&gt; {</span>
-<span class="nc bnc" id="L411" title="All 2 branches missed.">            if(StringUtils.equals(l.getName(),layerName)) {</span>
-<span class="nc" id="L412">                layer.setValue(l);</span>
-<span class="nc" id="L413">                return false;</span>
+<span class="nc" id="L406">        topLayer.accept((l, em1) -&gt; {</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">            if(StringUtils.equals(l.getName(),layerName)) {</span>
+<span class="nc" id="L408">                layer.setValue(l);</span>
+<span class="nc" id="L409">                return false;</span>
             }
-<span class="nc" id="L415">            return true;</span>
+<span class="nc" id="L411">            return true;</span>
         },em);
         
-<span class="nc" id="L418">        return layer.getValue();</span>
+<span class="nc" id="L414">        return layer.getValue();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -58,7 +58,7 @@
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      }
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <a name="JDBCFeatureSource" href="../../../../../nl/tailormap/viewer/config/services/JDBCFeatureSource.html#JDBCFeatureSource">JDBCFeatureSource</a>(Map params) <strong class="jxr_keyword">throws</strong> JSONException {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <a name="JDBCFeatureSource" href="../../../../../nl/tailormap/viewer/config/services/JDBCFeatureSource.html#JDBCFeatureSource">JDBCFeatureSource</a>(Map&lt;String, String&gt; params) <strong class="jxr_keyword">throws</strong> JSONException {
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          JSONObject urlObj = <strong class="jxr_keyword">new</strong> JSONObject();
@@ -68,9 +68,9 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          urlObj.put(<span class="jxr_string">"database"</span>, params.get(<span class="jxr_string">"database"</span>));
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          setUrl(urlObj.toString());
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          schema = (String)params.get(<span class="jxr_string">"schema"</span>);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          setUsername((String)params.get(<span class="jxr_string">"user"</span>));
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          setPassword((String)params.get(<span class="jxr_string">"passwd"</span>));
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          schema = params.get(<span class="jxr_string">"schema"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          setUsername(params.get(<span class="jxr_string">"user"</span>));
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          setPassword(params.get(<span class="jxr_string">"passwd"</span>));
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  }
 </pre>

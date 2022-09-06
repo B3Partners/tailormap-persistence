@@ -56,7 +56,7 @@ import java.util.Set;
  * @author Matthijs Laan
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicUpdate = true)
+@org.hibernate.annotations.DynamicUpdate
 public class Layer implements Serializable {
 <span class="fc" id="L61">    private static final Log log = LogFactory.getLog(Layer.class);</span>
 
@@ -87,7 +87,7 @@ public class Layer implements Serializable {
     public static final String DETAIL_USERLAYER_DATE_ADDED = &quot;userlayer_date_added&quot;;
     public static final String DETAIL_USERLAYER_USER = &quot;userlayer_user&quot;;
 
-<span class="fc" id="L90">    private static Set&lt;String&gt; interestingDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
+<span class="fc" id="L90">    private static final Set&lt;String&gt; interestingDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
             EXTRA_KEY_METADATA_URL,
             EXTRA_KEY_METADATA_STYLESHEET_URL,
             EXTRA_KEY_DOWNLOAD_URL,
@@ -99,7 +99,7 @@ public class Layer implements Serializable {
             EXTRA_KEY_ATTRIBUTION
     }));
 
-<span class="fc" id="L102">    private static Set&lt;String&gt; updatableDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
+<span class="fc" id="L102">    private static final Set&lt;String&gt; updatableDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
             EXTRA_KEY_METADATA_URL,
             DETAIL_ALL_CHILDREN,
             DETAIL_WMS_STYLES
@@ -290,7 +290,7 @@ public class Layer implements Serializable {
     }
 
     public interface Visitor {
-        public boolean visit(Layer l, EntityManager em);
+        boolean visit(Layer l, EntityManager em);
     }
 
     /**
@@ -379,14 +379,14 @@ public class Layer implements Serializable {
 <span class="nc" id="L379">            o.put(&quot;tileHeight&quot;, tileset.getHeight());</span>
 <span class="nc" id="L380">            o.put(&quot;tileWidth&quot;, tileset.getWidth());</span>
 <span class="nc bnc" id="L381" title="All 2 branches missed.">            if (tileset.getResolutions() != null) {</span>
-<span class="nc" id="L382">                String resolutions = &quot;&quot;;</span>
+<span class="nc" id="L382">                StringBuilder resolutions = new StringBuilder();</span>
 <span class="nc bnc" id="L383" title="All 2 branches missed.">                for (Double d : tileset.getResolutions()) {</span>
 <span class="nc bnc" id="L384" title="All 2 branches missed.">                    if (resolutions.length() &gt; 0) {</span>
-<span class="nc" id="L385">                        resolutions += &quot;,&quot;;</span>
+<span class="nc" id="L385">                        resolutions.append(&quot;,&quot;);</span>
                     }
-<span class="nc" id="L387">                    resolutions += d.toString();</span>
+<span class="nc" id="L387">                    resolutions.append(d.toString());</span>
 <span class="nc" id="L388">                }</span>
-<span class="nc" id="L389">                o.put(&quot;resolutions&quot;, resolutions);</span>
+<span class="nc" id="L389">                o.put(&quot;resolutions&quot;, resolutions.toString());</span>
             }
         }
 
@@ -408,9 +408,9 @@ public class Layer implements Serializable {
     }
 
     public List&lt;ApplicationLayer&gt; getApplicationLayers(EntityManager em) {
-<span class="nc" id="L411">        List&lt;ApplicationLayer&gt; appLayers = em.createQuery(&quot;from ApplicationLayer where service = :service&quot;</span>
-<span class="nc" id="L412">                + &quot; and layerName = :layerName&quot;).setParameter(&quot;service&quot;, service).setParameter(&quot;layerName&quot;, this.getName()).getResultList();</span>
-<span class="nc" id="L413">        return appLayers;</span>
+<span class="nc" id="L411">        return em.createQuery(&quot;from ApplicationLayer where service = :service&quot;</span>
+                + &quot; and layerName = :layerName&quot;,ApplicationLayer.class)
+<span class="nc" id="L413">                .setParameter(&quot;service&quot;, service).setParameter(&quot;layerName&quot;, this.getName()).getResultList();</span>
     }
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;

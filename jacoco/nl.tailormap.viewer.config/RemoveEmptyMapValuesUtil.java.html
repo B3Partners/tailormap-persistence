@@ -21,7 +21,7 @@ import java.util.Set;
      * MAP. Hibernate fails to remove map entries with a null value when calling
      * clear() on a map on Oracle. This leads to duplicate key violations when
      * updating layer details.
-     *
+     * &lt;p&gt;
      * {@code @PreUpdate}/{@code @PrePersist} nor {@code @EntityListeners} do
      * not work consistenly with cascaded objects in Hibernate, so call this
      * manually!

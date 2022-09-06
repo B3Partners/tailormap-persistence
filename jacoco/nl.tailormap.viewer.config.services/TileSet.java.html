@@ -74,8 +74,8 @@ import java.util.List;
     public void setResolutions(String res){
 <span class="nc" id="L75">        this.resolutions = new ArrayList&lt;Double&gt;();</span>
 <span class="nc" id="L76">        String[] resTokens = res.split(&quot;,&quot;);</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        for (int i = 0; i &lt; resTokens.length; i++){</span>
-<span class="nc" id="L78">            this.resolutions.add(Double.parseDouble(resTokens[i].trim()));</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        for (String resToken : resTokens) {</span>
+<span class="nc" id="L78">            this.resolutions.add(Double.parseDouble(resToken.trim()));</span>
         }
 <span class="nc" id="L80">    }</span>
 

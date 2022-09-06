@@ -75,9 +75,9 @@
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          <em class="jxr_comment">/* Converteer byte array naar hex-weergave */</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(digest.length*2);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">for</strong>(<strong class="jxr_keyword">int</strong> i = 0; i &lt; digest.length; i++) {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              sb.append(Integer.toHexString(digest[i] &gt;&gt; 4 &amp; 0xf)); <em class="jxr_comment">/* and mask met 0xf nodig door sign-extenden van bytes... */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              sb.append(Integer.toHexString(digest[i] &amp; 0xf));
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">for</strong> (byte b : digest) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>              sb.append(Integer.toHexString(b &gt;&gt; 4 &amp; 0xf)); <em class="jxr_comment">/* and mask met 0xf nodig door sign-extenden van bytes... */</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              sb.append(Integer.toHexString(b &amp; 0xf));
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          }
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          setPassword(sb.toString());
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      }

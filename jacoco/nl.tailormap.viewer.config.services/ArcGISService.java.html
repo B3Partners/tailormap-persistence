@@ -72,11 +72,11 @@ import java.util.SortedMap;
     // See {Layer#virtual}
     // Group layers are thus virtual layers. Sometimes ArcGIS even has layers
     // without a type...
-<span class="fc" id="L75">    public static final Set&lt;String&gt; NON_VIRTUAL_LAYER_TYPES = Collections.unmodifiableSet(new HashSet(Arrays.asList(new String[] {</span>
-        &quot;Feature Layer&quot;,
-        &quot;Raster Layer&quot;,
-        &quot;Annotation Layer&quot; // not sure about this one...
-    })));
+<span class="fc" id="L75">    public static final Set&lt;String&gt; NON_VIRTUAL_LAYER_TYPES = Set.of(new String[]{</span>
+            &quot;Feature Layer&quot;,
+            &quot;Raster Layer&quot;,
+            &quot;Annotation Layer&quot; // not sure about this one...
+    });
 
 
     @Transient

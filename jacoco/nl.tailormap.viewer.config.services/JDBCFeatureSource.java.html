@@ -50,7 +50,7 @@ public class JDBCFeatureSource extends FeatureSource{
 <span class="fc" id="L50">        super();</span>
 <span class="fc" id="L51">    }</span>
 
-    public JDBCFeatureSource(Map params) throws JSONException {
+    public JDBCFeatureSource(Map&lt;String, String&gt; params) throws JSONException {
 <span class="nc" id="L54">        super();</span>
 
 <span class="nc" id="L56">        JSONObject urlObj = new JSONObject();</span>
@@ -60,9 +60,9 @@ public class JDBCFeatureSource extends FeatureSource{
 <span class="nc" id="L60">        urlObj.put(&quot;database&quot;, params.get(&quot;database&quot;));</span>
 <span class="nc" id="L61">        setUrl(urlObj.toString());</span>
 
-<span class="nc" id="L63">        schema = (String)params.get(&quot;schema&quot;);</span>
-<span class="nc" id="L64">        setUsername((String)params.get(&quot;user&quot;));</span>
-<span class="nc" id="L65">        setPassword((String)params.get(&quot;passwd&quot;));</span>
+<span class="nc" id="L63">        schema = params.get(&quot;schema&quot;);</span>
+<span class="nc" id="L64">        setUsername(params.get(&quot;user&quot;));</span>
+<span class="nc" id="L65">        setPassword(params.get(&quot;passwd&quot;));</span>
 <span class="nc" id="L66">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

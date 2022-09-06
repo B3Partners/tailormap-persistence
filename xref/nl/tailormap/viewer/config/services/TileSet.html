@@ -82,8 +82,8 @@
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setResolutions(String res){
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">this</strong>.resolutions = <strong class="jxr_keyword">new</strong> ArrayList&lt;Double&gt;();
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          String[] resTokens = res.split(<span class="jxr_string">","</span>);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; resTokens.length; i++){
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">this</strong>.resolutions.add(Double.parseDouble(resTokens[i].trim()));
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">for</strong> (String resToken : resTokens) {
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">this</strong>.resolutions.add(Double.parseDouble(resToken.trim()));
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          }
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
