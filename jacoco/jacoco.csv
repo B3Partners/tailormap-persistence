@@ -24,7 +24,7 @@ Test Coverage,nl.tailormap.viewer.config.services,StyleLibrary,273,3,54,0,72,1,4
 Test Coverage,nl.tailormap.viewer.config.services,WMSService,36,6,0,0,10,2,7,1,7,1
 Test Coverage,nl.tailormap.viewer.config.services,TileMatrix,194,3,0,0,56,1,24,1,24,1
 Test Coverage,nl.tailormap.viewer.config.services,FeatureSource,119,19,6,0,35,7,18,4,15,4
-Test Coverage,nl.tailormap.viewer.config.services,Layer,676,137,64,0,167,24,85,7,53,7
+Test Coverage,nl.tailormap.viewer.config.services,Layer,677,137,64,0,167,24,85,7,53,7
 Test Coverage,nl.tailormap.viewer.config.services,Document,58,3,0,0,18,1,9,1,9,1
 Test Coverage,nl.tailormap.viewer.config.services,SimpleFeatureType,374,25,40,0,86,9,39,4,19,4
 Test Coverage,nl.tailormap.viewer.config.services,CoordinateReferenceSystem,54,0,8,0,16,0,11,0,7,0
