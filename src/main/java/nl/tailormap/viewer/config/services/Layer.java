@@ -313,7 +313,7 @@ public class Layer implements Serializable {
     public String getDisplayName() {
         if (StringUtils.isNotBlank(titleAlias)) {
             return titleAlias;
-        } else if (StringUtils.isNotBlank("title")) {
+        } else if (StringUtils.isNotBlank(title)) {
             return title;
         } else {
             return name;
