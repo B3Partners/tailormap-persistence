@@ -1,7 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 Test Coverage,nl.tailormap.viewer.config.security,User,143,0,6,0,38,0,19,0,16,0
-Test Coverage,nl.tailormap.viewer.config.security,Group,29,9,0,0,11,1,7,1,7,1
 Test Coverage,nl.tailormap.viewer.config.security,Authorizations,62,0,6,0,13,0,6,0,3,0
+Test Coverage,nl.tailormap.viewer.config.security,Group,29,9,0,0,11,1,7,1,7,1
 Test Coverage,nl.tailormap.viewer.config.app,StartLevel,41,21,0,0,14,9,6,6,6,6
 Test Coverage,nl.tailormap.viewer.config.app,FileUpload,109,3,0,0,36,1,20,1,20,1
 Test Coverage,nl.tailormap.viewer.config.app,StartLayer,40,25,0,0,14,11,7,7,7,7
