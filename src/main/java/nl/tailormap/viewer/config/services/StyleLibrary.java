@@ -197,7 +197,7 @@ public class StyleLibrary {
                         while(child2 != null && !"Name".equals(child2.getLocalName())) {
                             child2 = child2.getNextSibling();
                         }
-                        JSONObject style = null;
+                        JSONObject style;
                         if(child2 != null) {
                             style = new JSONObject();
                             style.put("name", child2.getTextContent());

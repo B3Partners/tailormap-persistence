@@ -10,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +38,7 @@ public class Group {
     private String description;
 
     @ManyToMany(mappedBy="groups")
-    private Set<User> members = new HashSet<User>();
+    private Set<User> members = new HashSet<>();
 
     public String getDescription() {
         return description;

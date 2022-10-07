@@ -45,7 +45,7 @@ public class TileSet {
             joinColumns = @JoinColumn(name = "tile_set")
     )
     @Column(name="resolution")
-    private List<Double> resolutions = new ArrayList<Double>();
+    private List<Double> resolutions = new ArrayList<>();
 
     public int getHeight() {
         return height;
@@ -72,7 +72,7 @@ public class TileSet {
     }
     
     public void setResolutions(String res){
-        this.resolutions = new ArrayList<Double>();
+        this.resolutions = new ArrayList<>();
         String[] resTokens = res.split(",");
         for (String resToken : resTokens) {
             this.resolutions.add(Double.parseDouble(resToken.trim()));

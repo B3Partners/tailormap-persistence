@@ -17,8 +17,6 @@
 package nl.tailormap.viewer.config.services;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,7 +66,7 @@ public class SimpleFeatureType {
     private String primaryKeyAttribute;
 
     @OneToMany (cascade=CascadeType.ALL, mappedBy="featureType")
-    private List<FeatureTypeRelation> relations = new ArrayList<FeatureTypeRelation>();
+    private List<FeatureTypeRelation> relations = new ArrayList<>();
     
     @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268 
     @JoinTable(
@@ -77,7 +75,7 @@ public class SimpleFeatureType {
             joinColumns=@JoinColumn(name = "feature_type", referencedColumnName = "id")
     )
     @OrderColumn(name="list_index")
-    private List<AttributeDescriptor> attributes = new ArrayList<AttributeDescriptor>();
+    private List<AttributeDescriptor> attributes = new ArrayList<>();
     
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public List<AttributeDescriptor> getAttributes() {
@@ -192,9 +190,9 @@ public class SimpleFeatureType {
                 for(AttributeDescriptor newAttribute: update.attributes){
                     
                     if(attributes.get(i).getName().equals(newAttribute.getName())){
-                        notFound = false;  
+                        notFound = false;
                         AttributeDescriptor oldAttr  = attributes.get(i);
-                        if(Objects.equals(oldAttr.getType(), newAttribute.getType())){
+                        if(Objects.equals(oldAttr.getType(), newAttribute.getType())){ // NOPMD
                             // ! expression didnt work(???) so dummy if-else (else is only used)
                         }else{
                             attributes.remove(i);
@@ -267,7 +265,7 @@ public class SimpleFeatureType {
     }
 
     public boolean hasRelations() {
-        return this.relations!=null && this.relations.size()>0;
+        return this.relations!=null && !this.relations.isEmpty();
     }
 }
 

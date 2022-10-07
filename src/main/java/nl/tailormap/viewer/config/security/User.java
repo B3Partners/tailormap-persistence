@@ -44,24 +44,24 @@ public class User implements Principal{
 
     @ManyToMany
     @JoinTable(name="user_groups", joinColumns=@JoinColumn(name="username"), inverseJoinColumns=@JoinColumn(name="group_"))
-    private Set<Group> groups = new HashSet<Group>();
+    private Set<Group> groups = new HashSet<>();
 
     @ElementCollection
     @JoinTable(joinColumns=@JoinColumn(name="username"))
-    private Map<String,String> details = new HashMap<String,String>();
+    private Map<String,String> details = new HashMap<>();
     
     
     @ElementCollection
     @Column(name="ipaddress", length = 45)
     @CollectionTable(joinColumns = @JoinColumn(name="user_"))
-    private Set<String> ips = new HashSet<String>();
+    private Set<String> ips = new HashSet<>();
     
     @Transient
     private boolean authenticatedByIp = false;
 
     public void changePassword(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 
-        MessageDigest md = (MessageDigest) MessageDigest.getInstance(DIGEST_ALGORITM);
+        MessageDigest md = MessageDigest.getInstance(DIGEST_ALGORITM);
         md.update(password.getBytes(DIGEST_CHARSET));
         byte[] digest = md.digest();
 

@@ -52,7 +52,7 @@ public class FeatureTypeRelation {
     private SimpleFeatureType foreignFeatureType;
         
     @OneToMany(cascade=CascadeType.ALL, mappedBy="relation", orphanRemoval=true)
-    private List<FeatureTypeRelationKey> relationKeys = new ArrayList<FeatureTypeRelationKey>();
+    private List<FeatureTypeRelationKey> relationKeys = new ArrayList<>();
     
     private String type;
 

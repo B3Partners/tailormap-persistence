@@ -8,7 +8,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ComponentsTest extends TestUtil {
+class ComponentsTest extends TestUtil {
     @Test
     void testComponents() {
         Application app = entityManager.find(Application.class, applicationId);

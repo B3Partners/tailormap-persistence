@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
-public class BookmarkTest extends TestUtil {
+class BookmarkTest extends TestUtil {
 
     @Test
-    public void testBookmarkPersist() {
+    void testBookmarkPersist() {
         Bookmark bm = new Bookmark();
         bm.setCode("" + 16);
         bm.setParams("parameters");
@@ -23,12 +23,12 @@ public class BookmarkTest extends TestUtil {
 
         entityManager.refresh(bm);
         Bookmark test = entityManager.find(Bookmark.class, bm.getId());
-        assertNotNull(test);
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertNotNull(test, "Bookmark not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(),"Levels not found");
     }
 
     @Test
-    public void testBookmarkDelete() {
+    void testBookmarkDelete() {
         Application app = entityManager.find(Application.class, applicationId);
         Bookmark bm = new Bookmark();
         bm.setCode("" + 16);
@@ -37,8 +37,8 @@ public class BookmarkTest extends TestUtil {
         persistEntityTest(bm, Bookmark.class);
 
         Application appTest = entityManager.find(Application.class, applicationId);
-        assertNotNull(appTest);
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertNotNull(appTest,"Application not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(),"Levels not found");
     }
 
 }

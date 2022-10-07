@@ -16,8 +16,6 @@
  */
 package nl.tailormap.viewer.config.services;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 
 import javax.persistence.DiscriminatorValue;

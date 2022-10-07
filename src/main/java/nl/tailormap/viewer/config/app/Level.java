@@ -331,6 +331,7 @@ public class Level implements Comparable<Level> {
                 parent == null ? null : parent.getId());
     }    
 
+    @Override
     public int compareTo(Level level) {
         return this.getName().compareTo(level.getName());
     }

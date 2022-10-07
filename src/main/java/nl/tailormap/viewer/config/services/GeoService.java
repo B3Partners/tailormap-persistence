@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -348,11 +349,7 @@ public abstract class GeoService implements Serializable {
             
             if(!em.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(l.getChildren())) {
                 List<Layer> childrenList = childrenByParent.get(l);
-                if(childrenList == null) {
-                    return Collections.emptyList();
-                } else {
-                    return childrenList;
-                }
+                return Objects.requireNonNullElse(childrenList, Collections.emptyList());
             } else {
                 return l.getChildren();
             }
