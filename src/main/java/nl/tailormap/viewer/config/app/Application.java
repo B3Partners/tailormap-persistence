@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -351,11 +352,7 @@ public class Application implements Comparable<Application>{
 
         public List<Level> getChildren(Level l) {
             List<Level> children = childrenByParent.get(l);
-            if (children == null) {
-                return Collections.emptyList();
-            } else {
-                return children;
-            }
+            return Objects.requireNonNullElse(children, Collections.emptyList());
         }
 
         public List<Level> getLevels() {
@@ -468,7 +465,7 @@ public class Application implements Comparable<Application>{
                     .setParameter("appId", this.getId())
                     .setResultTransformer(ApplicationDetailsValueTransformer.INSTANCE)
                     .list();
-            if (items.size() > 0) {
+            if (!items.isEmpty()) {
                 String mashupValue = items.get(0).get("value").toString();
                 this.isMashup_cached = Boolean.valueOf(mashupValue);
             }
@@ -597,12 +594,8 @@ public class Application implements Comparable<Application>{
         // In previous versions maxHeight and maxWidth where assigned to details directly
         // Now these settings are saved in globalLayout. We are removing these settings from
         // details (when present) to migrate from old layout to new layout
-        if (this.details.containsKey("maxWidth")) {
-            this.details.remove("maxWidth");
-        }
-        if (this.details.containsKey("maxHeight")) {
-            this.details.remove("maxHeight");
-        }
+        this.details.remove("maxWidth");
+        this.details.remove("maxHeight");
     }
 
     public void setGlobalLayout(String globalLayout) {

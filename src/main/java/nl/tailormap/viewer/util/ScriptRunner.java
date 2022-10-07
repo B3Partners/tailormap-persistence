@@ -103,7 +103,7 @@ public class ScriptRunner {
         StringBuffer command = null;
         try {
             LineNumberReader lineReader = new LineNumberReader(reader);
-            String line = null;
+            String line;
             while ((line = lineReader.readLine()) != null) {
                 if (command == null) {
                     command = new StringBuffer();
@@ -111,10 +111,12 @@ public class ScriptRunner {
                 String trimmedLine = line.trim();
                 if (trimmedLine.startsWith("--")) {
                     log.debug(trimmedLine);
-                } else if (trimmedLine.length() < 1
+                } else //noinspection StatementWithEmptyBody
+                     if (trimmedLine.length() < 1 // NOPMD
                         || trimmedLine.startsWith("//")) {
                     // Do nothing
-                } else if (trimmedLine.length() < 1
+                } else //noinspection StatementWithEmptyBody
+                    if (trimmedLine.length() < 1 // NOPMD
                         || trimmedLine.startsWith("--")) {
                     // Do nothing
                 } else if (!fullLineDelimiter
@@ -162,6 +164,7 @@ public class ScriptRunner {
 
                     command = null;
                     try {
+                        if (null != rs) rs.close();
                         statement.close();
                     } catch (Exception e) {
                         // Ignore to workaround a bug in Jakarta DBCP

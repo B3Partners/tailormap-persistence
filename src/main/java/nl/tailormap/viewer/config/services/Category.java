@@ -75,7 +75,7 @@ public class Category {
             joinColumns=@JoinColumn(name = "category", referencedColumnName = "id")
     )
     @OrderColumn(name="list_index")
-    private List<Category> children = new ArrayList<Category>();
+    private List<Category> children = new ArrayList<>();
 
     @ManyToMany // Actually @OneToMany, workaround for HHH-1268
     @JoinTable(
@@ -84,17 +84,17 @@ public class Category {
             joinColumns=@JoinColumn(name = "category", referencedColumnName = "id")
     )
     @OrderColumn(name="list_index")
-    private List<GeoService> services = new ArrayList<GeoService>();
+    private List<GeoService> services = new ArrayList<>();
 
     @ElementCollection
     @Column(name="role_name")
     @CollectionTable(joinColumns = @JoinColumn(name = "category"))
-    private Set<String> readers = new HashSet<String>();
+    private Set<String> readers = new HashSet<>();
 
     @ElementCollection
     @CollectionTable(joinColumns = @JoinColumn(name = "category"))
     @Column(name="role_name")
-    private Set<String> writers = new HashSet<String>();
+    private Set<String> writers = new HashSet<>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
     public List<Category> getChildren() {

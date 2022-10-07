@@ -25,12 +25,14 @@ import org.junit.jupiter.api.TestInfo;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * utility methoden voor unit tests.
@@ -62,7 +64,7 @@ public abstract class TestUtil extends LoggingTestUtil {
      * @see #entityManager
      */
     @BeforeEach
-    public void setUp(TestInfo testInfo) {
+    public void setUp(TestInfo testInfo) throws Exception {
         final String persistenceUnit = System.getProperty("test.persistence.unit");
         Map<String,String> config = new HashMap<>();
         String testname = testInfo.getDisplayName();
@@ -112,12 +114,13 @@ public abstract class TestUtil extends LoggingTestUtil {
      * Helper function for initializing data.
      *
      */
-    public void loadTestData() {
+    public void loadTestData() throws IOException {
 
         Application app = entityManager.find(Application.class, applicationId);
         if (app == null) {
-            Reader f = new InputStreamReader(TestUtil.class.getResourceAsStream("testdata.sql"));
-            executeScript(f);
+            try (Reader f = new InputStreamReader(Objects.requireNonNull(TestUtil.class.getResourceAsStream("testdata.sql")))){
+                executeScript(f);
+            }
         }
         Metadata version = entityManager.createQuery("From Metadata where configKey = :v", Metadata.class).setParameter("v", Metadata.DATABASE_VERSION_KEY).getSingleResult();
         originalVersion = version.getConfigValue();
@@ -129,9 +132,8 @@ public abstract class TestUtil extends LoggingTestUtil {
      * @param f The reader containing the scripts to be executed
      */
     public void executeScript(Reader f) {
-
+        @SuppressWarnings("PMD.CloseResource")
         Session session = (Session) entityManager.getDelegate();
-        // conn = (Connection) session.connection();
         try {
             session.doWork(con -> {
                 ScriptRunner sr = new ScriptRunner(con, true, true);

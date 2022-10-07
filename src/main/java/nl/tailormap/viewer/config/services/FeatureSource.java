@@ -72,7 +72,7 @@ public abstract class FeatureSource {
             joinColumns=@JoinColumn(name = "feature_source", referencedColumnName = "id")
     )
     @OrderColumn(name="list_index")
-    private List<SimpleFeatureType> featureTypes = new ArrayList<SimpleFeatureType>();
+    private List<SimpleFeatureType> featureTypes = new ArrayList<>();
 
     //<editor-fold defaultstate="collapsed" desc="getters en setters">
 

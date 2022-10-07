@@ -112,7 +112,7 @@ public class BoundingBox implements Cloneable {
     public BoundingBox clone() throws CloneNotSupportedException {
         BoundingBox clone = (BoundingBox)super.clone();
         if(crs != null) {
-            crs = (CoordinateReferenceSystem) crs.clone();
+            crs = crs.clone();
         }
         return clone;
     }

@@ -12,24 +12,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /**
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
-public class StartLevelTest extends TestUtil {
+class StartLevelTest extends TestUtil {
 
     @Test
-    public void persistLevel() {
+    void persistLevel() {
         StartLevel sl = new StartLevel();
         sl.setSelectedIndex(16);
         persistEntityTest(sl, StartLevel.class);
 
         entityManager.refresh(sl);
         StartLevel test = entityManager.find(StartLevel.class, sl.getId());
-        assertNotNull(test);
+        assertNotNull(test, "StartLevel not found");
 
-        assertEquals(Integer.valueOf(16), test.getSelectedIndex());
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertEquals(Integer.valueOf(16), test.getSelectedIndex(), "Selected index not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(),"Levels not found");
     }
 
     @Test
-    public void deleteStartLevel() {
+    void deleteStartLevel() {
         Application app = entityManager.find(Application.class, applicationId);
 
         Level level = entityManager.find(Level.class, 5L);
@@ -43,9 +43,9 @@ public class StartLevelTest extends TestUtil {
         Level levelExists = entityManager.find(Level.class, 5L);
         Application appExists = entityManager.find(Application.class, applicationId);
 
-        assertNotNull(levelExists);
-        assertNotNull(appExists);
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertNotNull(levelExists, "Level not found");
+        assertNotNull(appExists, "Application not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(),"Levels not found");
     }
 
 }

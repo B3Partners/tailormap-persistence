@@ -87,8 +87,7 @@ public class Layer implements Serializable {
     public static final String DETAIL_USERLAYER_DATE_ADDED = "userlayer_date_added";
     public static final String DETAIL_USERLAYER_USER = "userlayer_user";
 
-    private static final Set<String> interestingDetails = new HashSet<>(Arrays.asList(new String[]{
-            EXTRA_KEY_METADATA_URL,
+    private static final Set<String> interestingDetails = new HashSet<>(Arrays.asList(EXTRA_KEY_METADATA_URL,
             EXTRA_KEY_METADATA_STYLESHEET_URL,
             EXTRA_KEY_DOWNLOAD_URL,
             EXTRA_KEY_FILTERABLE,
@@ -96,14 +95,11 @@ public class Layer implements Serializable {
             DETAIL_ALL_CHILDREN,
             DETAIL_WMS_STYLES,
             DETAIL_ALTERNATE_LEGEND_IMAGE_URL,
-            EXTRA_KEY_ATTRIBUTION
-    }));
+            EXTRA_KEY_ATTRIBUTION));
 
-    private static final Set<String> updatableDetails = new HashSet<>(Arrays.asList(new String[]{
-            EXTRA_KEY_METADATA_URL,
+    private static final Set<String> updatableDetails = new HashSet<>(Arrays.asList(EXTRA_KEY_METADATA_URL,
             DETAIL_ALL_CHILDREN,
-            DETAIL_WMS_STYLES
-    }));
+            DETAIL_WMS_STYLES));
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -210,6 +206,7 @@ public class Layer implements Serializable {
     public Layer() {
     }
 
+    @Override
     public Layer clone() throws CloneNotSupportedException {
         return (Layer) super.clone();
     }

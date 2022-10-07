@@ -8,10 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -19,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * @author Meine Toonen meinetoonen@b3partners.nl
  */
-public class StartLayerTest extends TestUtil {
+class StartLayerTest extends TestUtil {
 
     private static final Log log = LogFactory.getLog(StartLayerTest.class);
 
     @Test
-    public void persistLayer() {
+    void persistLayer() {
         StartLayer sl = new StartLayer();
         sl.setChecked(true);
         sl.setSelectedIndex(16);
@@ -33,13 +29,13 @@ public class StartLayerTest extends TestUtil {
         entityManager.refresh(sl);
 
         StartLayer test = entityManager.find(StartLayer.class, sl.getId());
-        assertNotNull(test);
-        assertEquals(Integer.valueOf(16), test.getSelectedIndex());
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertNotNull(test, "StartLayer not found");
+        assertEquals(Integer.valueOf(16), test.getSelectedIndex(), "Selected index not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(), "Levels not found");
     }
 
     @Test
-    public void deleteLayer() {
+    void deleteLayer() {
         Application app = entityManager.find(Application.class, 1L);
 
         ApplicationLayer appLayer = entityManager.find(ApplicationLayer.class, 2L);
@@ -55,21 +51,21 @@ public class StartLayerTest extends TestUtil {
         ApplicationLayer appLayerExists = entityManager.find(ApplicationLayer.class, 2L);
         Application appExists = entityManager.find(Application.class, applicationId);
 
-        assertNotNull(appLayerExists);
-        assertNotNull(appExists);
-        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size());
+        assertNotNull(appLayerExists, "ApplicationLayer not found");
+        assertNotNull(appExists, "Application not found");
+        assertEquals(6, entityManager.createQuery("FROM Level").getResultList().size(), "Levels not found");
 
     }
 
     @Test
-    public void deleteApplayer() {
+    void deleteApplayer() {
         initData(true);
-        assertNotNull(testAppLayer);
-        assertNotNull(testStartLayer);
+        assertNotNull(testAppLayer, "ApplicationLayer not found");
+        assertNotNull(testStartLayer, "StartLayer not found");
         long lid = testAppLayer.getId();
         ApplicationLayer appLayer = entityManager.find(ApplicationLayer.class, lid);
         StartLayer startLayer = entityManager.find(StartLayer.class, testStartLayer.getId());
-        assertNotNull(startLayer);
+        assertNotNull(startLayer, "StartLayer not found");
 
         testLevel.getLayers().remove(appLayer);
         app.getStartLayers().removeAll(appLayer.getStartLayers().values());
@@ -84,17 +80,17 @@ public class StartLayerTest extends TestUtil {
 
         ApplicationLayer appLayerNull = entityManager.find(ApplicationLayer.class, lid);
         StartLayer startLayerNull = entityManager.find(StartLayer.class, testStartLayer.getId());
-        assertNull(appLayerNull);
-        assertNull(startLayerNull);
+        assertNull(appLayerNull, "AppLayer not deleted");
+        assertNull(startLayerNull, "Startlayer not deleted");
     }
 
 
     @Test
-    public void deleteApplication() {
+    void deleteApplication() {
         initData(true);
-        assertNotNull(testAppLayer);
-        assertNotNull(app);
-        assertNotNull(testStartLayer);
+        assertNotNull(testAppLayer,"AppLayer not found");
+        assertNotNull(app,"App not found");
+        assertNotNull(testStartLayer,"StartLayer not found");
         long lid = testAppLayer.getId();
 
         entityManager.remove(app);
@@ -104,8 +100,8 @@ public class StartLayerTest extends TestUtil {
         ApplicationLayer shouldBeNull = entityManager.find(ApplicationLayer.class, lid);
         StartLayer shouldBeNullAsWell = entityManager.find(StartLayer.class, testStartLayer.getId());
         Application appShouldBeNull = entityManager.find(Application.class, app.getId());
-        assertNull(shouldBeNull);
-        assertNull(shouldBeNullAsWell);
-        assertNull(appShouldBeNull);
+        assertNull(shouldBeNull, "AppLayer should be null");
+        assertNull(shouldBeNullAsWell, "StartLayer should be null");
+        assertNull(appShouldBeNull, "Application should be null");
     }
 }
