@@ -16,8 +16,6 @@
  */
 package nl.tailormap.viewer.config.services;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.json.JSONException;
 
 import javax.persistence.DiscriminatorValue;
@@ -34,16 +32,16 @@ public class WFSFeatureSource extends FeatureSource {
     public static final String PROTOCOL = &quot;wfs&quot;;
 
     public WFSFeatureSource() {
-<span class="fc" id="L37">        super();</span>
-<span class="fc" id="L38">    }</span>
+<span class="fc" id="L35">        super();</span>
+<span class="fc" id="L36">    }</span>
 
     public WFSFeatureSource(Map&lt;String,String&gt; params) throws JSONException {
-<span class="nc" id="L41">        super();</span>
+<span class="nc" id="L39">        super();</span>
 
-<span class="nc" id="L43">        setUrl(params.get(&quot;WFSDataStoreFactory:GET_CAPABILITIES_URL&quot;));</span>
-<span class="nc" id="L44">        setUsername(params.get(&quot;WFSDataStoreFactory:USERNAME&quot;));</span>
-<span class="nc" id="L45">        setPassword(params.get(&quot;WFSDataStoreFactory:PASSWORD&quot;));</span>
-<span class="nc" id="L46">    }</span>
+<span class="nc" id="L41">        setUrl(params.get(&quot;WFSDataStoreFactory:GET_CAPABILITIES_URL&quot;));</span>
+<span class="nc" id="L42">        setUsername(params.get(&quot;WFSDataStoreFactory:USERNAME&quot;));</span>
+<span class="nc" id="L43">        setPassword(params.get(&quot;WFSDataStoreFactory:PASSWORD&quot;));</span>
+<span class="nc" id="L44">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

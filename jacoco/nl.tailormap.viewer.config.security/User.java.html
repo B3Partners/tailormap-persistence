@@ -44,24 +44,24 @@ import java.util.Set;
 
 <span class="nc" id="L45">    @ManyToMany</span>
     @JoinTable(name=&quot;user_groups&quot;, joinColumns=@JoinColumn(name=&quot;username&quot;), inverseJoinColumns=@JoinColumn(name=&quot;group_&quot;))
-    private Set&lt;Group&gt; groups = new HashSet&lt;Group&gt;();
+    private Set&lt;Group&gt; groups = new HashSet&lt;&gt;();
 
 <span class="nc" id="L49">    @ElementCollection</span>
     @JoinTable(joinColumns=@JoinColumn(name=&quot;username&quot;))
-    private Map&lt;String,String&gt; details = new HashMap&lt;String,String&gt;();
+    private Map&lt;String,String&gt; details = new HashMap&lt;&gt;();
     
     
 <span class="nc" id="L54">    @ElementCollection</span>
     @Column(name=&quot;ipaddress&quot;, length = 45)
     @CollectionTable(joinColumns = @JoinColumn(name=&quot;user_&quot;))
-    private Set&lt;String&gt; ips = new HashSet&lt;String&gt;();
+    private Set&lt;String&gt; ips = new HashSet&lt;&gt;();
     
 <span class="nc" id="L59">    @Transient</span>
     private boolean authenticatedByIp = false;
 
     public void changePassword(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
 
-<span class="nc" id="L64">        MessageDigest md = (MessageDigest) MessageDigest.getInstance(DIGEST_ALGORITM);</span>
+<span class="nc" id="L64">        MessageDigest md = MessageDigest.getInstance(DIGEST_ALGORITM);</span>
 <span class="nc" id="L65">        md.update(password.getBytes(DIGEST_CHARSET));</span>
 <span class="nc" id="L66">        byte[] digest = md.digest();</span>
 

@@ -8,10 +8,10 @@ Test Coverage,nl.tailormap.viewer.config.app,StartLayer,40,25,0,0,14,11,7,7,7,7
 Test Coverage,nl.tailormap.viewer.config.app,Resource,51,0,0,0,20,0,12,0,12,0
 Test Coverage,nl.tailormap.viewer.config.app,Bookmark,46,18,0,0,16,8,9,5,9,5
 Test Coverage,nl.tailormap.viewer.config.app,ConfiguredAttribute,373,3,16,0,111,1,56,1,48,1
-Test Coverage,nl.tailormap.viewer.config.app,Application.TreeCache,96,0,8,0,25,0,11,0,7,0
+Test Coverage,nl.tailormap.viewer.config.app,Application.TreeCache,95,0,6,0,23,0,10,0,7,0
 Test Coverage,nl.tailormap.viewer.config.app,ConfiguredComponent,194,46,12,0,47,16,23,7,17,7
 Test Coverage,nl.tailormap.viewer.config.app,ApplicationLayer,876,46,124,0,167,14,88,6,26,6
-Test Coverage,nl.tailormap.viewer.config.app,Application,747,118,65,3,170,32,77,14,43,14
+Test Coverage,nl.tailormap.viewer.config.app,Application,737,118,61,3,168,32,75,14,43,14
 Test Coverage,nl.tailormap.viewer.config.app,Level,481,45,54,0,113,13,57,6,30,6
 Test Coverage,nl.tailormap.viewer.components,ViewerComponent,49,0,0,0,17,0,9,0,9,0
 Test Coverage,nl.tailormap.viewer.config.forms,Form,42,8,0,0,18,2,12,1,12,1
@@ -20,7 +20,7 @@ Test Coverage,nl.tailormap.viewer.config,RemoveEmptyMapValuesUtil,61,0,14,0,12,0
 Test Coverage,nl.tailormap.viewer.config,CRS,23,0,0,0,10,0,5,0,5,0
 Test Coverage,nl.tailormap.viewer.config,CycloramaAccount,59,3,0,0,20,1,11,1,11,1
 Test Coverage,nl.tailormap.viewer.config,ClobElement,83,0,16,0,20,0,17,0,9,0
-Test Coverage,nl.tailormap.viewer.config.services,StyleLibrary,273,3,54,0,72,1,42,1,15,1
+Test Coverage,nl.tailormap.viewer.config.services,StyleLibrary,271,3,54,0,71,1,42,1,15,1
 Test Coverage,nl.tailormap.viewer.config.services,WMSService,36,6,0,0,10,2,7,1,7,1
 Test Coverage,nl.tailormap.viewer.config.services,TileMatrix,194,3,0,0,56,1,24,1,24,1
 Test Coverage,nl.tailormap.viewer.config.services,FeatureSource,119,19,6,0,35,7,18,4,15,4
@@ -40,7 +40,7 @@ Test Coverage,nl.tailormap.viewer.config.services,FeatureTypeRelationKey,80,3,4,
 Test Coverage,nl.tailormap.viewer.config.services,ArcGISService,59,20,14,0,9,2,8,2,1,2
 Test Coverage,nl.tailormap.viewer.config.services,WFSFeatureSource,21,3,0,0,5,2,1,1,1,1
 Test Coverage,nl.tailormap.viewer.config.services,TileSet,70,0,2,0,19,0,11,0,10,0
-Test Coverage,nl.tailormap.viewer.config.services,GeoService,268,46,20,0,87,14,49,4,39,4
+Test Coverage,nl.tailormap.viewer.config.services,GeoService,267,46,18,0,85,14,48,4,39,4
 Test Coverage,nl.tailormap.viewer.config.services,SolrConf,106,18,4,0,32,4,15,1,13,1
 Test Coverage,nl.tailormap.viewer.config.services,AttributeDescriptor,189,36,34,0,47,2,31,2,12,2
 Test Coverage,nl.tailormap.viewer.util,ApplicationDetailsValueTransformer,57,0,4,0,14,0,4,0,2,0
@@ -48,4 +48,4 @@ Test Coverage,nl.tailormap.viewer.util,DB,3,0,0,0,1,0,1,0,1,0
 Test Coverage,nl.tailormap.viewer.util,Coalesce,41,0,10,0,7,0,9,0,4,0
 Test Coverage,nl.tailormap.viewer.util,LayerListHelper,166,0,56,0,41,0,31,0,3,0
 Test Coverage,nl.tailormap.viewer.util,SnakeCasePhysicalNamingStrategy,4,45,0,4,1,12,1,8,1,6
-Test Coverage,nl.tailormap.viewer.util,ScriptRunner,113,168,25,21,33,52,20,9,1,5
+Test Coverage,nl.tailormap.viewer.util,ScriptRunner,115,169,26,22,33,52,21,9,1,5

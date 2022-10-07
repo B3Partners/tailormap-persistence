@@ -52,7 +52,7 @@ import java.util.List;
     private SimpleFeatureType foreignFeatureType;
         
 <span class="fc" id="L54">    @OneToMany(cascade=CascadeType.ALL, mappedBy=&quot;relation&quot;, orphanRemoval=true)</span>
-    private List&lt;FeatureTypeRelationKey&gt; relationKeys = new ArrayList&lt;FeatureTypeRelationKey&gt;();
+    private List&lt;FeatureTypeRelationKey&gt; relationKeys = new ArrayList&lt;&gt;();
     
     private String type;
 

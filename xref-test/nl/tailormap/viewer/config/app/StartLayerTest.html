@@ -16,107 +16,103 @@
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.logging.LogFactory;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.net.URISyntaxException;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.sql.SQLException;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNotNull;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNull;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNotNull;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNull;
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * @author Meine Toonen meinetoonen@b3partners.nl</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="StartLayerTest" href="../../../../../nl/tailormap/viewer/config/app/StartLayerTest.html#StartLayerTest">StartLayerTest</a> <strong class="jxr_keyword">extends</strong> <a name="TestUtil" href="../../../../../nl/tailormap/viewer/util/TestUtil.html#TestUtil">TestUtil</a> {
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Log log = LogFactory.getLog(StartLayerTest.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>      @Test
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> persistLayer() {
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>          StartLayer sl = <strong class="jxr_keyword">new</strong> StartLayer();
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>          sl.setChecked(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>          sl.setSelectedIndex(16);
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>          persistEntityTest(sl, StartLayer.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>          entityManager.refresh(sl);
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>          StartLayer test = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, sl.getId());
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          assertNotNull(test);
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          assertEquals(Integer.valueOf(16), test.getSelectedIndex());
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          assertEquals(6, entityManager.createQuery(<span class="jxr_string">"FROM Level"</span>).getResultList().size());
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      }
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment"> * @author Meine Toonen meinetoonen@b3partners.nl</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">class</strong> <a name="StartLayerTest" href="../../../../../nl/tailormap/viewer/config/app/StartLayerTest.html#StartLayerTest">StartLayerTest</a> <strong class="jxr_keyword">extends</strong> <a name="TestUtil" href="../../../../../nl/tailormap/viewer/util/TestUtil.html#TestUtil">TestUtil</a> {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Log log = LogFactory.getLog(StartLayerTest.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      @Test
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">void</strong> persistLayer() {
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          StartLayer sl = <strong class="jxr_keyword">new</strong> StartLayer();
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>          sl.setChecked(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          sl.setSelectedIndex(16);
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          persistEntityTest(sl, StartLayer.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          entityManager.refresh(sl);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          StartLayer test = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, sl.getId());
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          assertNotNull(test, <span class="jxr_string">"StartLayer not found"</span>);
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>          assertEquals(Integer.valueOf(16), test.getSelectedIndex(), <span class="jxr_string">"Selected index not found"</span>);
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          assertEquals(6, entityManager.createQuery(<span class="jxr_string">"FROM Level"</span>).getResultList().size(), <span class="jxr_string">"Levels not found"</span>);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      @Test
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">void</strong> deleteLayer() {
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          Application app = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, 1L);
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>      @Test
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteLayer() {
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          Application app = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, 1L);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          ApplicationLayer appLayer = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, 2L);
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          StartLayer sl = <strong class="jxr_keyword">new</strong> StartLayer();
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          sl.setChecked(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          sl.setApplicationLayer(appLayer);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          sl.setApplication(app);
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          sl.setSelectedIndex(16);
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          persistEntityTest(sl, StartLayer.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          ApplicationLayer appLayer = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, 2L);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          StartLayer sl = <strong class="jxr_keyword">new</strong> StartLayer();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          sl.setChecked(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          sl.setApplicationLayer(appLayer);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          sl.setApplication(app);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          sl.setSelectedIndex(16);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          persistEntityTest(sl, StartLayer.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          entityManager.flush();
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          ApplicationLayer appLayerExists = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, 2L);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          Application appExists = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, applicationId);
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          entityManager.flush();
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          ApplicationLayer appLayerExists = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, 2L);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          Application appExists = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, applicationId);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          assertNotNull(appLayerExists, <span class="jxr_string">"ApplicationLayer not found"</span>);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          assertNotNull(appExists, <span class="jxr_string">"Application not found"</span>);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertEquals(6, entityManager.createQuery(<span class="jxr_string">"FROM Level"</span>).getResultList().size(), <span class="jxr_string">"Levels not found"</span>);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          assertNotNull(appLayerExists);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertNotNull(appExists);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(6, entityManager.createQuery(<span class="jxr_string">"FROM Level"</span>).getResultList().size());
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteApplayer() {
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          initData(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          assertNotNull(testAppLayer);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertNotNull(testStartLayer);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">long</strong> lid = testAppLayer.getId();
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          ApplicationLayer appLayer = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          StartLayer startLayer = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertNotNull(startLayer);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          testLevel.getLayers().remove(appLayer);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          app.getStartLayers().removeAll(appLayer.getStartLayers().values());
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          entityManager.remove(appLayer);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              entityManager.getTransaction().commit();
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              log.error(<span class="jxr_string">"Fout bij verwijderen"</span>, e);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              assert (false);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          }
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          entityManager.getTransaction().begin();
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          ApplicationLayer appLayerNull = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          StartLayer startLayerNull = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          assertNull(appLayerNull);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          assertNull(startLayerNull);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      @Test
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteApplication() {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          initData(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          assertNotNull(testAppLayer);
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          assertNotNull(app);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          assertNotNull(testStartLayer);
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">long</strong> lid = testAppLayer.getId();
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      @Test
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">void</strong> deleteApplayer() {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          initData(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertNotNull(testAppLayer, <span class="jxr_string">"ApplicationLayer not found"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertNotNull(testStartLayer, <span class="jxr_string">"StartLayer not found"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">long</strong> lid = testAppLayer.getId();
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          ApplicationLayer appLayer = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          StartLayer startLayer = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertNotNull(startLayer, <span class="jxr_string">"StartLayer not found"</span>);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          testLevel.getLayers().remove(appLayer);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          app.getStartLayers().removeAll(appLayer.getStartLayers().values());
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          entityManager.remove(appLayer);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>              entityManager.getTransaction().commit();
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>              log.error(<span class="jxr_string">"Fout bij verwijderen"</span>, e);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              assert (false);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          entityManager.getTransaction().begin();
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          ApplicationLayer appLayerNull = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          StartLayer startLayerNull = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          assertNull(appLayerNull, <span class="jxr_string">"AppLayer not deleted"</span>);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          assertNull(startLayerNull, <span class="jxr_string">"Startlayer not deleted"</span>);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      @Test
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">void</strong> deleteApplication() {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          initData(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          assertNotNull(testAppLayer,<span class="jxr_string">"AppLayer not found"</span>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          assertNotNull(app,<span class="jxr_string">"App not found"</span>);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          assertNotNull(testStartLayer,<span class="jxr_string">"StartLayer not found"</span>);
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">long</strong> lid = testAppLayer.getId();
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          entityManager.remove(app);
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          entityManager.getTransaction().commit();
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          entityManager.getTransaction().begin();
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         entityManager.remove(app);
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         entityManager.getTransaction().commit();
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         entityManager.getTransaction().begin();
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         ApplicationLayer shouldBeNull = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         StartLayer shouldBeNullAsWell = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         Application appShouldBeNull = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, app.getId());
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         assertNull(shouldBeNull);
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         assertNull(shouldBeNullAsWell);
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>         assertNull(appShouldBeNull);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>     }
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> }
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         ApplicationLayer shouldBeNull = entityManager.find(ApplicationLayer.<strong class="jxr_keyword">class</strong>, lid);
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         StartLayer shouldBeNullAsWell = entityManager.find(StartLayer.<strong class="jxr_keyword">class</strong>, testStartLayer.getId());
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>         Application appShouldBeNull = entityManager.find(Application.<strong class="jxr_keyword">class</strong>, app.getId());
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         assertNull(shouldBeNull, <span class="jxr_string">"AppLayer should be null"</span>);
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>         assertNull(shouldBeNullAsWell, <span class="jxr_string">"StartLayer should be null"</span>);
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         assertNull(appShouldBeNull, <span class="jxr_string">"Application should be null"</span>);
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2022 <a href="https://www.b3partners.nl/">B3Partners B.V.</a>. All rights reserved.</div>

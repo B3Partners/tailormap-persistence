@@ -25,9 +25,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,7 +32,7 @@ import java.util.Set;
  * @author Matthijs Laan
  */
 @Entity
-<span class="fc" id="L38">public class AttributeDescriptor {</span>
+<span class="fc" id="L35">public class AttributeDescriptor {</span>
     public static final String TYPE_STRING = &quot;string&quot;;
     public static final String TYPE_DOUBLE = &quot;double&quot;;
     public static final String TYPE_INTEGER = &quot;integer&quot;;
@@ -50,7 +47,7 @@ import java.util.Set;
     public static final String TYPE_GEOMETRY_POLYGON = &quot;polygon&quot;;
     public static final String TYPE_GEOMETRY_MPOLYGON = &quot;multipolygon&quot;;
     
-<span class="fc" id="L53">    public static final Set&lt;String&gt; GEOMETRY_TYPES = Set.of(new String[]{</span>
+<span class="fc" id="L50">    public static final Set&lt;String&gt; GEOMETRY_TYPES = Set.of(new String[]{</span>
             TYPE_GEOMETRY,
             TYPE_GEOMETRY_POINT,
             TYPE_GEOMETRY_MPOINT,
@@ -82,101 +79,101 @@ import java.util.Set;
      */
     public String getExtJSType() {
         // default to &quot;auto&quot; field type
-<span class="nc" id="L85">        String ext_type = &quot;auto&quot;;</span>
+<span class="nc" id="L82">        String ext_type = &quot;auto&quot;;</span>
 
-<span class="nc bnc" id="L87" title="All 6 branches missed.">        switch (this.type) {</span>
+<span class="nc bnc" id="L84" title="All 6 branches missed.">        switch (this.type) {</span>
             case TYPE_STRING:
-<span class="nc" id="L89">                ext_type = &quot;string&quot;;</span>
-<span class="nc" id="L90">                break;</span>
+<span class="nc" id="L86">                ext_type = &quot;string&quot;;</span>
+<span class="nc" id="L87">                break;</span>
             case TYPE_INTEGER:
-<span class="nc" id="L92">                ext_type = &quot;int&quot;;</span>
-<span class="nc" id="L93">                break;</span>
+<span class="nc" id="L89">                ext_type = &quot;int&quot;;</span>
+<span class="nc" id="L90">                break;</span>
             case TYPE_DOUBLE:
-<span class="nc" id="L95">                ext_type = &quot;number&quot;;</span>
-<span class="nc" id="L96">                break;</span>
+<span class="nc" id="L92">                ext_type = &quot;number&quot;;</span>
+<span class="nc" id="L93">                break;</span>
             case TYPE_BOOLEAN:
-<span class="nc" id="L98">                ext_type = &quot;boolean&quot;;</span>
-<span class="nc" id="L99">                break;</span>
+<span class="nc" id="L95">                ext_type = &quot;boolean&quot;;</span>
+<span class="nc" id="L96">                break;</span>
             case TYPE_DATE:
             case TYPE_TIMESTAMP:
-<span class="nc" id="L102">                ext_type = &quot;date&quot;;</span>
+<span class="nc" id="L99">                ext_type = &quot;date&quot;;</span>
                 break;
         }
 
-<span class="nc" id="L106">        return ext_type;</span>
+<span class="nc" id="L103">        return ext_type;</span>
     }
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
     public Long getId() {
-<span class="nc" id="L111">        return id;</span>
+<span class="nc" id="L108">        return id;</span>
     }
 
     public void setId(Long id) {
-<span class="nc" id="L115">        this.id = id;</span>
-<span class="nc" id="L116">    }</span>
+<span class="nc" id="L112">        this.id = id;</span>
+<span class="nc" id="L113">    }</span>
 
     public String getAlias() {
-<span class="nc" id="L119">        return alias;</span>
+<span class="nc" id="L116">        return alias;</span>
     }
 
     public void setAlias(String alias) {
-<span class="nc" id="L123">        this.alias = alias;</span>
-<span class="nc" id="L124">    }</span>
+<span class="nc" id="L120">        this.alias = alias;</span>
+<span class="nc" id="L121">    }</span>
 
     public String getName() {
-<span class="nc" id="L127">        return name;</span>
+<span class="nc" id="L124">        return name;</span>
     }
 
     public void setName(String name) {
-<span class="nc" id="L131">        this.name = name;</span>
-<span class="nc" id="L132">    }</span>
+<span class="nc" id="L128">        this.name = name;</span>
+<span class="nc" id="L129">    }</span>
 
     public String getType() {
-<span class="nc" id="L135">        return type;</span>
+<span class="nc" id="L132">        return type;</span>
     }
 
     public void setType(String type) {
-<span class="nc" id="L139">        this.type = type;</span>
-<span class="nc" id="L140">    }</span>
+<span class="nc" id="L136">        this.type = type;</span>
+<span class="nc" id="L137">    }</span>
     //&lt;/editor-fold&gt;
     
     public JSONObject toJSONObject() throws JSONException {
-<span class="nc" id="L144">        JSONObject j = new JSONObject();</span>
-<span class="nc" id="L145">        j.put(&quot;id&quot;, id);</span>
-<span class="nc" id="L146">        j.put(&quot;name&quot;, name);</span>
-<span class="nc" id="L147">        j.put(&quot;alias&quot;, alias);</span>
-<span class="nc" id="L148">        j.put(&quot;type&quot;, type);</span>
-<span class="nc" id="L149">        return j;</span>
+<span class="nc" id="L141">        JSONObject j = new JSONObject();</span>
+<span class="nc" id="L142">        j.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L143">        j.put(&quot;name&quot;, name);</span>
+<span class="nc" id="L144">        j.put(&quot;alias&quot;, alias);</span>
+<span class="nc" id="L145">        j.put(&quot;type&quot;, type);</span>
+<span class="nc" id="L146">        return j;</span>
     }
 
     @Override
     public int hashCode() {
-<span class="nc" id="L154">        int hash = 7;</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);</span>
-<span class="nc bnc" id="L156" title="All 2 branches missed.">        hash = 97 * hash + (this.alias != null ? this.alias.hashCode() : 0);</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">        hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);</span>
-<span class="nc" id="L158">        return hash;</span>
+<span class="nc" id="L151">        int hash = 7;</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        hash = 97 * hash + (this.alias != null ? this.alias.hashCode() : 0);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);</span>
+<span class="nc" id="L155">        return hash;</span>
     }
     
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (obj == null) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L161">            return false;</span>
+        }
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
 <span class="nc" id="L164">            return false;</span>
         }
-<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L167">            return false;</span>
+<span class="nc" id="L166">        final AttributeDescriptor other = (AttributeDescriptor) obj;</span>
+<span class="nc bnc" id="L167" title="All 6 branches missed.">        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {</span>
+<span class="nc" id="L168">            return false;</span>
         }
-<span class="nc" id="L169">        final AttributeDescriptor other = (AttributeDescriptor) obj;</span>
-<span class="nc bnc" id="L170" title="All 6 branches missed.">        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {</span>
+<span class="nc bnc" id="L170" title="All 6 branches missed.">        if ((this.alias == null) ? (other.alias != null) : !this.alias.equals(other.alias)) {</span>
 <span class="nc" id="L171">            return false;</span>
         }
-<span class="nc bnc" id="L173" title="All 6 branches missed.">        if ((this.alias == null) ? (other.alias != null) : !this.alias.equals(other.alias)) {</span>
+<span class="nc bnc" id="L173" title="All 6 branches missed.">        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {</span>
 <span class="nc" id="L174">            return false;</span>
         }
-<span class="nc bnc" id="L176" title="All 6 branches missed.">        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {</span>
-<span class="nc" id="L177">            return false;</span>
-        }
-<span class="nc" id="L179">        return true;</span>
+<span class="nc" id="L176">        return true;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

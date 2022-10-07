@@ -72,7 +72,7 @@ import java.util.List;
             joinColumns=@JoinColumn(name = &quot;feature_source&quot;, referencedColumnName = &quot;id&quot;)
     )
     @OrderColumn(name=&quot;list_index&quot;)
-    private List&lt;SimpleFeatureType&gt; featureTypes = new ArrayList&lt;SimpleFeatureType&gt;();
+    private List&lt;SimpleFeatureType&gt; featureTypes = new ArrayList&lt;&gt;();
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
 

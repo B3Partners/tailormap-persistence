@@ -75,7 +75,7 @@ import java.util.Set;
             joinColumns=@JoinColumn(name = &quot;category&quot;, referencedColumnName = &quot;id&quot;)
     )
     @OrderColumn(name=&quot;list_index&quot;)
-    private List&lt;Category&gt; children = new ArrayList&lt;Category&gt;();
+    private List&lt;Category&gt; children = new ArrayList&lt;&gt;();
 
 <span class="fc" id="L80">    @ManyToMany // Actually @OneToMany, workaround for HHH-1268</span>
     @JoinTable(
@@ -84,17 +84,17 @@ import java.util.Set;
             joinColumns=@JoinColumn(name = &quot;category&quot;, referencedColumnName = &quot;id&quot;)
     )
     @OrderColumn(name=&quot;list_index&quot;)
-    private List&lt;GeoService&gt; services = new ArrayList&lt;GeoService&gt;();
+    private List&lt;GeoService&gt; services = new ArrayList&lt;&gt;();
 
 <span class="fc" id="L89">    @ElementCollection</span>
     @Column(name=&quot;role_name&quot;)
     @CollectionTable(joinColumns = @JoinColumn(name = &quot;category&quot;))
-    private Set&lt;String&gt; readers = new HashSet&lt;String&gt;();
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
 
 <span class="fc" id="L94">    @ElementCollection</span>
     @CollectionTable(joinColumns = @JoinColumn(name = &quot;category&quot;))
     @Column(name=&quot;role_name&quot;)
-    private Set&lt;String&gt; writers = new HashSet&lt;String&gt;();
+    private Set&lt;String&gt; writers = new HashSet&lt;&gt;();
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
     public List&lt;Category&gt; getChildren() {

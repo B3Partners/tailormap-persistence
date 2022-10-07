@@ -112,7 +112,7 @@ public class BoundingBox implements Cloneable {
     public BoundingBox clone() throws CloneNotSupportedException {
 <span class="nc" id="L113">        BoundingBox clone = (BoundingBox)super.clone();</span>
 <span class="nc bnc" id="L114" title="All 2 branches missed.">        if(crs != null) {</span>
-<span class="nc" id="L115">            crs = (CoordinateReferenceSystem) crs.clone();</span>
+<span class="nc" id="L115">            crs = crs.clone();</span>
         }
 <span class="nc" id="L117">        return clone;</span>
     }

@@ -197,7 +197,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 <span class="nc bnc" id="L197" title="All 4 branches missed.">                        while(child2 != null &amp;&amp; !&quot;Name&quot;.equals(child2.getLocalName())) {</span>
 <span class="nc" id="L198">                            child2 = child2.getNextSibling();</span>
                         }
-<span class="nc" id="L200">                        JSONObject style = null;</span>
+                        JSONObject style;
 <span class="nc bnc" id="L201" title="All 2 branches missed.">                        if(child2 != null) {</span>
 <span class="nc" id="L202">                            style = new JSONObject();</span>
 <span class="nc" id="L203">                            style.put(&quot;name&quot;, child2.getTextContent());</span>

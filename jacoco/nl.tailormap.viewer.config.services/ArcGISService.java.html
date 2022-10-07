@@ -22,9 +22,6 @@ import org.json.JSONObject;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +33,7 @@ import java.util.SortedMap;
  */
 @Entity
 @DiscriminatorValue(ArcGISService.PROTOCOL)
-<span class="fc" id="L39">public class ArcGISService extends GeoService{</span>
+<span class="fc" id="L36">public class ArcGISService extends GeoService{</span>
 
     public static final String PROTOCOL = &quot;arcgis&quot;;
 
@@ -72,7 +69,7 @@ import java.util.SortedMap;
     // See {Layer#virtual}
     // Group layers are thus virtual layers. Sometimes ArcGIS even has layers
     // without a type...
-<span class="fc" id="L75">    public static final Set&lt;String&gt; NON_VIRTUAL_LAYER_TYPES = Set.of(new String[]{</span>
+<span class="fc" id="L72">    public static final Set&lt;String&gt; NON_VIRTUAL_LAYER_TYPES = Set.of(new String[]{</span>
             &quot;Feature Layer&quot;,
             &quot;Raster Layer&quot;,
             &quot;Annotation Layer&quot; // not sure about this one...
@@ -91,22 +88,22 @@ import java.util.SortedMap;
     public Map&lt;String,List&lt;String&gt;&gt; childrenByLayerId;
 
     public String getCurrentVersion() {
-<span class="nc" id="L94">        ClobElement ce = getDetails().get(DETAIL_CURRENT_VERSION);</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">        String cv = ce != null ? ce.getValue() : null;</span>
+<span class="nc" id="L91">        ClobElement ce = getDetails().get(DETAIL_CURRENT_VERSION);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        String cv = ce != null ? ce.getValue() : null;</span>
 
-<span class="nc bnc" id="L97" title="All 4 branches missed.">        if(cv == null &amp;&amp; getTopLayer() != null) {</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">        if(cv == null &amp;&amp; getTopLayer() != null) {</span>
             // get it from the topLayer, was saved there before GeoService.details
             // was added
-<span class="nc" id="L100">            ce = getTopLayer().getDetails().get(DETAIL_CURRENT_VERSION);</span>
-<span class="nc bnc" id="L101" title="All 2 branches missed.">            cv = ce != null ? ce.getValue() : null;</span>
+<span class="nc" id="L97">            ce = getTopLayer().getDetails().get(DETAIL_CURRENT_VERSION);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            cv = ce != null ? ce.getValue() : null;</span>
 
             // try the first actual layer where may have been saved in version &lt; 4.1
-<span class="nc bnc" id="L104" title="All 4 branches missed.">            if(cv == null &amp;&amp; !getTopLayer().getChildren().isEmpty()) {</span>
-<span class="nc" id="L105">                ce = getTopLayer().getChildren().get(0).getDetails().get(DETAIL_CURRENT_VERSION);</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">                cv = ce != null ? ce.getValue() : null;</span>
+<span class="nc bnc" id="L101" title="All 4 branches missed.">            if(cv == null &amp;&amp; !getTopLayer().getChildren().isEmpty()) {</span>
+<span class="nc" id="L102">                ce = getTopLayer().getChildren().get(0).getDetails().get(DETAIL_CURRENT_VERSION);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                cv = ce != null ? ce.getValue() : null;</span>
             }
         }
-<span class="nc" id="L109">        return cv;</span>
+<span class="nc" id="L106">        return cv;</span>
     }
 
 

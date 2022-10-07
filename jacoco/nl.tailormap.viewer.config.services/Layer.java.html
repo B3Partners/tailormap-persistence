@@ -87,8 +87,7 @@ public class Layer implements Serializable {
     public static final String DETAIL_USERLAYER_DATE_ADDED = &quot;userlayer_date_added&quot;;
     public static final String DETAIL_USERLAYER_USER = &quot;userlayer_user&quot;;
 
-<span class="fc" id="L90">    private static final Set&lt;String&gt; interestingDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
-            EXTRA_KEY_METADATA_URL,
+<span class="fc" id="L90">    private static final Set&lt;String&gt; interestingDetails = new HashSet&lt;&gt;(Arrays.asList(EXTRA_KEY_METADATA_URL,</span>
             EXTRA_KEY_METADATA_STYLESHEET_URL,
             EXTRA_KEY_DOWNLOAD_URL,
             EXTRA_KEY_FILTERABLE,
@@ -96,14 +95,11 @@ public class Layer implements Serializable {
             DETAIL_ALL_CHILDREN,
             DETAIL_WMS_STYLES,
             DETAIL_ALTERNATE_LEGEND_IMAGE_URL,
-            EXTRA_KEY_ATTRIBUTION
-    }));
+            EXTRA_KEY_ATTRIBUTION));
 
-<span class="fc" id="L102">    private static final Set&lt;String&gt; updatableDetails = new HashSet&lt;&gt;(Arrays.asList(new String[]{</span>
-            EXTRA_KEY_METADATA_URL,
+<span class="fc" id="L100">    private static final Set&lt;String&gt; updatableDetails = new HashSet&lt;&gt;(Arrays.asList(EXTRA_KEY_METADATA_URL,</span>
             DETAIL_ALL_CHILDREN,
-            DETAIL_WMS_STYLES
-    }));
+            DETAIL_WMS_STYLES));
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -133,11 +129,11 @@ public class Layer implements Serializable {
     private Double minScale;
     private Double maxScale;
 
-<span class="fc" id="L136">    @ElementCollection</span>
+<span class="fc" id="L132">    @ElementCollection</span>
     @CollectionTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
     private Set&lt;CoordinateReferenceSystem&gt; crsList = new HashSet&lt;&gt;();
 
-<span class="fc" id="L140">    @ElementCollection</span>
+<span class="fc" id="L136">    @ElementCollection</span>
     @CollectionTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
     private Map&lt;CoordinateReferenceSystem, BoundingBox&gt; boundingBoxes = new HashMap&lt;&gt;();
 
@@ -155,35 +151,35 @@ public class Layer implements Serializable {
     private boolean queryable;
     private boolean filterable;
 
-<span class="fc" id="L158">    private Boolean userlayer = false;</span>
+<span class="fc" id="L154">    private Boolean userlayer = false;</span>
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = &quot;feature_type&quot;)
     private SimpleFeatureType featureType;
 
-<span class="fc" id="L164">    @ElementCollection</span>
+<span class="fc" id="L160">    @ElementCollection</span>
     @JoinTable(
             joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;)
     )
     @Column(name = &quot;keyword&quot;)
     private Set&lt;String&gt; keywords = new HashSet&lt;&gt;();
 
-<span class="fc" id="L171">    @ElementCollection</span>
+<span class="fc" id="L167">    @ElementCollection</span>
     @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
     @Column(name = &quot;role_name&quot;)
     private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
 
-<span class="fc" id="L176">    @ElementCollection</span>
+<span class="fc" id="L172">    @ElementCollection</span>
     @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
     @Column(name = &quot;role_name&quot;)
     public Set&lt;String&gt; writers = new HashSet&lt;&gt;();
 
-<span class="fc" id="L181">    @ElementCollection</span>
+<span class="fc" id="L177">    @ElementCollection</span>
     @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;))
     @Column(name = &quot;role_name&quot;)
     public Set&lt;String&gt; preventGeomEditors = new HashSet&lt;&gt;();
 
-<span class="fc" id="L186">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
+<span class="fc" id="L182">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
     @JoinTable(
             name = &quot;layer_children&quot;,
             inverseJoinColumns = @JoinColumn(name = &quot;child&quot;, unique = true),
@@ -192,13 +188,13 @@ public class Layer implements Serializable {
     @OrderColumn(name = &quot;list_index&quot;)
     private List&lt;Layer&gt; children = new ArrayList&lt;&gt;();
 
-<span class="fc" id="L195">    @ElementCollection</span>
+<span class="fc" id="L191">    @ElementCollection</span>
     @JoinTable(joinColumns = @JoinColumn(name = &quot;layer&quot;))
     // Element wrapper required because of http://opensource.atlassian.com/projects/hibernate/browse/JPA-11
     private Map&lt;String, ClobElement&gt; details = new HashMap&lt;&gt;();
 
 
-<span class="fc" id="L201">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
+<span class="fc" id="L197">    @ManyToMany(cascade = CascadeType.PERSIST) // Actually @OneToMany, workaround for HHH-1268</span>
     @JoinTable(
             name = &quot;layer_matrix_sets&quot;,
             joinColumns = @JoinColumn(name = &quot;layer&quot;, referencedColumnName = &quot;id&quot;),
@@ -207,61 +203,62 @@ public class Layer implements Serializable {
     @OrderColumn(name = &quot;list_index&quot;)
     private List&lt;TileMatrixSet&gt; matrixSets = new ArrayList&lt;&gt;();
 
-<span class="fc" id="L210">    public Layer() {</span>
-<span class="fc" id="L211">    }</span>
+<span class="fc" id="L206">    public Layer() {</span>
+<span class="fc" id="L207">    }</span>
 
+    @Override
     public Layer clone() throws CloneNotSupportedException {
-<span class="nc" id="L214">        return (Layer) super.clone();</span>
+<span class="nc" id="L211">        return (Layer) super.clone();</span>
     }
 
     public void update(Layer update) {
-<span class="nc" id="L218">        update(update, null);</span>
-<span class="nc" id="L219">    }</span>
+<span class="nc" id="L215">        update(update, null);</span>
+<span class="nc" id="L216">    }</span>
 
     public void update(Layer update, Set&lt;String&gt; additionalUpdatableDetails) {
-<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (!getName().equals(update.getName())) {</span>
-<span class="nc" id="L223">            throw new IllegalArgumentException(&quot;Cannot update layer with properties from layer with different name!&quot;);</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (!getName().equals(update.getName())) {</span>
+<span class="nc" id="L220">            throw new IllegalArgumentException(&quot;Cannot update layer with properties from layer with different name!&quot;);</span>
         }
 
-<span class="nc" id="L226">        virtual = update.virtual;</span>
-<span class="nc" id="L227">        queryable = update.queryable;</span>
-<span class="nc" id="L228">        filterable = update.filterable;</span>
-<span class="nc" id="L229">        title = update.title;</span>
-<span class="nc" id="L230">        minScale = update.minScale;</span>
-<span class="nc" id="L231">        maxScale = update.maxScale;</span>
+<span class="nc" id="L223">        virtual = update.virtual;</span>
+<span class="nc" id="L224">        queryable = update.queryable;</span>
+<span class="nc" id="L225">        filterable = update.filterable;</span>
+<span class="nc" id="L226">        title = update.title;</span>
+<span class="nc" id="L227">        minScale = update.minScale;</span>
+<span class="nc" id="L228">        maxScale = update.maxScale;</span>
 
-<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (!boundingBoxes.equals(update.boundingBoxes)) {</span>
-<span class="nc" id="L234">            boundingBoxes.clear();</span>
-<span class="nc" id="L235">            boundingBoxes.putAll(update.boundingBoxes);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (!boundingBoxes.equals(update.boundingBoxes)) {</span>
+<span class="nc" id="L231">            boundingBoxes.clear();</span>
+<span class="nc" id="L232">            boundingBoxes.putAll(update.boundingBoxes);</span>
         }
-<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (!crsList.equals(update.crsList)) {</span>
-<span class="nc" id="L238">            crsList.clear();</span>
-<span class="nc" id="L239">            crsList.addAll(update.crsList);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (!crsList.equals(update.crsList)) {</span>
+<span class="nc" id="L235">            crsList.clear();</span>
+<span class="nc" id="L236">            crsList.addAll(update.crsList);</span>
         }
-<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (!keywords.equals(update.keywords)) {</span>
-<span class="nc" id="L242">            keywords.clear();</span>
-<span class="nc" id="L243">            keywords.addAll(update.keywords);</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (!keywords.equals(update.keywords)) {</span>
+<span class="nc" id="L239">            keywords.clear();</span>
+<span class="nc" id="L240">            keywords.addAll(update.keywords);</span>
         }
 
         // updateableDetails maps are used for clearing only details which are
         // set by loading metadata, leave details set by other code alone
 
-<span class="nc bnc" id="L249" title="All 2 branches missed.">        for (String s : updatableDetails) {</span>
-<span class="nc" id="L250">            details.remove(s);</span>
-<span class="nc" id="L251">        }</span>
-<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (additionalUpdatableDetails != null) {</span>
-<span class="nc bnc" id="L253" title="All 2 branches missed.">            for (String s : additionalUpdatableDetails) {</span>
-<span class="nc" id="L254">                details.remove(s);</span>
-<span class="nc" id="L255">            }</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        for (String s : updatableDetails) {</span>
+<span class="nc" id="L247">            details.remove(s);</span>
+<span class="nc" id="L248">        }</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">        if (additionalUpdatableDetails != null) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">            for (String s : additionalUpdatableDetails) {</span>
+<span class="nc" id="L251">                details.remove(s);</span>
+<span class="nc" id="L252">            }</span>
         }
         // update all metadata loaded details
-<span class="nc" id="L258">        details.putAll(update.getDetails());</span>
-<span class="nc" id="L259">        RemoveEmptyMapValuesUtil.removeEmptyMapValues(details);</span>
+<span class="nc" id="L255">        details.putAll(update.getDetails());</span>
+<span class="nc" id="L256">        RemoveEmptyMapValuesUtil.removeEmptyMapValues(details);</span>
 
-<span class="nc" id="L261">        legendImageUrl = update.legendImageUrl;</span>
+<span class="nc" id="L258">        legendImageUrl = update.legendImageUrl;</span>
 
         // tileSet ignored -- only for tile services!
-<span class="nc" id="L264">    }</span>
+<span class="nc" id="L261">    }</span>
 
     /**
      * Copy user modified properties of given layer onto this instance. Used for
@@ -271,12 +268,12 @@ public class Layer implements Serializable {
      * @param other the source of properties to copy
      */
     public void copyUserModifiedProperties(Layer other) {
-<span class="nc" id="L274">        setTitleAlias(other.getTitleAlias());</span>
-<span class="nc" id="L275">        getReaders().clear();</span>
-<span class="nc" id="L276">        getReaders().addAll(other.getReaders());</span>
-<span class="nc" id="L277">        getWriters().clear();</span>
-<span class="nc" id="L278">        getWriters().addAll(other.getWriters());</span>
-<span class="nc" id="L279">    }</span>
+<span class="nc" id="L271">        setTitleAlias(other.getTitleAlias());</span>
+<span class="nc" id="L272">        getReaders().clear();</span>
+<span class="nc" id="L273">        getReaders().addAll(other.getReaders());</span>
+<span class="nc" id="L274">        getWriters().clear();</span>
+<span class="nc" id="L275">        getWriters().addAll(other.getWriters());</span>
+<span class="nc" id="L276">    }</span>
 
 
     /**
@@ -286,7 +283,7 @@ public class Layer implements Serializable {
      * otherwise
      */
     public boolean isBufferable() {
-<span class="nc bnc" id="L289" title="All 2 branches missed.">        return this.getFeatureType() != null;</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        return this.getFeatureType() != null;</span>
     }
 
     public interface Visitor {
@@ -302,309 +299,309 @@ public class Layer implements Serializable {
      * @return {@code true} if visitor accepted all layers
      */
     public boolean accept(Layer.Visitor visitor, EntityManager em) {
-<span class="nc bnc" id="L305" title="All 2 branches missed.">        for (Layer child : getCachedChildren(em)) {</span>
-<span class="nc bnc" id="L306" title="All 2 branches missed.">            if (!child.accept(visitor, em)) {</span>
-<span class="nc" id="L307">                return false;</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">        for (Layer child : getCachedChildren(em)) {</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (!child.accept(visitor, em)) {</span>
+<span class="nc" id="L304">                return false;</span>
             }
-<span class="nc" id="L309">        }</span>
-<span class="nc" id="L310">        return visitor.visit(this, em);</span>
+<span class="nc" id="L306">        }</span>
+<span class="nc" id="L307">        return visitor.visit(this, em);</span>
     }
 
     public String getDisplayName() {
-<span class="nc bnc" id="L314" title="All 2 branches missed.">        if (StringUtils.isNotBlank(titleAlias)) {</span>
-<span class="nc" id="L315">            return titleAlias;</span>
-<span class="nc bnc" id="L316" title="All 2 branches missed.">        } else if (StringUtils.isNotBlank(title)) {</span>
-<span class="nc" id="L317">            return title;</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">        if (StringUtils.isNotBlank(titleAlias)) {</span>
+<span class="nc" id="L312">            return titleAlias;</span>
+<span class="nc bnc" id="L313" title="All 2 branches missed.">        } else if (StringUtils.isNotBlank(title)) {</span>
+<span class="nc" id="L314">            return title;</span>
         } else {
-<span class="nc" id="L319">            return name;</span>
+<span class="nc" id="L316">            return name;</span>
         }
     }
 
     public JSONObject toJSONObject() throws JSONException {
-<span class="nc" id="L324">        JSONObject o = new JSONObject();</span>
+<span class="nc" id="L321">        JSONObject o = new JSONObject();</span>
 
-<span class="nc" id="L326">        o.put(&quot;id&quot;, id);</span>
-<span class="nc" id="L327">        o.put(&quot;serviceId&quot;, service.getId());</span>
-<span class="nc" id="L328">        o.put(&quot;name&quot;, name);</span>
+<span class="nc" id="L323">        o.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L324">        o.put(&quot;serviceId&quot;, service.getId());</span>
+<span class="nc" id="L325">        o.put(&quot;name&quot;, name);</span>
 
-<span class="nc" id="L330">        o.put(&quot;virtual&quot;, virtual);</span>
-<span class="nc" id="L331">        o.put(&quot;queryable&quot;, queryable);</span>
-<span class="nc" id="L332">        o.put(&quot;filterable&quot;, filterable);</span>
+<span class="nc" id="L327">        o.put(&quot;virtual&quot;, virtual);</span>
+<span class="nc" id="L328">        o.put(&quot;queryable&quot;, queryable);</span>
+<span class="nc" id="L329">        o.put(&quot;filterable&quot;, filterable);</span>
 
-<span class="nc" id="L334">        o.put(&quot;userlayer&quot;, userlayer);</span>
+<span class="nc" id="L331">        o.put(&quot;userlayer&quot;, userlayer);</span>
 
-<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (title != null) {</span>
-<span class="nc" id="L337">            o.put(&quot;title&quot;, title);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        if (title != null) {</span>
+<span class="nc" id="L334">            o.put(&quot;title&quot;, title);</span>
         }
-<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (titleAlias != null) {</span>
-<span class="nc" id="L340">            o.put(&quot;titleAlias&quot;, titleAlias);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (titleAlias != null) {</span>
+<span class="nc" id="L337">            o.put(&quot;titleAlias&quot;, titleAlias);</span>
         }
-<span class="nc bnc" id="L342" title="All 2 branches missed.">        if (legendImageUrl != null) {</span>
-<span class="nc" id="L343">            o.put(&quot;legendImageUrl&quot;, legendImageUrl);</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (legendImageUrl != null) {</span>
+<span class="nc" id="L340">            o.put(&quot;legendImageUrl&quot;, legendImageUrl);</span>
         }
-<span class="nc bnc" id="L345" title="All 2 branches missed.">        if (minScale != null) {</span>
-<span class="nc bnc" id="L346" title="All 4 branches missed.">            if (minScale.isNaN() || minScale.isInfinite()) {</span>
-<span class="nc" id="L347">                log.error(&quot;Can't use minScale: &quot; + minScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        if (minScale != null) {</span>
+<span class="nc bnc" id="L343" title="All 4 branches missed.">            if (minScale.isNaN() || minScale.isInfinite()) {</span>
+<span class="nc" id="L344">                log.error(&quot;Can't use minScale: &quot; + minScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
             } else {
-<span class="nc" id="L349">                o.put(&quot;minScale&quot;, minScale);</span>
+<span class="nc" id="L346">                o.put(&quot;minScale&quot;, minScale);</span>
             }
         }
-<span class="nc bnc" id="L352" title="All 2 branches missed.">        if (maxScale != null) {</span>
-<span class="nc bnc" id="L353" title="All 4 branches missed.">            if (maxScale.isNaN() || maxScale.isInfinite()) {</span>
-<span class="nc" id="L354">                log.error(&quot;Can't use maxScale: &quot; + maxScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (maxScale != null) {</span>
+<span class="nc bnc" id="L350" title="All 4 branches missed.">            if (maxScale.isNaN() || maxScale.isInfinite()) {</span>
+<span class="nc" id="L351">                log.error(&quot;Can't use maxScale: &quot; + maxScale + &quot; of Servicelayer&quot; + this.service.getName() + &quot; - &quot; + this.name);</span>
             } else {
-<span class="nc" id="L356">                o.put(&quot;maxScale&quot;, maxScale);</span>
+<span class="nc" id="L353">                o.put(&quot;maxScale&quot;, maxScale);</span>
             }
         }
 
-<span class="nc bnc" id="L360" title="All 2 branches missed.">        o.put(&quot;hasFeatureType&quot;, featureType != null);</span>
-<span class="nc bnc" id="L361" title="All 2 branches missed.">        if (featureType != null) {</span>
-<span class="nc" id="L362">            o.put(&quot;featureTypeName&quot;, featureType.getTypeName());</span>
-<span class="nc" id="L363">            o.put(&quot;featureTypeId&quot;, featureType.getId());</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        o.put(&quot;hasFeatureType&quot;, featureType != null);</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">        if (featureType != null) {</span>
+<span class="nc" id="L359">            o.put(&quot;featureTypeName&quot;, featureType.getTypeName());</span>
+<span class="nc" id="L360">            o.put(&quot;featureTypeId&quot;, featureType.getId());</span>
         }
 
         /* Only include &quot;interesting&quot; details in JSON */
 
-<span class="nc bnc" id="L368" title="All 2 branches missed.">        if (!details.isEmpty()) {</span>
-<span class="nc" id="L369">            JSONObject d = new JSONObject();</span>
-<span class="nc" id="L370">            o.put(&quot;details&quot;, d);</span>
-<span class="nc bnc" id="L371" title="All 2 branches missed.">            for (Map.Entry&lt;String, ClobElement&gt; e : details.entrySet()) {</span>
-<span class="nc bnc" id="L372" title="All 2 branches missed.">                if (interestingDetails.contains(e.getKey())) {</span>
-<span class="nc" id="L373">                    d.put(e.getKey(), e.getValue().getValue());</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">        if (!details.isEmpty()) {</span>
+<span class="nc" id="L366">            JSONObject d = new JSONObject();</span>
+<span class="nc" id="L367">            o.put(&quot;details&quot;, d);</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">            for (Map.Entry&lt;String, ClobElement&gt; e : details.entrySet()) {</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">                if (interestingDetails.contains(e.getKey())) {</span>
+<span class="nc" id="L370">                    d.put(e.getKey(), e.getValue().getValue());</span>
                 }
-<span class="nc" id="L375">            }</span>
+<span class="nc" id="L372">            }</span>
         }
 
-<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (tileset != null) {</span>
-<span class="nc" id="L379">            o.put(&quot;tileHeight&quot;, tileset.getHeight());</span>
-<span class="nc" id="L380">            o.put(&quot;tileWidth&quot;, tileset.getWidth());</span>
-<span class="nc bnc" id="L381" title="All 2 branches missed.">            if (tileset.getResolutions() != null) {</span>
-<span class="nc" id="L382">                StringBuilder resolutions = new StringBuilder();</span>
-<span class="nc bnc" id="L383" title="All 2 branches missed.">                for (Double d : tileset.getResolutions()) {</span>
-<span class="nc bnc" id="L384" title="All 2 branches missed.">                    if (resolutions.length() &gt; 0) {</span>
-<span class="nc" id="L385">                        resolutions.append(&quot;,&quot;);</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">        if (tileset != null) {</span>
+<span class="nc" id="L376">            o.put(&quot;tileHeight&quot;, tileset.getHeight());</span>
+<span class="nc" id="L377">            o.put(&quot;tileWidth&quot;, tileset.getWidth());</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            if (tileset.getResolutions() != null) {</span>
+<span class="nc" id="L379">                StringBuilder resolutions = new StringBuilder();</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">                for (Double d : tileset.getResolutions()) {</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                    if (resolutions.length() &gt; 0) {</span>
+<span class="nc" id="L382">                        resolutions.append(&quot;,&quot;);</span>
                     }
-<span class="nc" id="L387">                    resolutions.append(d.toString());</span>
-<span class="nc" id="L388">                }</span>
-<span class="nc" id="L389">                o.put(&quot;resolutions&quot;, resolutions.toString());</span>
+<span class="nc" id="L384">                    resolutions.append(d.toString());</span>
+<span class="nc" id="L385">                }</span>
+<span class="nc" id="L386">                o.put(&quot;resolutions&quot;, resolutions.toString());</span>
             }
         }
 
-<span class="nc bnc" id="L393" title="All 2 branches missed.">        if (boundingBoxes.size() == 1) {</span>
-<span class="nc" id="L394">            BoundingBox bbox = boundingBoxes.values().iterator().next();</span>
-<span class="nc" id="L395">            o.put(&quot;bbox&quot;, bbox.toJSONObject());</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">        if (boundingBoxes.size() == 1) {</span>
+<span class="nc" id="L391">            BoundingBox bbox = boundingBoxes.values().iterator().next();</span>
+<span class="nc" id="L392">            o.put(&quot;bbox&quot;, bbox.toJSONObject());</span>
         }
-<span class="nc" id="L397">        JSONArray sets = new JSONArray();</span>
-<span class="nc" id="L398">        o.put(&quot;matrixSets&quot;, sets);</span>
-<span class="nc bnc" id="L399" title="All 2 branches missed.">        for (TileMatrixSet matrixSet : matrixSets) {</span>
-<span class="nc" id="L400">            sets.put(matrixSet.toJSONObject());</span>
-<span class="nc" id="L401">        }</span>
+<span class="nc" id="L394">        JSONArray sets = new JSONArray();</span>
+<span class="nc" id="L395">        o.put(&quot;matrixSets&quot;, sets);</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        for (TileMatrixSet matrixSet : matrixSets) {</span>
+<span class="nc" id="L397">            sets.put(matrixSet.toJSONObject());</span>
+<span class="nc" id="L398">        }</span>
 
-<span class="nc" id="L403">        return o;</span>
+<span class="nc" id="L400">        return o;</span>
     }
 
     public List&lt;Layer&gt; getCachedChildren(EntityManager em) {
-<span class="nc" id="L407">        return service.getLayerChildrenCache(this, em);</span>
+<span class="nc" id="L404">        return service.getLayerChildrenCache(this, em);</span>
     }
 
     public List&lt;ApplicationLayer&gt; getApplicationLayers(EntityManager em) {
-<span class="nc" id="L411">        return em.createQuery(&quot;from ApplicationLayer where service = :service&quot;</span>
+<span class="nc" id="L408">        return em.createQuery(&quot;from ApplicationLayer where service = :service&quot;</span>
                 + &quot; and layerName = :layerName&quot;,ApplicationLayer.class)
-<span class="nc" id="L413">                .setParameter(&quot;service&quot;, service).setParameter(&quot;layerName&quot;, this.getName()).getResultList();</span>
+<span class="nc" id="L410">                .setParameter(&quot;service&quot;, service).setParameter(&quot;layerName&quot;, this.getName()).getResultList();</span>
     }
 
     //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
     public Layer getParent() {
-<span class="nc" id="L418">        return parent;</span>
+<span class="nc" id="L415">        return parent;</span>
     }
 
     public void setParent(Layer parent) {
-<span class="fc" id="L422">        this.parent = parent;</span>
-<span class="fc" id="L423">    }</span>
+<span class="fc" id="L419">        this.parent = parent;</span>
+<span class="fc" id="L420">    }</span>
 
     public boolean isVirtual() {
-<span class="nc" id="L426">        return virtual;</span>
+<span class="nc" id="L423">        return virtual;</span>
     }
 
     public void setVirtual(boolean virtual) {
-<span class="nc" id="L430">        this.virtual = virtual;</span>
-<span class="nc" id="L431">    }</span>
+<span class="nc" id="L427">        this.virtual = virtual;</span>
+<span class="nc" id="L428">    }</span>
 
     public String getTitle() {
-<span class="nc" id="L434">        return title;</span>
+<span class="nc" id="L431">        return title;</span>
     }
 
     public void setTitle(String title) {
-<span class="nc" id="L438">        this.title = title;</span>
-<span class="nc" id="L439">    }</span>
+<span class="nc" id="L435">        this.title = title;</span>
+<span class="nc" id="L436">    }</span>
 
     public String getTitleAlias() {
-<span class="nc" id="L442">        return titleAlias;</span>
+<span class="nc" id="L439">        return titleAlias;</span>
     }
 
     public void setTitleAlias(String titleAlias) {
-<span class="nc" id="L446">        this.titleAlias = titleAlias;</span>
-<span class="nc" id="L447">    }</span>
+<span class="nc" id="L443">        this.titleAlias = titleAlias;</span>
+<span class="nc" id="L444">    }</span>
 
     public GeoService getService() {
-<span class="nc" id="L450">        return service;</span>
+<span class="nc" id="L447">        return service;</span>
     }
 
     public void setService(GeoService service) {
-<span class="fc" id="L454">        this.service = service;</span>
-<span class="fc" id="L455">    }</span>
+<span class="fc" id="L451">        this.service = service;</span>
+<span class="fc" id="L452">    }</span>
 
     public Set&lt;CoordinateReferenceSystem&gt; getCrsList() {
-<span class="nc" id="L458">        return crsList;</span>
+<span class="nc" id="L455">        return crsList;</span>
     }
 
     public void setCrsList(Set&lt;CoordinateReferenceSystem&gt; crsList) {
-<span class="nc" id="L462">        this.crsList = crsList;</span>
-<span class="nc" id="L463">    }</span>
+<span class="nc" id="L459">        this.crsList = crsList;</span>
+<span class="nc" id="L460">    }</span>
 
     public SimpleFeatureType getFeatureType() {
-<span class="nc" id="L466">        return featureType;</span>
+<span class="nc" id="L463">        return featureType;</span>
     }
 
     public void setFeatureType(SimpleFeatureType featureType) {
-<span class="fc" id="L470">        this.featureType = featureType;</span>
-<span class="fc" id="L471">    }</span>
+<span class="fc" id="L467">        this.featureType = featureType;</span>
+<span class="fc" id="L468">    }</span>
 
     public boolean isFilterable() {
-<span class="nc" id="L474">        return filterable;</span>
+<span class="nc" id="L471">        return filterable;</span>
     }
 
     public void setFilterable(boolean filterable) {
-<span class="nc" id="L478">        this.filterable = filterable;</span>
-<span class="nc" id="L479">    }</span>
+<span class="nc" id="L475">        this.filterable = filterable;</span>
+<span class="nc" id="L476">    }</span>
 
     public Long getId() {
-<span class="nc" id="L482">        return id;</span>
+<span class="nc" id="L479">        return id;</span>
     }
 
     public void setId(Long id) {
-<span class="nc" id="L486">        this.id = id;</span>
-<span class="nc" id="L487">    }</span>
+<span class="nc" id="L483">        this.id = id;</span>
+<span class="nc" id="L484">    }</span>
 
     public String getName() {
-<span class="nc" id="L490">        return name;</span>
+<span class="nc" id="L487">        return name;</span>
     }
 
     public void setName(String name) {
-<span class="fc" id="L494">        this.name = name;</span>
-<span class="fc" id="L495">    }</span>
+<span class="fc" id="L491">        this.name = name;</span>
+<span class="fc" id="L492">    }</span>
 
     public boolean isQueryable() {
-<span class="nc" id="L498">        return queryable;</span>
+<span class="nc" id="L495">        return queryable;</span>
     }
 
     public void setQueryable(boolean queryable) {
-<span class="nc" id="L502">        this.queryable = queryable;</span>
-<span class="nc" id="L503">    }</span>
+<span class="nc" id="L499">        this.queryable = queryable;</span>
+<span class="nc" id="L500">    }</span>
 
     public Set&lt;String&gt; getReaders() {
-<span class="nc" id="L506">        return readers;</span>
+<span class="nc" id="L503">        return readers;</span>
     }
 
     public void setReaders(Set&lt;String&gt; readers) {
-<span class="nc" id="L510">        this.readers = readers;</span>
-<span class="nc" id="L511">    }</span>
+<span class="nc" id="L507">        this.readers = readers;</span>
+<span class="nc" id="L508">    }</span>
 
     public Set&lt;String&gt; getWriters() {
-<span class="nc" id="L514">        return writers;</span>
+<span class="nc" id="L511">        return writers;</span>
     }
 
     public void setWriters(Set&lt;String&gt; writers) {
-<span class="nc" id="L518">        this.writers = writers;</span>
-<span class="nc" id="L519">    }</span>
+<span class="nc" id="L515">        this.writers = writers;</span>
+<span class="nc" id="L516">    }</span>
 
     public Set&lt;String&gt; getPreventGeomEditors() {
-<span class="nc" id="L522">        return preventGeomEditors;</span>
+<span class="nc" id="L519">        return preventGeomEditors;</span>
     }
 
     public void setPreventGeomEditors(Set&lt;String&gt; preventGeomEditors) {
-<span class="nc" id="L526">        this.preventGeomEditors = preventGeomEditors;</span>
-<span class="nc" id="L527">    }</span>
+<span class="nc" id="L523">        this.preventGeomEditors = preventGeomEditors;</span>
+<span class="nc" id="L524">    }</span>
 
     public List&lt;Layer&gt; getChildren() {
-<span class="fc" id="L530">        return children;</span>
+<span class="fc" id="L527">        return children;</span>
     }
 
     public void setChildren(List&lt;Layer&gt; children) {
-<span class="nc" id="L534">        this.children = children;</span>
-<span class="nc" id="L535">    }</span>
+<span class="nc" id="L531">        this.children = children;</span>
+<span class="nc" id="L532">    }</span>
 
     public Set&lt;String&gt; getKeywords() {
-<span class="nc" id="L538">        return keywords;</span>
+<span class="nc" id="L535">        return keywords;</span>
     }
 
     public void setKeywords(Set&lt;String&gt; keywords) {
-<span class="nc" id="L542">        this.keywords = keywords;</span>
-<span class="nc" id="L543">    }</span>
+<span class="nc" id="L539">        this.keywords = keywords;</span>
+<span class="nc" id="L540">    }</span>
 
     public Map&lt;String, ClobElement&gt; getDetails() {
-<span class="nc" id="L546">        return details;</span>
+<span class="nc" id="L543">        return details;</span>
     }
 
     public void setDetails(Map&lt;String, ClobElement&gt; details) {
-<span class="nc" id="L550">        this.details = details;</span>
-<span class="nc" id="L551">    }</span>
+<span class="nc" id="L547">        this.details = details;</span>
+<span class="nc" id="L548">    }</span>
 
     public Double getMaxScale() {
-<span class="nc" id="L554">        return maxScale;</span>
+<span class="nc" id="L551">        return maxScale;</span>
     }
 
     public void setMaxScale(Double maxScale) {
-<span class="nc" id="L558">        this.maxScale = maxScale;</span>
-<span class="nc" id="L559">    }</span>
+<span class="nc" id="L555">        this.maxScale = maxScale;</span>
+<span class="nc" id="L556">    }</span>
 
     public Double getMinScale() {
-<span class="nc" id="L562">        return minScale;</span>
+<span class="nc" id="L559">        return minScale;</span>
     }
 
     public void setMinScale(Double minScale) {
-<span class="nc" id="L566">        this.minScale = minScale;</span>
-<span class="nc" id="L567">    }</span>
+<span class="nc" id="L563">        this.minScale = minScale;</span>
+<span class="nc" id="L564">    }</span>
 
     public TileSet getTileset() {
-<span class="nc" id="L570">        return tileset;</span>
+<span class="nc" id="L567">        return tileset;</span>
     }
 
     public void setTileset(TileSet tileset) {
-<span class="nc" id="L574">        this.tileset = tileset;</span>
-<span class="nc" id="L575">    }</span>
+<span class="nc" id="L571">        this.tileset = tileset;</span>
+<span class="nc" id="L572">    }</span>
 
     public String getLegendImageUrl() {
-<span class="nc" id="L578">        return legendImageUrl;</span>
+<span class="nc" id="L575">        return legendImageUrl;</span>
     }
 
     public void setLegendImageUrl(String legendImageUrl) {
-<span class="nc" id="L582">        this.legendImageUrl = legendImageUrl;</span>
-<span class="nc" id="L583">    }</span>
+<span class="nc" id="L579">        this.legendImageUrl = legendImageUrl;</span>
+<span class="nc" id="L580">    }</span>
 
     public Map&lt;CoordinateReferenceSystem, BoundingBox&gt; getBoundingBoxes() {
-<span class="nc" id="L586">        return boundingBoxes;</span>
+<span class="nc" id="L583">        return boundingBoxes;</span>
     }
 
     public void setBoundingBoxes(Map&lt;CoordinateReferenceSystem, BoundingBox&gt; boundingBoxes) {
-<span class="nc" id="L590">        this.boundingBoxes = boundingBoxes;</span>
-<span class="nc" id="L591">    }</span>
+<span class="nc" id="L587">        this.boundingBoxes = boundingBoxes;</span>
+<span class="nc" id="L588">    }</span>
 
     public List&lt;TileMatrixSet&gt; getMatrixSets() {
-<span class="nc" id="L594">        return matrixSets;</span>
+<span class="nc" id="L591">        return matrixSets;</span>
     }
 
     public void setMatrixSets(List&lt;TileMatrixSet&gt; matrixSets) {
-<span class="nc" id="L598">        this.matrixSets = matrixSets;</span>
-<span class="nc" id="L599">    }</span>
+<span class="nc" id="L595">        this.matrixSets = matrixSets;</span>
+<span class="nc" id="L596">    }</span>
 
     public Boolean isUserlayer() {
-<span class="nc" id="L602">        return userlayer;</span>
+<span class="nc" id="L599">        return userlayer;</span>
     }
 
     public void setUserlayer(boolean userlayer) {
-<span class="nc" id="L606">        this.userlayer = userlayer;</span>
-<span class="nc" id="L607">    }</span>
+<span class="nc" id="L603">        this.userlayer = userlayer;</span>
+<span class="nc" id="L604">    }</span>
 
     //&lt;/editor-fold&gt;
 }

@@ -16,9 +16,6 @@
  */
 package nl.tailormap.viewer.config.services;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -38,7 +35,7 @@ import javax.persistence.Enumerated;
  */
 @Entity
 @DiscriminatorValue(WMSService.PROTOCOL)
-<span class="fc" id="L41">public class WMSService extends GeoService {</span>
+<span class="fc" id="L38">public class WMSService extends GeoService {</span>
     /**
      * JPA DiscriminatorValue for this class.
      */
@@ -80,7 +77,7 @@ import javax.persistence.Enumerated;
     @Column(name=&quot;skip_discoverwfs&quot;)
     private Boolean skipDiscoverWFS;
     
-<span class="fc" id="L83">    @Enumerated(EnumType.STRING)</span>
+<span class="fc" id="L80">    @Enumerated(EnumType.STRING)</span>
     private WMSExceptionType exception_type = WMSExceptionType.Inimage;
 
     /**
@@ -95,32 +92,32 @@ import javax.persistence.Enumerated;
      * @return true when set
      */
     public Boolean getOverrideUrl() {
-<span class="nc" id="L98">        return overrideUrl;</span>
+<span class="nc" id="L95">        return overrideUrl;</span>
     }
 
     public void setOverrideUrl(Boolean overrideUrl) {
-<span class="nc" id="L102">        this.overrideUrl = overrideUrl;</span>
-<span class="nc" id="L103">    }</span>
+<span class="nc" id="L99">        this.overrideUrl = overrideUrl;</span>
+<span class="nc" id="L100">    }</span>
     
     public WMSExceptionType getException_type() {
-<span class="nc" id="L106">        return exception_type;</span>
+<span class="nc" id="L103">        return exception_type;</span>
     }
 
     public void setException_type(WMSExceptionType exception_type) {
-<span class="nc" id="L110">        this.exception_type = exception_type;</span>
-<span class="nc" id="L111">    }</span>
+<span class="nc" id="L107">        this.exception_type = exception_type;</span>
+<span class="nc" id="L108">    }</span>
 
     public Boolean getSkipDiscoverWFS() {
-<span class="nc" id="L114">        return skipDiscoverWFS;</span>
+<span class="nc" id="L111">        return skipDiscoverWFS;</span>
     }
 
     public void setSkipDiscoverWFS(Boolean skipDiscoverWFS) {
-<span class="nc" id="L118">        this.skipDiscoverWFS = skipDiscoverWFS;</span>
-<span class="nc" id="L119">    }</span>
+<span class="nc" id="L115">        this.skipDiscoverWFS = skipDiscoverWFS;</span>
+<span class="nc" id="L116">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L123">        return String.format(&quot;WMS service \&quot;%s\&quot; at %s&quot;, getName(), getUrl());</span>
+<span class="nc" id="L120">        return String.format(&quot;WMS service \&quot;%s\&quot; at %s&quot;, getName(), getUrl());</span>
     }
 
     //&lt;/editor-fold&gt;

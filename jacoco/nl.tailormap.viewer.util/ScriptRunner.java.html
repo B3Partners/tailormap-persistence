@@ -103,7 +103,7 @@ public class ScriptRunner {
 <span class="fc" id="L103">        StringBuffer command = null;</span>
         try {
 <span class="fc" id="L105">            LineNumberReader lineReader = new LineNumberReader(reader);</span>
-<span class="fc" id="L106">            String line = null;</span>
+            String line;
 <span class="fc bfc" id="L107" title="All 2 branches covered.">            while ((line = lineReader.readLine()) != null) {</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">                if (command == null) {</span>
 <span class="fc" id="L109">                    command = new StringBuffer();</span>
@@ -111,88 +111,91 @@ public class ScriptRunner {
 <span class="fc" id="L111">                String trimmedLine = line.trim();</span>
 <span class="pc bpc" id="L112" title="1 of 2 branches missed.">                if (trimmedLine.startsWith(&quot;--&quot;)) {</span>
 <span class="nc" id="L113">                    log.debug(trimmedLine);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">                } else if (trimmedLine.length() &lt; 1</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">                        || trimmedLine.startsWith(&quot;//&quot;)) {</span>
+                } else //noinspection StatementWithEmptyBody
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                     if (trimmedLine.length() &lt; 1 // NOPMD</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">                        || trimmedLine.startsWith(&quot;//&quot;)) {</span>
                     // Do nothing
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">                } else if (trimmedLine.length() &lt; 1</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                        || trimmedLine.startsWith(&quot;--&quot;)) {</span>
+                } else //noinspection StatementWithEmptyBody
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">                    if (trimmedLine.length() &lt; 1 // NOPMD</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">                        || trimmedLine.startsWith(&quot;--&quot;)) {</span>
                     // Do nothing
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">                } else if (!fullLineDelimiter</span>
-<span class="pc bpc" id="L121" title="1 of 4 branches missed.">                        &amp;&amp; trimmedLine.endsWith(getDelimiter())</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">                } else if (!fullLineDelimiter</span>
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">                        &amp;&amp; trimmedLine.endsWith(getDelimiter())</span>
                         || fullLineDelimiter
-<span class="nc bnc" id="L123" title="All 2 branches missed.">                        &amp;&amp; trimmedLine.equals(getDelimiter())) {</span>
-<span class="fc" id="L124">                    command.append(line, 0, line</span>
-<span class="fc" id="L125">                            .lastIndexOf(getDelimiter()));</span>
-<span class="fc" id="L126">                    command.append(&quot; &quot;);</span>
-<span class="fc" id="L127">                    Statement statement = conn.createStatement();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                        &amp;&amp; trimmedLine.equals(getDelimiter())) {</span>
+<span class="fc" id="L126">                    command.append(line, 0, line</span>
+<span class="fc" id="L127">                            .lastIndexOf(getDelimiter()));</span>
+<span class="fc" id="L128">                    command.append(&quot; &quot;);</span>
+<span class="fc" id="L129">                    Statement statement = conn.createStatement();</span>
 
-<span class="fc" id="L129">                    log.debug(command);</span>
+<span class="fc" id="L131">                    log.debug(command);</span>
 
-<span class="fc" id="L131">                    boolean hasResults = false;</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                    if (stopOnError) {</span>
-<span class="fc" id="L133">                        hasResults = statement.execute(command.toString());</span>
+<span class="fc" id="L133">                    boolean hasResults = false;</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">                    if (stopOnError) {</span>
+<span class="fc" id="L135">                        hasResults = statement.execute(command.toString());</span>
                     } else {
                         try {
-<span class="nc" id="L136">                            statement.execute(command.toString());</span>
-<span class="nc" id="L137">                        } catch (SQLException e) {</span>
-<span class="nc" id="L138">                            e.fillInStackTrace();</span>
-<span class="nc" id="L139">                            log.error(&quot;Error executing command: &quot; + command, e);</span>
-<span class="nc" id="L140">                        }</span>
+<span class="nc" id="L138">                            statement.execute(command.toString());</span>
+<span class="nc" id="L139">                        } catch (SQLException e) {</span>
+<span class="nc" id="L140">                            e.fillInStackTrace();</span>
+<span class="nc" id="L141">                            log.error(&quot;Error executing command: &quot; + command, e);</span>
+<span class="nc" id="L142">                        }</span>
                     }
 
-<span class="pc bpc" id="L143" title="2 of 4 branches missed.">                    if (autoCommit &amp;&amp; !conn.getAutoCommit()) {</span>
-<span class="nc" id="L144">                        conn.commit();</span>
+<span class="pc bpc" id="L145" title="2 of 4 branches missed.">                    if (autoCommit &amp;&amp; !conn.getAutoCommit()) {</span>
+<span class="nc" id="L146">                        conn.commit();</span>
                     }
 
-<span class="fc" id="L147">                    ResultSet rs = statement.getResultSet();</span>
-<span class="pc bpc" id="L148" title="3 of 4 branches missed.">                    if (hasResults &amp;&amp; rs != null) {</span>
-<span class="nc" id="L149">                        ResultSetMetaData md = rs.getMetaData();</span>
-<span class="nc" id="L150">                        int cols = md.getColumnCount();</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">                        for (int i = 0; i &lt; cols; i++) {</span>
-<span class="nc" id="L152">                            String name = md.getColumnLabel(i);</span>
-<span class="nc" id="L153">                            log.debug(name + &quot;\t&quot;);</span>
+<span class="fc" id="L149">                    ResultSet rs = statement.getResultSet();</span>
+<span class="pc bpc" id="L150" title="3 of 4 branches missed.">                    if (hasResults &amp;&amp; rs != null) {</span>
+<span class="nc" id="L151">                        ResultSetMetaData md = rs.getMetaData();</span>
+<span class="nc" id="L152">                        int cols = md.getColumnCount();</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                        for (int i = 0; i &lt; cols; i++) {</span>
+<span class="nc" id="L154">                            String name = md.getColumnLabel(i);</span>
+<span class="nc" id="L155">                            log.debug(name + &quot;\t&quot;);</span>
                         }
-<span class="nc bnc" id="L155" title="All 2 branches missed.">                        while (rs.next()) {</span>
-<span class="nc bnc" id="L156" title="All 2 branches missed.">                            for (int i = 0; i &lt; cols; i++) {</span>
-<span class="nc" id="L157">                                String value = rs.getString(i);</span>
-<span class="nc" id="L158">                                log.debug(value + &quot;\t&quot;);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                        while (rs.next()) {</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">                            for (int i = 0; i &lt; cols; i++) {</span>
+<span class="nc" id="L159">                                String value = rs.getString(i);</span>
+<span class="nc" id="L160">                                log.debug(value + &quot;\t&quot;);</span>
                             }
                         }
                     }
 
-<span class="fc" id="L163">                    command = null;</span>
+<span class="fc" id="L165">                    command = null;</span>
                     try {
-<span class="fc" id="L165">                        statement.close();</span>
-<span class="nc" id="L166">                    } catch (Exception e) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                        if (null != rs) rs.close();</span>
+<span class="fc" id="L168">                        statement.close();</span>
+<span class="nc" id="L169">                    } catch (Exception e) {</span>
                         // Ignore to workaround a bug in Jakarta DBCP
-<span class="fc" id="L168">                    }</span>
-<span class="fc" id="L169">                    Thread.yield();</span>
-<span class="fc" id="L170">                } else {</span>
-<span class="fc" id="L171">                    command.append(line);</span>
-<span class="fc" id="L172">                    command.append(&quot; &quot;);</span>
+<span class="fc" id="L171">                    }</span>
+<span class="fc" id="L172">                    Thread.yield();</span>
+<span class="fc" id="L173">                } else {</span>
+<span class="fc" id="L174">                    command.append(line);</span>
+<span class="fc" id="L175">                    command.append(&quot; &quot;);</span>
                 }
-<span class="fc" id="L174">            }</span>
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">            if (!autoCommit) {</span>
-<span class="nc" id="L176">                conn.commit();</span>
+<span class="fc" id="L177">            }</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (!autoCommit) {</span>
+<span class="nc" id="L179">                conn.commit();</span>
             }
-<span class="nc" id="L178">        } catch (SQLException | IOException e) {</span>
-<span class="nc" id="L179">            e.fillInStackTrace();</span>
+<span class="nc" id="L181">        } catch (SQLException | IOException e) {</span>
+<span class="nc" id="L182">            e.fillInStackTrace();</span>
             
-<span class="nc bnc" id="L181" title="All 2 branches missed.">            if(!canFail){</span>
-<span class="nc" id="L182">                log.error(&quot;Error executing: &quot; + command,e);</span>
-<span class="nc" id="L183">                throw e;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            if(!canFail){</span>
+<span class="nc" id="L185">                log.error(&quot;Error executing: &quot; + command,e);</span>
+<span class="nc" id="L186">                throw e;</span>
             }else{
-<span class="nc" id="L185">                log.error(&quot;Error executing: &quot; + command + &quot; but ignoring, because it is allowed to fail.&quot; + e.getLocalizedMessage());</span>
+<span class="nc" id="L188">                log.error(&quot;Error executing: &quot; + command + &quot; but ignoring, because it is allowed to fail.&quot; + e.getLocalizedMessage());</span>
             }
         } finally {
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            if (!this.autoCommit){</span>
-<span class="nc" id="L189">                conn.rollback();</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">            if (!this.autoCommit){</span>
+<span class="nc" id="L192">                conn.rollback();</span>
             }
         }
-<span class="fc" id="L192">    }</span>
+<span class="fc" id="L195">    }</span>
 
     private String getDelimiter() {
-<span class="fc" id="L195">        return delimiter;</span>
+<span class="fc" id="L198">        return delimiter;</span>
     }
 
     

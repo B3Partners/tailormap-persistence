@@ -45,7 +45,7 @@ import java.util.List;
             joinColumns = @JoinColumn(name = &quot;tile_set&quot;)
     )
     @Column(name=&quot;resolution&quot;)
-    private List&lt;Double&gt; resolutions = new ArrayList&lt;Double&gt;();
+    private List&lt;Double&gt; resolutions = new ArrayList&lt;&gt;();
 
     public int getHeight() {
 <span class="nc" id="L51">        return height;</span>
@@ -72,7 +72,7 @@ import java.util.List;
 <span class="nc" id="L72">    }</span>
     
     public void setResolutions(String res){
-<span class="nc" id="L75">        this.resolutions = new ArrayList&lt;Double&gt;();</span>
+<span class="nc" id="L75">        this.resolutions = new ArrayList&lt;&gt;();</span>
 <span class="nc" id="L76">        String[] resTokens = res.split(&quot;,&quot;);</span>
 <span class="nc bnc" id="L77" title="All 2 branches missed.">        for (String resToken : resTokens) {</span>
 <span class="nc" id="L78">            this.resolutions.add(Double.parseDouble(resToken.trim()));</span>
