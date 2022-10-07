@@ -248,7 +248,7 @@ SPDX-License-Identifier: MIT
             <configuration>
               <target>
                 <!-- run after schema gegeration -->
-                <move file="target/classes/scripts/hsql-schema-export.sql" tofile="target/classes/scripts/hsqldb-schema-export.sql" />
+                <move file="target/classes/scripts/hsql-schema-export.sql" tofile="target/classes/scripts/hsqldb-schema-export.sql"></move>
               </target>
             </configuration>
           </execution>
