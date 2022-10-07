@@ -427,7 +427,7 @@ SPDX-License-Identifier: MIT
         <configuration>
           <pushChanges>true</pushChanges>
           <releaseProfiles>release</releaseProfiles>
-          <tagNameFormat>tailormap-api-@{project.version}</tagNameFormat>
+          <tagNameFormat>tailormap-tailormap-persistence-@{project.version}</tagNameFormat>
         </configuration>
       </plugin>
       <plugin>
