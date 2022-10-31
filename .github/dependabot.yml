@@ -1,11 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: maven
-    directory: "/"
+    directory: '/'
     schedule:
-      interval: daily
-      time: "06:00"
-      timezone: Europe/Amsterdam
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: 'Europe/Amsterdam'
     open-pull-requests-limit: 25
     target-branch: main
     reviewers:
@@ -16,13 +17,13 @@ updates:
       - infrastucture
       - dependency
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: saturday
-      time: "21:00"
-      timezone: Europe/Amsterdam
+      interval: weekly
+      day: monday
+      time: '05:00'
+      timezone: 'Europe/Amsterdam'
     assignees:
       - mprins
     labels:
