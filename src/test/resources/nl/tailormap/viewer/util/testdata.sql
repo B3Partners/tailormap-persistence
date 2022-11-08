@@ -8,6 +8,7 @@ INSERT INTO application_details (application, value, details_key) VALUES (1, '/r
 INSERT INTO application_details (application, value, details_key) VALUES (1, '#FFFFFF', 'steunkleur1');
 INSERT INTO application_details (application, value, details_key) VALUES (1, 'true', 'cachedSelectedContentDirty');
 INSERT INTO application_details (application, value, details_key) VALUES (1, 'true', 'cachedExpandedSelectedContentDirty');
+INSERT INTO application_details (application, value, details_key) VALUES (1, '{"components":[{"type":"measure","config":{"enabled":false}},{"type":"print","config":{"enabled":false}}]}', 'components');
 
 INSERT INTO application_layer (id, layer_name, service) VALUES (2, 'begroeid_terreinvakonderdeel_bestaand', 2);
 INSERT INTO application_layer (id, layer_name, service) VALUES (3, 'begroeid_terreindeel', 2);
