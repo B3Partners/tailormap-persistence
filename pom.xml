@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
   <modelVersion>4.0.0</modelVersion>
   <groupId>nl.b3p.tailormap</groupId>
   <artifactId>tailormap-persistence</artifactId>
-  <version>10.1-SNAPSHOT</version>
+  <version>10.1</version>
   <packaging>jar</packaging>
   <name>Tailormap persistence</name>
   <description>Shared persistence module for Tailormap Admin and Tailormap API</description>
@@ -45,7 +45,7 @@ SPDX-License-Identifier: MIT
   <scm>
     <connection>scm:git:git@github.com:B3Partners/tailormap-persistence.git</connection>
     <developerConnection>scm:git:git@github.com:B3Partners/tailormap-persistence.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>tailormap-tailormap-persistence-10.1</tag>
     <url>https://github.com/B3Partners/tailormap-persistence/</url>
   </scm>
   <issueManagement>
