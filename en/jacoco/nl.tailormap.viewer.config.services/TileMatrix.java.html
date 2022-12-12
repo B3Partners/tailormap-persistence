@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TileMatrix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">TileMatrix.java</span></div><h1>TileMatrix.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONObject;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+/**
+ *
+ * @author Meine Toonen meinetoonen@b3partners.nl
+ */
+@Entity
+<span class="fc" id="L35">public class TileMatrix {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String identifier;
+    private String title;
+    private String description;
+    private String scaleDenominator;
+    private String topLeftCorner;
+    private int tileWidth;
+    private int tileHeight;
+    private int matrixWidth;
+    private int matrixHeight;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;matrix_set&quot;)
+    private TileMatrixSet matrixSet;
+
+    public static TileMatrix fromJSONObject(JSONObject tilematrix){
+<span class="nc" id="L55">        TileMatrix tm = new TileMatrix();</span>
+<span class="nc" id="L56">        tm.setDescription(tilematrix.optString(&quot;description&quot;));</span>
+<span class="nc" id="L57">        tm.setMatrixHeight(tilematrix.getInt(&quot;matrixHeight&quot;));</span>
+<span class="nc" id="L58">        tm.setMatrixWidth(tilematrix.getInt(&quot;matrixWidth&quot;));</span>
+<span class="nc" id="L59">        tm.setScaleDenominator(tilematrix.getString(&quot;scaleDenominator&quot;));</span>
+<span class="nc" id="L60">        tm.setTopLeftCorner(tilematrix.getString(&quot;topLeftCorner&quot;));</span>
+<span class="nc" id="L61">        tm.setTileHeight(tilematrix.getInt(&quot;tileHeight&quot;));</span>
+<span class="nc" id="L62">        tm.setTileWidth(tilematrix.getInt(&quot;tileWidth&quot;));</span>
+<span class="nc" id="L63">        tm.setIdentifier(tilematrix.getString(&quot;identifier&quot;));</span>
+<span class="nc" id="L64">        tm.setTitle(tilematrix.optString(&quot;title&quot;));</span>
+<span class="nc" id="L65">        return tm;</span>
+    }
+    
+    public JSONObject toJSONObject() {
+<span class="nc" id="L69">        JSONObject obj = new JSONObject();</span>
+<span class="nc" id="L70">        obj.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L71">        obj.put(&quot;identifier&quot;, identifier);</span>
+<span class="nc" id="L72">        obj.put(&quot;title&quot;, title);</span>
+<span class="nc" id="L73">        obj.put(&quot;description&quot;, description);</span>
+<span class="nc" id="L74">        obj.put(&quot;scaleDenominator&quot;, scaleDenominator);</span>
+<span class="nc" id="L75">        obj.put(&quot;topLeftCorner&quot;, topLeftCorner);</span>
+<span class="nc" id="L76">        obj.put(&quot;tileWidth&quot;, tileWidth);</span>
+<span class="nc" id="L77">        obj.put(&quot;tileHeight&quot;, tileHeight);</span>
+<span class="nc" id="L78">        obj.put(&quot;matrixWidth&quot;, matrixWidth);</span>
+<span class="nc" id="L79">        obj.put(&quot;matrixHeight&quot;, matrixHeight);</span>
+<span class="nc" id="L80">        return obj;</span>
+    }
+
+    // &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Getters and setters&quot; &gt;
+    public Long getId() {
+<span class="nc" id="L85">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L89">        this.id = id;</span>
+<span class="nc" id="L90">    }</span>
+
+    public String getIdentifier() {
+<span class="nc" id="L93">        return identifier;</span>
+    }
+
+    public void setIdentifier(String identifier) {
+<span class="nc" id="L97">        this.identifier = identifier;</span>
+<span class="nc" id="L98">    }</span>
+
+    public String getTitle() {
+<span class="nc" id="L101">        return title;</span>
+    }
+
+    public void setTitle(String title) {
+<span class="nc" id="L105">        this.title = title;</span>
+<span class="nc" id="L106">    }</span>
+
+    public String getDescription() {
+<span class="nc" id="L109">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="nc" id="L113">        this.description = description;</span>
+<span class="nc" id="L114">    }</span>
+
+    public String getScaleDenominator() {
+<span class="nc" id="L117">        return scaleDenominator;</span>
+    }
+
+    public void setScaleDenominator(String scaleDenominator) {
+<span class="nc" id="L121">        this.scaleDenominator = scaleDenominator;</span>
+<span class="nc" id="L122">    }</span>
+
+
+    public int getTileWidth() {
+<span class="nc" id="L126">        return tileWidth;</span>
+    }
+
+    public void setTileWidth(int tileWidth) {
+<span class="nc" id="L130">        this.tileWidth = tileWidth;</span>
+<span class="nc" id="L131">    }</span>
+
+    public int getTileHeight() {
+<span class="nc" id="L134">        return tileHeight;</span>
+    }
+
+    public void setTileHeight(int tileHeight) {
+<span class="nc" id="L138">        this.tileHeight = tileHeight;</span>
+<span class="nc" id="L139">    }</span>
+
+    public int getMatrixWidth() {
+<span class="nc" id="L142">        return matrixWidth;</span>
+    }
+
+    public void setMatrixWidth(int matrixWidth) {
+<span class="nc" id="L146">        this.matrixWidth = matrixWidth;</span>
+<span class="nc" id="L147">    }</span>
+
+    public int getMatrixHeight() {
+<span class="nc" id="L150">        return matrixHeight;</span>
+    }
+
+    public void setMatrixHeight(int matrixHeight) {
+<span class="nc" id="L154">        this.matrixHeight = matrixHeight;</span>
+<span class="nc" id="L155">    }</span>
+
+    public TileMatrixSet getMatrixSet() {
+<span class="nc" id="L158">        return matrixSet;</span>
+    }
+
+    public void setMatrixSet(TileMatrixSet matrixSet) {
+<span class="nc" id="L162">        this.matrixSet = matrixSet;</span>
+<span class="nc" id="L163">    }</span>
+    
+    public String getTopLeftCorner() {
+<span class="nc" id="L166">        return topLeftCorner;</span>
+    }
+
+    public void setTopLeftCorner(String topLeftCorner) {
+<span class="nc" id="L170">        this.topLeftCorner = topLeftCorner;</span>
+<span class="nc" id="L171">    }</span>
+    // &lt;/editor-fold&gt;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

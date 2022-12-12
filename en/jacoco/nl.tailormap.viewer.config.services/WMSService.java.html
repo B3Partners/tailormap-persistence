@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WMSService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">WMSService.java</span></div><h1>WMSService.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2016 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+/**
+ * Entity for saving WMS service metadata. Enables the administration module to
+ * easily work with WMS service entities and the viewer to quickly marshall the
+ * metadata without having to do a GetCapabilities request each time the viewer 
+ * starts.
+ * &lt;p&gt;
+ * This requires an option to update the metadata should the service change, so
+ * this class implements Updatable.
+ * &lt;p&gt;
+ * @author Matthijs Laan
+ */
+@Entity
+@DiscriminatorValue(WMSService.PROTOCOL)
+<span class="fc" id="L38">public class WMSService extends GeoService {</span>
+    /**
+     * JPA DiscriminatorValue for this class.
+     */
+    public static final String PROTOCOL = &quot;wms&quot;;
+
+    /**
+     * Parameter to specify the value for #getOverrideUrl().
+     */
+    public static final String PARAM_OVERRIDE_URL = &quot;overrideUrl&quot;;
+
+    /**
+     * Parameter to specify the value for {@code skipDiscoverWFS}.
+     *
+     * @see #skipDiscoverWFS
+     */
+    public static final String PARAM_SKIP_DISCOVER_WFS = &quot;skipDiscoverWFS&quot;;
+
+   
+    /* Detail key under which &quot;true&quot; is saved in details if in the WMS capabilities 
+     * the &lt;UserDefinedSymbolization&gt; element has a positive SupportSLD attribute.
+     */ 
+    public static final String DETAIL_SUPPORT_SLD = &quot;SupportSLD&quot;;
+    
+    /* Detail key under which &quot;true&quot; is saved in details if in the WMS capabilities 
+     * the &lt;UserDefinedSymbolization&gt; element has a positive UserStyle attribute.
+     */ 
+    public static final String DETAIL_USER_STYLE = &quot;UserStyle&quot;;
+    
+
+    /**
+     * Additional persistent property for this subclass, so type must be nullable.
+     */
+    private Boolean overrideUrl;
+
+    /**
+     * Additional persistent property for this subclass to remember wether to
+     * search for and join WFS attribute sources, so type must be nullable.
+     */
+    @Column(name=&quot;skip_discoverwfs&quot;)
+    private Boolean skipDiscoverWFS;
+    
+<span class="fc" id="L80">    @Enumerated(EnumType.STRING)</span>
+    private WMSExceptionType exception_type = WMSExceptionType.Inimage;
+
+    /**
+     * Whether to use the original URL the Capabilities was loaded with or the
+     * URL the WMS reports it is at in the Capabilities. Sometimes the URL reported
+     * by the WMS is outdated, but it can also be used to migrate the service
+     * to another URL or load Capabilities from a static XML Capabilities document
+     * on a simple HTTP server. According to the standard the URL in the Capabilities
+     * should be used, so set this to false by default except if the user requests
+     * an override.
+     *
+     * @return true when set
+     */
+    public Boolean getOverrideUrl() {
+<span class="nc" id="L95">        return overrideUrl;</span>
+    }
+
+    public void setOverrideUrl(Boolean overrideUrl) {
+<span class="nc" id="L99">        this.overrideUrl = overrideUrl;</span>
+<span class="nc" id="L100">    }</span>
+    
+    public WMSExceptionType getException_type() {
+<span class="nc" id="L103">        return exception_type;</span>
+    }
+
+    public void setException_type(WMSExceptionType exception_type) {
+<span class="nc" id="L107">        this.exception_type = exception_type;</span>
+<span class="nc" id="L108">    }</span>
+
+    public Boolean getSkipDiscoverWFS() {
+<span class="nc" id="L111">        return skipDiscoverWFS;</span>
+    }
+
+    public void setSkipDiscoverWFS(Boolean skipDiscoverWFS) {
+<span class="nc" id="L115">        this.skipDiscoverWFS = skipDiscoverWFS;</span>
+<span class="nc" id="L116">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L120">        return String.format(&quot;WMS service \&quot;%s\&quot; at %s&quot;, getName(), getUrl());</span>
+    }
+
+    //&lt;/editor-fold&gt;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

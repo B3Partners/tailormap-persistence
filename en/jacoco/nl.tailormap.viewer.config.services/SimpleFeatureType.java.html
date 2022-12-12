@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleFeatureType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">SimpleFeatureType.java</span></div><h1>SimpleFeatureType.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@Table(name=&quot;feature_type&quot;)
+@org.hibernate.annotations.DynamicUpdate
+<span class="fc" id="L49">public class SimpleFeatureType {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = &quot;feature_source&quot;)
+    private FeatureSource featureSource;    
+    
+    private String typeName;
+    
+    private String description;
+    
+    private boolean writeable;
+
+    private String geometryAttribute;
+
+    private String primaryKeyAttribute;
+
+<span class="fc" id="L68">    @OneToMany (cascade=CascadeType.ALL, mappedBy=&quot;featureType&quot;)</span>
+    private List&lt;FeatureTypeRelation&gt; relations = new ArrayList&lt;&gt;();
+    
+<span class="fc" id="L71">    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268 </span>
+    @JoinTable(
+            inverseJoinColumns=@JoinColumn(name=&quot;attribute_descriptor&quot;),
+            name=&quot;feature_type_attributes&quot;,
+            joinColumns=@JoinColumn(name = &quot;feature_type&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;AttributeDescriptor&gt; attributes = new ArrayList&lt;&gt;();
+    
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public List&lt;AttributeDescriptor&gt; getAttributes() {
+<span class="nc" id="L82">        return attributes;</span>
+    }
+
+    public void setAttributes(List&lt;AttributeDescriptor&gt; attributes) {
+<span class="nc" id="L86">        this.attributes = attributes;</span>
+<span class="nc" id="L87">    }</span>
+
+    public FeatureSource getFeatureSource() {
+<span class="nc" id="L90">        return featureSource;</span>
+    }
+
+    public void setFeatureSource(FeatureSource featureSource) {
+<span class="fc" id="L94">        this.featureSource = featureSource;</span>
+<span class="fc" id="L95">    }</span>
+
+    public String getGeometryAttribute() {
+<span class="nc" id="L98">        return geometryAttribute;</span>
+    }
+
+    public void setGeometryAttribute(String geometryAttribute) {
+<span class="fc" id="L102">        this.geometryAttribute = geometryAttribute;</span>
+<span class="fc" id="L103">    }</span>
+
+    public boolean isWriteable() {
+<span class="nc" id="L106">        return writeable;</span>
+    }
+
+    public void setWriteable(boolean writeable) {
+<span class="nc" id="L110">        this.writeable = writeable;</span>
+<span class="nc" id="L111">    }</span>
+
+    public Long getId() {
+<span class="nc" id="L114">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L118">        this.id = id;</span>
+<span class="nc" id="L119">    }</span>
+
+    public String getTypeName() {
+<span class="nc" id="L122">        return typeName;</span>
+    }
+
+    public void setTypeName(String typeName) {
+<span class="fc" id="L126">        this.typeName = typeName;</span>
+<span class="fc" id="L127">    }</span>
+
+    public String getDescription() {
+<span class="nc" id="L130">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="nc" id="L134">        this.description = description;</span>
+<span class="nc" id="L135">    }</span>
+    
+    public List&lt;FeatureTypeRelation&gt; getRelations() {
+<span class="nc" id="L138">        return relations;</span>
+    }
+
+    public void setRelations(List&lt;FeatureTypeRelation&gt; relations) {
+<span class="nc" id="L142">        this.relations = relations;</span>
+<span class="nc" id="L143">    }</span>
+
+    public String getPrimaryKeyAttribute() {
+<span class="nc" id="L146">        return primaryKeyAttribute;</span>
+    }
+
+    public void setPrimaryKeyAttribute(String primaryKeyAttribute) {
+<span class="nc" id="L150">        this.primaryKeyAttribute = primaryKeyAttribute;</span>
+<span class="nc" id="L151">    }</span>
+    //&lt;/editor-fold&gt;
+
+    public boolean update(SimpleFeatureType update) {
+<span class="nc bnc" id="L155" title="All 2 branches missed.">        if(!getTypeName().equals(update.getTypeName())) {</span>
+<span class="nc" id="L156">            throw new IllegalArgumentException(&quot;Cannot update feature type with properties from feature type with different type name!&quot;);</span>
+        }        
+
+<span class="nc" id="L159">        description = update.description;</span>
+<span class="nc" id="L160">        writeable = update.writeable;</span>
+<span class="nc" id="L161">        geometryAttribute = update.geometryAttribute;</span>
+<span class="nc" id="L162">        primaryKeyAttribute = update.primaryKeyAttribute;</span>
+        
+<span class="nc" id="L164">        boolean changed = false;</span>
+        
+        // Retain user set aliases for attributes
+        
+        // Does not work correctly for Arc* feature sources which set attribute
+        // title in alias... Needs other field to differentiate user set title
+        
+<span class="nc" id="L171">        Map&lt;String,String&gt; aliasesByAttributeName = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        for(AttributeDescriptor ad: attributes) {</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if(StringUtils.isNotBlank(ad.getAlias())) {</span>
+<span class="nc" id="L174">                aliasesByAttributeName.put(ad.getName(), ad.getAlias());</span>
+            }
+<span class="nc" id="L176">        }</span>
+        
+        //loop over oude attributes
+        // voor iedere oude attr kijk of er een attib ib de update.attributes zit
+        //   zo ja kijk of type gelijk is
+        //      als type niet gelijk dan oude attr verwijderen en vervangen door nieuwe, evt met alias kopieren
+        // zo niet dan toevoegen nieuw attr aan oude set
+        //   loop over nieuwe attributen om te kijken of er oude verwijderd moeten worden
+        // todo: Het is handiger om deze check op basis van 2 hashmaps uittevoeren
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if(!attributes.equals(update.attributes)) {</span>
+<span class="nc" id="L186">            changed = true;</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            for(int i = 0; i &lt; attributes.size();i++){</span>
+<span class="nc" id="L188">                boolean notFound = true;</span>
+                
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                for(AttributeDescriptor newAttribute: update.attributes){</span>
+                    
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                    if(attributes.get(i).getName().equals(newAttribute.getName())){</span>
+<span class="nc" id="L193">                        notFound = false;</span>
+<span class="nc" id="L194">                        AttributeDescriptor oldAttr  = attributes.get(i);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                        if(Objects.equals(oldAttr.getType(), newAttribute.getType())){ // NOPMD</span>
+                            // ! expression didnt work(???) so dummy if-else (else is only used)
+                        }else{
+<span class="nc" id="L198">                            attributes.remove(i);</span>
+<span class="nc" id="L199">                            attributes.add(i, newAttribute);  </span>
+                        }
+<span class="nc" id="L201">                        break;</span>
+                    }
+<span class="nc" id="L203">                }</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                if(notFound){</span>
+<span class="nc" id="L205">                    attributes.remove(i);</span>
+                }
+            }
+            
+            //nieuwe attributen worden hier toegevoegd aan de oude attributen lijst
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            for(int i = 0; i &lt; update.attributes.size();i++){</span>
+<span class="nc" id="L211">                boolean notFound = true;</span>
+                
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                for(AttributeDescriptor oldAttribute: attributes){</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">                    if(update.attributes.get(i).getName().equals(oldAttribute.getName())){</span>
+<span class="nc" id="L215">                        notFound = false;</span>
+<span class="nc" id="L216">                        break; </span>
+                    }
+                   
+<span class="nc" id="L219">                }</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">                if(notFound){</span>
+<span class="nc" id="L221">                    attributes.add(update.attributes.get(i));</span>
+                }
+            }
+        }
+        
+        //update.attributes ID = NULL so the attributes list is getting NULL aswell
+
+<span class="nc bnc" id="L228" title="All 2 branches missed.">        for(AttributeDescriptor ad: attributes) {</span>
+<span class="nc" id="L229">            String alias = aliasesByAttributeName.get(ad.getName());</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            if(alias != null) {</span>
+<span class="nc" id="L231">                ad.setAlias(alias);</span>
+            }            
+<span class="nc" id="L233">        }</span>
+<span class="nc" id="L234">        return changed;</span>
+    }
+    
+    public AttributeDescriptor getAttribute(String attributeName) {
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        for(AttributeDescriptor ad: attributes) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if(ad.getName().equals(attributeName)) {</span>
+<span class="nc" id="L240">                return ad;</span>
+            }
+<span class="nc" id="L242">        }</span>
+<span class="nc" id="L243">        return null;</span>
+    }   
+    
+    public JSONObject toJSONObject() throws JSONException {
+<span class="nc" id="L247">        JSONObject o = new JSONObject();</span>
+<span class="nc" id="L248">        o.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L249">        o.put(&quot;typeName&quot;, typeName);</span>
+<span class="nc" id="L250">        o.put(&quot;writeable&quot;, writeable);</span>
+<span class="nc" id="L251">        o.put(&quot;geometryAttribute&quot;, geometryAttribute);</span>
+<span class="nc" id="L252">        o.put(&quot;primaryKeyAttribute&quot;, primaryKeyAttribute);</span>
+
+<span class="nc" id="L254">        JSONArray atts = new JSONArray();</span>
+<span class="nc" id="L255">        o.put(&quot;attributes&quot;, atts);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        for(AttributeDescriptor a: attributes) {</span>
+<span class="nc" id="L257">            JSONObject ja = new JSONObject();</span>
+<span class="nc" id="L258">            ja.put(&quot;id&quot;, a.getId());</span>
+<span class="nc" id="L259">            ja.put(&quot;name&quot;, a.getName());</span>
+<span class="nc" id="L260">            ja.put(&quot;alias&quot;, a.getAlias());</span>
+<span class="nc" id="L261">            ja.put(&quot;type&quot;, a.getType());</span>
+<span class="nc" id="L262">            atts.put(ja);</span>
+<span class="nc" id="L263">        }</span>
+<span class="nc" id="L264">        return o;</span>
+    }
+
+    public boolean hasRelations() {
+<span class="nc bnc" id="L268" title="All 4 branches missed.">        return this.relations!=null &amp;&amp; !this.relations.isEmpty();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

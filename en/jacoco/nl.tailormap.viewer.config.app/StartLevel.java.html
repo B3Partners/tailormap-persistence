@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StartLevel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">StartLevel.java</span></div><h1>StartLevel.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import org.apache.commons.beanutils.BeanUtils;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+/**
+ *
+ * @author Meine Toonen meinetoonen@b3partners.nl
+ */
+@Entity
+<span class="fc" id="L20">public class StartLevel {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;level_&quot;)
+    private Level level;
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;application&quot;)
+    private Application application;
+    
+    private Integer selectedIndex;
+    
+    private boolean removed;
+
+    public StartLevel deepCopy(Application app, Level levelCopy) throws Exception{
+<span class="nc" id="L39">        StartLevel copy = (StartLevel) BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L40">        copy.setId(null);</span>
+<span class="nc" id="L41">        copy.setSelectedIndex(selectedIndex);</span>
+<span class="nc" id="L42">        copy.setApplication(app);</span>
+<span class="nc" id="L43">        copy.setLevel(levelCopy);</span>
+       // copy.setRemoved(removed);
+<span class="nc" id="L45">        app.getStartLevels().add(copy);</span>
+<span class="nc" id="L46">        return copy;</span>
+        
+    }
+
+    // &lt;editor-fold desc=&quot;Getters and setters&quot; defaultstate=&quot;collapsed&quot;&gt;
+    public Long getId() {
+<span class="fc" id="L52">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L56">        this.id = id;</span>
+<span class="nc" id="L57">    }</span>
+
+    public Level getLevel() {
+<span class="nc" id="L60">        return level;</span>
+    }
+
+    public void setLevel(Level level) {
+<span class="fc" id="L64">        this.level = level;</span>
+<span class="fc" id="L65">    }</span>
+
+    public Application getApplication() {
+<span class="nc" id="L68">        return application;</span>
+    }
+
+    public void setApplication(Application application) {
+<span class="fc" id="L72">        this.application = application;</span>
+<span class="fc" id="L73">    }</span>
+
+    public Integer getSelectedIndex() {
+<span class="fc" id="L76">        return selectedIndex;</span>
+    }
+
+    public void setSelectedIndex(Integer selectedIndex) {
+<span class="fc" id="L80">        this.selectedIndex = selectedIndex;</span>
+<span class="fc" id="L81">    }</span>
+
+    public boolean isRemoved() {
+<span class="nc" id="L84">        return removed;</span>
+    }
+
+    public void setRemoved(boolean removed) {
+<span class="nc" id="L88">        this.removed = removed;</span>
+<span class="nc" id="L89">    }</span>
+    // &lt;/editor-fold&gt;
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

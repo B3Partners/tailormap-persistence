@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FeatureTypeRelation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">FeatureTypeRelation.java</span></div><h1>FeatureTypeRelation.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author Roy Braam
+ */
+@Entity
+<span class="fc" id="L39">public class FeatureTypeRelation {</span>
+    public static final String JOIN = &quot;join&quot;;
+    public static final String RELATE = &quot;relate&quot;;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = &quot;feature_type&quot;)
+    private SimpleFeatureType featureType;
+    
+    @ManyToOne
+    @JoinColumn(name = &quot;foreign_feature_type&quot;)
+    private SimpleFeatureType foreignFeatureType;
+        
+<span class="fc" id="L54">    @OneToMany(cascade=CascadeType.ALL, mappedBy=&quot;relation&quot;, orphanRemoval=true)</span>
+    private List&lt;FeatureTypeRelationKey&gt; relationKeys = new ArrayList&lt;&gt;();
+    
+    private String type;
+
+    private boolean searchNextRelation;
+
+    private boolean canCreateNewRelation;
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Getters/Setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L65">        return id;</span>
+    }
+    
+    public void setId(Long id) {
+<span class="nc" id="L69">        this.id = id;</span>
+<span class="nc" id="L70">    }</span>
+    
+    public SimpleFeatureType getFeatureType() {
+<span class="nc" id="L73">        return featureType;</span>
+    }
+    
+    public void setFeatureType(SimpleFeatureType featureType) {
+<span class="nc" id="L77">        this.featureType = featureType;</span>
+<span class="nc" id="L78">    }</span>
+    
+    public List&lt;FeatureTypeRelationKey&gt; getRelationKeys() {
+<span class="nc" id="L81">        return relationKeys;</span>
+    }
+    
+    public void setRelationKeys(List&lt;FeatureTypeRelationKey&gt; relationKeys) {
+<span class="nc" id="L85">        this.relationKeys = relationKeys;</span>
+<span class="nc" id="L86">    }</span>
+    
+    public String getType() {
+<span class="nc" id="L89">        return type;</span>
+    }
+
+    public void setType(String type) {
+<span class="nc" id="L93">        this.type = type;</span>
+<span class="nc" id="L94">    }</span>
+
+    public SimpleFeatureType getForeignFeatureType() {
+<span class="nc" id="L97">        return foreignFeatureType;</span>
+    }
+
+    public void setForeignFeatureType(SimpleFeatureType foreignFeatureType) {
+<span class="nc" id="L101">        this.foreignFeatureType = foreignFeatureType;</span>
+<span class="nc" id="L102">    }</span>
+
+    public boolean isSearchNextRelation() {
+<span class="nc" id="L105">        return searchNextRelation;</span>
+    }
+
+    public void setSearchNextRelation(boolean searchNextRelation) {
+<span class="nc" id="L109">        this.searchNextRelation = searchNextRelation;</span>
+<span class="nc" id="L110">    }</span>
+
+<span class="nc" id="L112">    public boolean isCanCreateNewRelation() { return canCreateNewRelation; }</span>
+
+<span class="nc" id="L114">    public void setCanCreateNewRelation(boolean canCreateNewRelation) { this.canCreateNewRelation = canCreateNewRelation; }</span>
+    //&lt;/editor-fold&gt;
+
+    public JSONObject toJSONObject(SimpleFeatureType head) throws JSONException {
+<span class="nc" id="L118">        JSONObject j = new JSONObject();</span>
+<span class="nc" id="L119">        j.put(&quot;type&quot;,type); </span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (this.featureType!=null){</span>
+<span class="nc" id="L121">            j.put(&quot;featureType&quot;, this.featureType.getId());</span>
+<span class="nc" id="L122">            j.put(&quot;featureTypeName&quot;, this.featureType.getTypeName());</span>
+<span class="nc" id="L123">            j.put(&quot;featureTypePrimaryKeyAttribute&quot;, this.featureType.getPrimaryKeyAttribute());</span>
+<span class="nc" id="L124">            JSONArray keys = new JSONArray();</span>
+<span class="nc" id="L125">            j.put(&quot;relationKeys&quot;, keys);</span>
+<span class="nc" id="L126">            relationKeys.forEach(key -&gt; keys.put(key.toJSONObject()));</span>
+        }
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (this.foreignFeatureType!=null){</span>
+<span class="nc" id="L129">            j.put(&quot;foreignFeatureType&quot;, this.foreignFeatureType.getId());</span>
+<span class="nc" id="L130">            j.put(&quot;foreignFeatureTypeName&quot;, this.foreignFeatureType.getTypeName());</span>
+<span class="nc" id="L131">            j.put(&quot;foreignFeatureTypePrimaryKeyAttribute&quot;, this.foreignFeatureType.getPrimaryKeyAttribute());</span>
+<span class="nc" id="L132">            JSONArray jRel = new JSONArray();</span>
+<span class="nc bnc" id="L133" title="All 6 branches missed.">            if (!this.foreignFeatureType.getRelations().isEmpty() &amp;&amp; this.isSearchNextRelation() &amp;&amp; !head.getTypeName().equals(this.foreignFeatureType.getTypeName())){</span>
+<span class="nc" id="L134">                j.put(&quot;relations&quot;,jRel);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                for (FeatureTypeRelation rel : this.foreignFeatureType.getRelations()){</span>
+<span class="nc" id="L136">                    jRel.put(rel.toJSONObject(head));</span>
+<span class="nc" id="L137">                }</span>
+            }
+        }
+<span class="nc" id="L140">        return j;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

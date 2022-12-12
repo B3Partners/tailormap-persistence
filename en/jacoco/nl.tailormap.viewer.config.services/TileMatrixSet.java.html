@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TileMatrixSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">TileMatrixSet.java</span></div><h1>TileMatrixSet.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ * @author Meine Toonen meinetoonen@b3partners.nl
+ */
+@Entity
+<span class="fc" id="L43">public class TileMatrixSet {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String identifier;
+    
+    private String crs;
+    
+<span class="fc" id="L52">    @OneToMany(cascade=CascadeType.ALL,fetch = FetchType.LAZY, mappedBy=&quot;matrixSet&quot;)</span>
+    private List&lt;TileMatrix&gt; matrices = new ArrayList&lt;&gt;();
+    
+    @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @JoinColumn(name = &quot;tile_service&quot;)
+    private TileService tileService;
+    
+    
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = &quot;crs.name&quot;, column = @Column(name=&quot;max_crs&quot;)),
+        @AttributeOverride(name = &quot;minx&quot;, column = @Column(name=&quot;max_minx&quot;)),
+        @AttributeOverride(name = &quot;maxx&quot;, column = @Column(name=&quot;max_maxx&quot;)),
+        @AttributeOverride(name = &quot;miny&quot;, column = @Column(name=&quot;max_miny&quot;)),
+        @AttributeOverride(name = &quot;maxy&quot;, column = @Column(name=&quot;max_maxy&quot;))
+    })
+    private BoundingBox bbox;
+    
+    public static TileMatrixSet fromJSONObject(JSONObject obj){
+<span class="nc" id="L71">        TileMatrixSet tms = new TileMatrixSet();</span>
+<span class="nc" id="L72">        BoundingBox bbox = BoundingBox.fromJSONObject(obj.getJSONObject(&quot;bbox&quot;));</span>
+<span class="nc" id="L73">        tms.setBbox(bbox);</span>
+<span class="nc" id="L74">        tms.setCrs(obj.getString(&quot;crs&quot;));</span>
+<span class="nc" id="L75">        tms.setIdentifier(obj.getString(&quot;identifier&quot;));</span>
+<span class="nc" id="L76">        JSONArray tmses = obj.getJSONArray(&quot;matrices&quot;);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        for (int i = 0; i &lt; tmses.length(); i++) {</span>
+<span class="nc" id="L78">            JSONObject tmObj = tmses.getJSONObject(i);</span>
+<span class="nc" id="L79">            TileMatrix tm = TileMatrix.fromJSONObject(tmObj);</span>
+<span class="nc" id="L80">            tm.setMatrixSet(tms);</span>
+<span class="nc" id="L81">            tms.getMatrices().add(tm);</span>
+            
+        }
+<span class="nc" id="L84">        return tms;</span>
+    }
+    
+    public JSONObject toJSONObject(){
+<span class="nc" id="L88">        JSONObject obj = new JSONObject();</span>
+<span class="nc" id="L89">        obj.put(&quot;id&quot;,id);</span>
+<span class="nc" id="L90">        obj.put(&quot;identifier&quot;,identifier);</span>
+<span class="nc" id="L91">        obj.put(&quot;crs&quot;,crs);</span>
+        
+<span class="nc" id="L93">        JSONArray matricesJSON = new JSONArray();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        for (TileMatrix matrix : matrices) {</span>
+<span class="nc" id="L95">            matricesJSON.put(matrix.toJSONObject());</span>
+<span class="nc" id="L96">        }</span>
+<span class="nc" id="L97">        obj.put(&quot;matrices&quot;, matricesJSON);</span>
+
+        
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if(bbox != null){</span>
+<span class="nc" id="L101">            obj.put(&quot;bbox&quot;,bbox.toJSONObject());</span>
+        }
+<span class="nc" id="L103">        return obj;</span>
+    }
+
+    // &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;Getters and setters&quot; &gt;
+    public Long getId() {
+<span class="nc" id="L108">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L112">        this.id = id;</span>
+<span class="nc" id="L113">    }</span>
+
+    public String getIdentifier() {
+<span class="nc" id="L116">        return identifier;</span>
+    }
+
+    public void setIdentifier(String identifier) {
+<span class="nc" id="L120">        this.identifier = identifier;</span>
+<span class="nc" id="L121">    }</span>
+
+    public String getCrs() {
+<span class="nc" id="L124">        return crs;</span>
+    }
+
+    public void setCrs(String crs) {
+<span class="nc" id="L128">        this.crs = crs;</span>
+<span class="nc" id="L129">    }</span>
+
+    public List&lt;TileMatrix&gt; getMatrices() {
+<span class="nc" id="L132">        return matrices;</span>
+    }
+
+    public void setMatrices(List&lt;TileMatrix&gt; matrices) {
+<span class="nc" id="L136">        this.matrices = matrices;</span>
+<span class="nc" id="L137">    }</span>
+
+    public TileService getTileService() {
+<span class="nc" id="L140">        return tileService;</span>
+    }
+
+    public void setTileService(TileService tileService) {
+<span class="nc" id="L144">        this.tileService = tileService;</span>
+<span class="nc" id="L145">    }</span>
+    
+    public BoundingBox getBbox() {
+<span class="nc" id="L148">        return bbox;</span>
+    }
+
+    public void setBbox(BoundingBox bbox) {
+<span class="nc" id="L152">        this.bbox = bbox;</span>
+<span class="nc" id="L153">    }</span>
+    // &lt;/editor-fold&gt;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

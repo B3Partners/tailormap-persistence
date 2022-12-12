@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfiguredComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">ConfiguredComponent.java</span></div><h1>ConfiguredComponent.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.annotations.Type;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@Table(
+        uniqueConstraints=
+            @UniqueConstraint(columnNames={&quot;name&quot;, &quot;application&quot;})
+)
+<span class="fc" id="L41">public class ConfiguredComponent implements Comparable&lt;ConfiguredComponent&gt; {</span>
+    /**
+     * {@value #ADMIN_ONLY} magic prefix for &quot;admin only&quot; config attributes.
+     */
+    @SuppressWarnings(&quot;JavadocDeclaration&quot;)
+    public static final String ADMIN_ONLY = &quot;adminOnly&quot;;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Basic(optional=false)
+    private String name;
+
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String config;
+
+    @Basic(optional=false)
+    private String className;
+
+<span class="fc" id="L62">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;configured_component&quot;))
+    private Map&lt;String,String&gt; details = new HashMap&lt;&gt;();
+
+    @ManyToOne(optional=false)
+    @JoinColumn(name = &quot;application&quot;)
+    private Application application;
+
+<span class="fc" id="L70">    @ElementCollection</span>
+    @Column(name=&quot;role_name&quot;)
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;configured_component&quot;))
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+
+    @ManyToOne
+    @JoinColumn(name = &quot;mother_component&quot;)
+    private ConfiguredComponent motherComponent;
+
+<span class="fc" id="L79">    @OneToMany(mappedBy = &quot;motherComponent&quot;)</span>
+    private List&lt;ConfiguredComponent&gt; linkedComponents = new ArrayList&lt;&gt;();
+    
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters and setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L84">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L88">        this.id = id;</span>
+<span class="nc" id="L89">    }</span>
+
+    public String getName() {
+<span class="nc" id="L92">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L96">        this.name = name;</span>
+<span class="fc" id="L97">    }</span>
+
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L100">        return readers;</span>
+    }
+
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L104">        this.readers = readers;</span>
+<span class="nc" id="L105">    }</span>
+
+    public String getClassName() {
+<span class="fc" id="L108">        return className;</span>
+    }
+
+    public void setClassName(String className) {
+<span class="fc" id="L112">        this.className = className;</span>
+<span class="fc" id="L113">    }</span>
+
+    public String getConfig() {
+<span class="nc" id="L116">        return config;</span>
+    }
+
+    public void setConfig(String config) {
+<span class="fc" id="L120">        this.config = config;</span>
+<span class="fc" id="L121">    }</span>
+
+    public Map&lt;String, String&gt; getDetails() {
+<span class="nc" id="L124">        return details;</span>
+    }
+
+    public void setDetails(Map&lt;String, String&gt; details) {
+<span class="nc" id="L128">        this.details = details;</span>
+<span class="nc" id="L129">    }</span>
+
+    public Application getApplication() {
+<span class="nc" id="L132">        return application;</span>
+    }
+
+    public void setApplication(Application application) {
+<span class="fc" id="L136">        this.application = application;</span>
+<span class="fc" id="L137">    }</span>
+
+    public ConfiguredComponent getMotherComponent() {
+<span class="nc" id="L140">        return motherComponent;</span>
+    }
+
+    public void setMotherComponent(ConfiguredComponent motherComponent) {
+<span class="nc" id="L144">        this.motherComponent = motherComponent;</span>
+<span class="nc" id="L145">    }</span>
+
+    public List&lt;ConfiguredComponent&gt; getLinkedComponents() {
+<span class="nc" id="L148">        return linkedComponents;</span>
+    }
+
+    public void setLinkedComponents(List&lt;ConfiguredComponent&gt; linkedComponents) {
+<span class="nc" id="L152">        this.linkedComponents = linkedComponents;</span>
+<span class="nc" id="L153">    }</span>
+    
+    //&lt;/editor-fold&gt;
+
+<span class="fc" id="L157">    public final static List&lt;String&gt; classesExcludedFromPushing = new ArrayList&lt;&gt;();</span>
+    static {
+<span class="fc" id="L159">        classesExcludedFromPushing.add(&quot;viewer.components.HTML&quot;);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * @return a JSON representation of this component
+     * @throws JSONException if any
+     * @deprecated use {@link #toJSON(boolean)}
+     */
+    @Deprecated
+    public JSONObject toJSON() throws JSONException {
+<span class="nc" id="L169">        return this.toJSON(false);</span>
+    }
+
+    /**
+     * render a JSON representation of this component.
+     *
+     * @param hideAdminOnly set to {@code true} to obtain this component JSON representation without any &quot;admin-only&quot;
+     *                     attributes.
+     * @return a JSON representation of this component
+     * @throws JSONException if ant
+     */
+    public JSONObject toJSON(boolean hideAdminOnly) throws JSONException {
+<span class="nc" id="L181">        JSONObject o = new JSONObject();</span>
+<span class="nc" id="L182">        o.put(&quot;name&quot;, name);</span>
+<span class="nc" id="L183">        o.put(&quot;className&quot;, className);</span>
+
+<span class="nc" id="L185">        JSONObject d = new JSONObject();</span>
+<span class="nc" id="L186">        o.put(&quot;details&quot;, d);</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        for(Map.Entry&lt;String,String&gt; e: details.entrySet()) {</span>
+<span class="nc" id="L188">            d.put(e.getKey(), e.getValue());</span>
+<span class="nc" id="L189">        }</span>
+
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        o.put(&quot;config&quot;, config == null ? new JSONObject() : new JSONObject(config));</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (hideAdminOnly) {</span>
+            // remove any config keys starting with adminOnly
+<span class="nc" id="L194">            JSONObject c = o.getJSONObject(&quot;config&quot;);</span>
+<span class="nc" id="L195">            List&lt;String&gt; removeKeys = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">            for (String key : c.keySet()) {</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                if (key.startsWith(ADMIN_ONLY)) {</span>
+<span class="nc" id="L198">                    removeKeys.add(key);</span>
+                }
+<span class="nc" id="L200">            }</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">            for (String key : removeKeys) {</span>
+<span class="nc" id="L202">                c.remove(key);</span>
+<span class="nc" id="L203">            }</span>
+        }
+<span class="nc" id="L205">        return o;</span>
+    }
+
+    @Override
+    public int compareTo(ConfiguredComponent rhs) {
+<span class="nc" id="L210">        return className.compareTo(rhs.getClassName());</span>
+    }
+
+    public ConfiguredComponent deepCopy(Application app) throws Exception {
+<span class="nc" id="L214">        ConfiguredComponent copy = (ConfiguredComponent) BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L215">        copy.setId(null);</span>
+<span class="nc" id="L216">        copy.setDetails(new HashMap&lt;&gt;(details));</span>
+<span class="nc" id="L217">        copy.setReaders(new HashSet&lt;&gt;(readers));</span>
+<span class="nc" id="L218">        copy.setLinkedComponents(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L219">        copy.setApplication(app);</span>
+<span class="nc" id="L220">        return copy;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

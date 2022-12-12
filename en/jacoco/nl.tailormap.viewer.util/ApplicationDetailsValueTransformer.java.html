@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationDetailsValueTransformer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.util</a> &gt; <span class="el_source">ApplicationDetailsValueTransformer.java</span></div><h1>ApplicationDetailsValueTransformer.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2017-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.util;
+
+import org.apache.commons.collections.map.CaseInsensitiveMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.transform.BasicTransformerAdapter;
+
+import java.sql.Clob;
+import java.sql.SQLException;
+import java.util.Map;
+
+/**
+ * Transform the clob in application details to a string. Avoid using with very
+ * large values.
+ *
+ * @author Mark Prins
+ */
+public class ApplicationDetailsValueTransformer extends BasicTransformerAdapter {
+
+<span class="nc" id="L23">    private static final Log LOG = LogFactory.getLog(ApplicationDetailsValueTransformer.class);</span>
+    public final static ApplicationDetailsValueTransformer INSTANCE;
+
+    static {
+<span class="nc" id="L27">        INSTANCE = new ApplicationDetailsValueTransformer();</span>
+<span class="nc" id="L28">    }</span>
+
+    private ApplicationDetailsValueTransformer() {
+
+    }
+
+    /**
+     * create a CaseInsensitiveMap with key/values.
+     * &lt;p&gt;
+     * Tuples are the elements making up each &quot;row&quot; of the query result. The
+     * contract here is to transform these elements into the final row.
+     *
+     * @param tuple The result elements
+     * @param aliases The result aliases (&quot;parallel&quot; array to tuple)
+     * @return The transformed row.
+     */
+    @Override
+    public Object transformTuple(Object[] tuple, String[] aliases) {
+<span class="nc" id="L46">        Map&lt;String, Object&gt; map = new CaseInsensitiveMap();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        for (int i = 0; i &lt; aliases.length; i++) {</span>
+<span class="nc" id="L48">            Object t = tuple[i];</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (t instanceof Clob) {</span>
+<span class="nc" id="L50">                Clob c = (Clob) tuple[i];</span>
+                try {
+<span class="nc" id="L52">                    t = c.getSubString(1, (int) c.length());</span>
+<span class="nc" id="L53">                } catch (SQLException e) {</span>
+<span class="nc" id="L54">                    LOG.error(&quot;Error transforming data tuple of &quot; + aliases[i], e);</span>
+<span class="nc" id="L55">                }</span>
+            }
+<span class="nc" id="L57">            map.put(aliases[i], t);</span>
+        }
+<span class="nc" id="L59">        return map;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

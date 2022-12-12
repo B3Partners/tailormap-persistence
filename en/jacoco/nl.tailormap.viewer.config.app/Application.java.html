@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Application.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">Application.java</span></div><h1>Application.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import nl.tailormap.viewer.config.ClobElement;
+import nl.tailormap.viewer.config.security.User;
+import nl.tailormap.viewer.config.services.BoundingBox;
+import nl.tailormap.viewer.util.ApplicationDetailsValueTransformer;
+import nl.tailormap.viewer.util.DB;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.annotations.Type;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PostPersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ * @author mprins
+ */
+@Entity
+@Table(
+        uniqueConstraints
+        = @UniqueConstraint(columnNames = {&quot;name&quot;, &quot;version&quot;})
+)
+<span class="fc" id="L65">public class Application implements Comparable&lt;Application&gt;{</span>
+
+<span class="fc" id="L67">    private static final Log log = LogFactory.getLog(Application.class);</span>
+
+    // Details keys
+    public static final String DETAIL_IS_MASHUP = &quot;isMashup&quot;;
+    public static final String DETAIL_GLOBAL_LAYOUT = &quot;globalLayout&quot;;
+    public static final String DETAIL_LAST_SPINUP_TIME = &quot;lastSpinupTime&quot;;
+
+<span class="fc" id="L74">    public static Set&lt;String&gt; adminOnlyDetails = new HashSet&lt;&gt;(List.of(&quot;opmerking&quot;));</span>
+
+<span class="fc" id="L76">    public static final Set&lt;String&gt; preventClearDetails = new HashSet&lt;&gt;(Arrays.asList(DETAIL_IS_MASHUP,</span>
+            DETAIL_GLOBAL_LAYOUT));
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Basic(optional = false)
+    private String name;
+
+    @Column(length = 30)
+    private String version;
+
+    @Column()
+    private String title;
+
+    @Column()
+    // lang instead of language because language can be a reserved word in some SQL versions
+    private String lang;
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String layout;
+
+<span class="fc" id="L99">    @ElementCollection</span>
+    @JoinTable(joinColumns = @JoinColumn(name = &quot;application&quot;))
+    // Element wrapper required because of http://opensource.atlassian.com/projects/hibernate/browse/JPA-11
+    private Map&lt;String, ClobElement&gt; details = new HashMap&lt;&gt;();
+
+    @ManyToOne
+    @JoinColumn(name = &quot;owner&quot;)
+    private User owner;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = &quot;crs.name&quot;, column = @Column(name = &quot;start_crs&quot;)),
+        @AttributeOverride(name = &quot;minx&quot;, column = @Column(name = &quot;start_minx&quot;)),
+        @AttributeOverride(name = &quot;maxx&quot;, column = @Column(name = &quot;start_maxx&quot;)),
+        @AttributeOverride(name = &quot;miny&quot;, column = @Column(name = &quot;start_miny&quot;)),
+        @AttributeOverride(name = &quot;maxy&quot;, column = @Column(name = &quot;start_maxy&quot;))
+    })
+    private BoundingBox startExtent;
+
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = &quot;crs.name&quot;, column = @Column(name = &quot;max_crs&quot;)),
+        @AttributeOverride(name = &quot;minx&quot;, column = @Column(name = &quot;max_minx&quot;)),
+        @AttributeOverride(name = &quot;maxx&quot;, column = @Column(name = &quot;max_maxx&quot;)),
+        @AttributeOverride(name = &quot;miny&quot;, column = @Column(name = &quot;max_miny&quot;)),
+        @AttributeOverride(name = &quot;maxy&quot;, column = @Column(name = &quot;max_maxy&quot;))
+    })
+    private BoundingBox maxExtent;
+
+    private boolean authenticatedRequired;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;root&quot;)
+    private Level root;
+
+<span class="fc" id="L134">    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)</span>
+    private Set&lt;ConfiguredComponent&gt; components = new HashSet&lt;&gt;();
+
+<span class="fc" id="L137">    @Basic(optional = false)</span>
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date authorizationsModified = new Date();
+
+    /**
+     * Map (populated in deepCopy()) of the original persistant object from the
+     * copy source Application to the new object in this copy used for updating
+     * the references in component JSON config using id's in postPersist().
+     */
+    @Transient
+    public Map originalToCopy;
+
+<span class="fc" id="L149">    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)</span>
+    private List&lt;Bookmark&gt; bookmarks = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L152">    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)</span>
+    private List&lt;StartLayer&gt; startLayers = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L155">    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, mappedBy = &quot;application&quot;)</span>
+    private List&lt;StartLevel&gt; startLevels = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L158">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;application&quot;))
+    @Column(name = &quot;role_name&quot;)
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+    private String projectionCode;
+
+    // &lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters and setters&quot;&gt;
+    public Long getId() {
+<span class="fc" id="L166">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L170">        this.id = id;</span>
+<span class="nc" id="L171">    }</span>
+
+    public String getName() {
+<span class="nc" id="L174">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L178">        this.name = name;</span>
+<span class="fc" id="L179">    }</span>
+
+    public String getVersion() {
+<span class="nc" id="L182">        return version;</span>
+    }
+
+    public void setVersion(String version) {
+<span class="fc" id="L186">        this.version = version;</span>
+<span class="fc" id="L187">    }</span>
+
+    public String getTitle() {
+<span class="nc" id="L190">        return title;</span>
+    }
+
+    public void setLang(String lang) {
+<span class="nc" id="L194">        this.lang = lang;</span>
+<span class="nc" id="L195">    }</span>
+
+    public String getLang() {
+<span class="nc" id="L198">        return lang;</span>
+    }
+
+    public void setTitle(String title) {
+<span class="nc" id="L202">        this.title = title;</span>
+<span class="nc" id="L203">    }</span>
+
+    public String getLayout() {
+<span class="nc" id="L206">        return layout;</span>
+    }
+
+    public void setLayout(String layout) {
+<span class="nc" id="L210">        this.layout = layout;</span>
+<span class="nc" id="L211">    }</span>
+
+    public Map&lt;String, ClobElement&gt; getDetails() {
+<span class="fc" id="L214">        return details;</span>
+    }
+
+    public void setDetails(Map&lt;String, ClobElement&gt; details) {
+<span class="nc" id="L218">        this.details = details;</span>
+<span class="nc" id="L219">    }</span>
+
+    public boolean isAuthenticatedRequired() {
+<span class="nc" id="L222">        return authenticatedRequired;</span>
+    }
+
+    public void setAuthenticatedRequired(boolean authenticatedRequired) {
+<span class="nc" id="L226">        this.authenticatedRequired = authenticatedRequired;</span>
+<span class="nc" id="L227">    }</span>
+
+    public Set&lt;ConfiguredComponent&gt; getComponents() {
+<span class="fc" id="L230">        return components;</span>
+    }
+
+    public void setComponents(Set&lt;ConfiguredComponent&gt; components) {
+<span class="nc" id="L234">        this.components = components;</span>
+<span class="nc" id="L235">    }</span>
+
+    public BoundingBox getMaxExtent() {
+<span class="nc" id="L238">        return maxExtent;</span>
+    }
+
+    public void setMaxExtent(BoundingBox maxExtent) {
+<span class="nc" id="L242">        this.maxExtent = maxExtent;</span>
+<span class="nc" id="L243">    }</span>
+
+    public User getOwner() {
+<span class="nc" id="L246">        return owner;</span>
+    }
+
+    public void setOwner(User owner) {
+<span class="nc" id="L250">        this.owner = owner;</span>
+<span class="nc" id="L251">    }</span>
+
+    public Level getRoot() {
+<span class="nc" id="L254">        return root;</span>
+    }
+
+    public void setRoot(Level root) {
+<span class="fc" id="L258">        this.root = root;</span>
+<span class="fc" id="L259">    }</span>
+
+    public BoundingBox getStartExtent() {
+<span class="nc" id="L262">        return startExtent;</span>
+    }
+
+    public void setStartExtent(BoundingBox startExtent) {
+<span class="nc" id="L266">        this.startExtent = startExtent;</span>
+<span class="nc" id="L267">    }</span>
+
+    public Date getAuthorizationsModified() {
+<span class="nc" id="L270">        return authorizationsModified;</span>
+    }
+
+    public void setAuthorizationsModified(Date authorizationsModified) {
+<span class="nc" id="L274">        this.authorizationsModified = authorizationsModified;</span>
+<span class="nc" id="L275">    }</span>
+
+    public List&lt;Bookmark&gt; getBookmarks() {
+<span class="nc" id="L278">        return bookmarks;</span>
+    }
+
+    public void setBookmarks(List&lt;Bookmark&gt; bookmarks) {
+<span class="nc" id="L282">        this.bookmarks = bookmarks;</span>
+<span class="nc" id="L283">    }</span>
+
+    public List&lt;StartLayer&gt; getStartLayers() {
+<span class="fc" id="L286">        return startLayers;</span>
+    }
+
+    public void setStartLayers(List&lt;StartLayer&gt; startLayers) {
+<span class="nc" id="L290">        this.startLayers = startLayers;</span>
+<span class="nc" id="L291">    }</span>
+
+    public List&lt;StartLevel&gt; getStartLevels() {
+<span class="fc" id="L294">        return startLevels;</span>
+    }
+
+    public void setStartLevels(List&lt;StartLevel&gt; startLevels) {
+<span class="nc" id="L298">        this.startLevels = startLevels;</span>
+<span class="nc" id="L299">    }</span>
+
+    public Set&lt;String&gt; getReaders() {
+<span class="fc" id="L302">        return readers;</span>
+    }
+
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L306">        this.readers = readers;</span>
+<span class="nc" id="L307">    }</span>
+
+    public String getProjectionCode() {
+<span class="nc" id="L310">        return projectionCode;</span>
+    }
+
+    public void setProjectionCode(String projectionCode) {
+<span class="nc" id="L314">        this.projectionCode = projectionCode;</span>
+<span class="nc" id="L315">    }</span>
+    //&lt;/editor-fold&gt;
+
+    public String getNameWithVersion() {
+<span class="nc" id="L319">        String n = getName();</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (getVersion() != null) {</span>
+<span class="nc" id="L321">            n += &quot; v&quot; + getVersion();</span>
+        }
+<span class="nc" id="L323">        return n;</span>
+    }
+
+    public TreeCache getTreeCache() {
+<span class="nc" id="L327">        return treeCache;</span>
+    }
+
+    @Override
+    public int compareTo(Application o) {
+<span class="nc bnc" id="L332" title="All 2 branches missed.">        if(o != null){</span>
+<span class="nc" id="L333">            return o.getId().compareTo(this.getId());</span>
+        }else{
+<span class="nc" id="L335">            return -1;</span>
+        }
+    }
+
+<span class="nc" id="L339">    public static class TreeCache {</span>
+
+        List&lt;Level&gt; levels;
+        Map&lt;Level, List&lt;Level&gt;&gt; childrenByParent;
+        List&lt;ApplicationLayer&gt; applicationLayers;
+
+        public List&lt;ApplicationLayer&gt; getApplicationLayers() {
+<span class="nc" id="L346">            return applicationLayers;</span>
+        }
+
+        public Map&lt;Level, List&lt;Level&gt;&gt; getChildrenByParent() {
+<span class="nc" id="L350">            return childrenByParent;</span>
+        }
+
+        public List&lt;Level&gt; getChildren(Level l) {
+<span class="nc" id="L354">            List&lt;Level&gt; children = childrenByParent.get(l);</span>
+<span class="nc" id="L355">            return Objects.requireNonNullElse(children, Collections.emptyList());</span>
+        }
+
+        public List&lt;Level&gt; getLevels() {
+<span class="nc" id="L359">            return levels;</span>
+        }
+
+        public void initializeLevels(String leftJoins, EntityManager em) {
+            // Prevent n+1 queries for each level
+<span class="nc" id="L364">            int i = 0;</span>
+            do {
+<span class="nc" id="L366">                List&lt;Level&gt; subList = levels.subList(i, Math.min(levels.size(), i + DB.MAX_LIST_EXPRESSIONS));</span>
+<span class="nc" id="L367">                em.createQuery(&quot;from Level l &quot;</span>
+                        + leftJoins + &quot; &quot;
+                        + &quot;where l in (:levels) &quot;)
+<span class="nc" id="L370">                        .setParameter(&quot;levels&quot;, subList)</span>
+<span class="nc" id="L371">                        .getResultList();</span>
+<span class="nc" id="L372">                i += subList.size();</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">            } while (i &lt; levels.size());</span>
+<span class="nc" id="L374">        }</span>
+
+        public void initializeApplicationLayers(String leftJoins, EntityManager em) {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">            if (!getApplicationLayers().isEmpty()) {</span>
+                // Prevent n+1 queries for each ApplicationLayer
+<span class="nc" id="L379">                int i = 0;</span>
+                do {
+<span class="nc" id="L381">                    List&lt;ApplicationLayer&gt; subList = applicationLayers.subList(i, Math.min(applicationLayers.size(), i + DB.MAX_LIST_EXPRESSIONS));</span>
+<span class="nc" id="L382">                    em.createQuery(&quot;from ApplicationLayer al &quot;</span>
+                            + leftJoins + &quot; &quot;
+                            + &quot;where al in (:alayers) &quot;)
+<span class="nc" id="L385">                            .setParameter(&quot;alayers&quot;, subList)</span>
+<span class="nc" id="L386">                            .getResultList();</span>
+<span class="nc" id="L387">                    i += subList.size();</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">                } while (i &lt; applicationLayers.size());</span>
+            }
+<span class="nc" id="L390">        }</span>
+    }
+
+    @Transient
+    private TreeCache treeCache;
+
+    public void setTreeCache(TreeCache treeCache) {
+<span class="nc" id="L397">        this.treeCache = treeCache;</span>
+<span class="nc" id="L398">    }</span>
+
+    public TreeCache loadTreeCache(EntityManager em) {
+<span class="nc bnc" id="L401" title="All 2 branches missed.">        if (treeCache == null) {</span>
+
+<span class="nc" id="L403">            treeCache = new TreeCache();</span>
+
+            // Retrieve level tree structure in single query
+<span class="nc" id="L406">            treeCache.levels = em.createNamedQuery(&quot;getLevelTree&quot;, Level.class)</span>
+<span class="nc" id="L407">                    .setParameter(&quot;rootId&quot;, root.getId())</span>
+<span class="nc" id="L408">                    .getResultList();</span>
+
+<span class="nc" id="L410">            treeCache.childrenByParent = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L411">            treeCache.applicationLayers = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L413" title="All 2 branches missed.">            for (Level l : treeCache.levels) {</span>
+<span class="nc" id="L414">                treeCache.applicationLayers.addAll(l.getLayers());</span>
+
+<span class="nc bnc" id="L416" title="All 2 branches missed.">                if (l.getParent() != null) {</span>
+<span class="nc" id="L417">                    List&lt;Level&gt; parentChildren = treeCache.childrenByParent.computeIfAbsent(l.getParent(), k -&gt; new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L418">                    parentChildren.add(l);</span>
+                }
+<span class="nc" id="L420">            }</span>
+
+        }
+<span class="nc" id="L423">        return treeCache;</span>
+    }
+
+    public void authorizationsModified() {
+<span class="nc" id="L427">        authorizationsModified = new Date();</span>
+<span class="nc" id="L428">    }</span>
+
+    /**
+     * keep a cached copy of our mashup status.
+     */
+    @Transient
+    public Boolean isMashup_cached;
+
+    /**
+     * slow method -especially on Oracle- because it will need all keys and
+     * Oracle lazy loading sucks so clob's get pulled in as well.
+     *
+     * @return {@code true} if we are a mashup
+     * @see #isMashup(org.hibernate.Session)
+     */
+    public Boolean isMashup() {
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">        if (this.getDetails().containsKey(Application.DETAIL_IS_MASHUP)) {</span>
+<span class="nc" id="L445">            String mashupValue = this.getDetails().get(Application.DETAIL_IS_MASHUP).getValue();</span>
+<span class="nc" id="L446">            this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
+<span class="nc" id="L447">        } else {</span>
+<span class="fc" id="L448">            this.isMashup_cached = Boolean.FALSE;</span>
+        }
+<span class="fc" id="L450">        return this.isMashup_cached;</span>
+    }
+
+    /**
+     * fast access to determine if we are mashup.
+     *
+     * @param sess the hibernate session
+     * @return {@code true} if we are a mashup, this may be a cached value
+     *
+     * @see #isMashup()
+     */
+    public Boolean isMashup(Session sess) {
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (this.isMashup_cached == null) {</span>
+<span class="nc" id="L463">            this.isMashup_cached = Boolean.FALSE;</span>
+<span class="nc" id="L464">            List&lt;Map&lt;String, Object&gt;&gt; items = sess.createSQLQuery(&quot;select d.value from application_details d where d.details_key = '&quot; + Application.DETAIL_IS_MASHUP + &quot;' and d.application =  :appId&quot;)</span>
+<span class="nc" id="L465">                    .setParameter(&quot;appId&quot;, this.getId())</span>
+<span class="nc" id="L466">                    .setResultTransformer(ApplicationDetailsValueTransformer.INSTANCE)</span>
+<span class="nc" id="L467">                    .list();</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">            if (!items.isEmpty()) {</span>
+<span class="nc" id="L469">                String mashupValue = items.get(0).get(&quot;value&quot;).toString();</span>
+<span class="nc" id="L470">                this.isMashup_cached = Boolean.valueOf(mashupValue);</span>
+            }
+        }
+<span class="nc" id="L473">        return this.isMashup_cached;</span>
+    }
+
+
+    public ApplicationLayer findLayer(ApplicationLayer oldLayer) {
+<span class="nc" id="L478">        List&lt;ApplicationLayer&gt; appLayers = treeCache.applicationLayers;</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">        for (ApplicationLayer appLayer : appLayers) {</span>
+<span class="nc bnc" id="L480" title="All 4 branches missed.">            if (appLayer.getService().equals(oldLayer.getService()) &amp;&amp; appLayer.getLayerName().equals(oldLayer.getLayerName())) {</span>
+<span class="nc" id="L481">                return appLayer;</span>
+            }
+<span class="nc" id="L483">        }</span>
+<span class="nc" id="L484">        return null;</span>
+    }
+
+    public Level findLevel(Level oldLevel) {
+<span class="nc" id="L488">        List&lt;Level&gt; levels = treeCache.levels;</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">        for (Level level : levels) {</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">            if (level.getName().equals(oldLevel.getName())) {</span>
+<span class="nc" id="L491">                return level;</span>
+            }
+<span class="nc" id="L493">        }</span>
+<span class="nc" id="L494">        return null;</span>
+    }
+
+    @PostPersist
+    public void postPersist() {
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">        if (isMashup()) {</span>
+<span class="nc" id="L500">            log.debug(&quot;postPersist(): mashup&quot;);</span>
+<span class="nc" id="L501">            return;</span>
+        }
+<span class="fc" id="L503">        processCopyMap();</span>
+<span class="fc" id="L504">    }</span>
+
+    @Transient
+    public Map&lt;String, Long&gt; idMap;
+
+    public void processCopyMap() {
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">        if (originalToCopy == null) {</span>
+<span class="fc" id="L511">            log.debug(&quot;postPersist(): not a copy&quot;);</span>
+<span class="fc" id="L512">            return;</span>
+        }
+<span class="nc" id="L514">        idMap = getIdMap();</span>
+
+<span class="nc" id="L516">        originalToCopy = null;</span>
+
+<span class="nc" id="L518">        log.debug(&quot;Updating component configs&quot;);</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">        for (ConfiguredComponent comp : components) {</span>
+<span class="nc bnc" id="L520" title="All 2 branches missed.">            if (comp.getConfig() == null) {</span>
+<span class="nc" id="L521">                continue;</span>
+            }
+<span class="nc" id="L523">            log.debug(String.format(&quot;Checking component class %s, name %s&quot;, comp.getClassName(), comp.getName()));</span>
+<span class="nc" id="L524">            boolean changed = false;</span>
+            try {
+<span class="nc" id="L526">                JSONObject cfg = new JSONObject(comp.getConfig());</span>
+<span class="nc bnc" id="L527" title="All 2 branches missed.">                if (cfg.has(&quot;layers&quot;)) {</span>
+<span class="nc" id="L528">                    JSONArray layers = cfg.getJSONArray(&quot;layers&quot;);</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">                    for (int i = 0; i &lt; layers.length(); i++) {</span>
+<span class="nc" id="L530">                        Long newId = idMap.get(ApplicationLayer.class + &quot;_&quot; + layers.getInt(i));</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">                        if (newId != null) {</span>
+<span class="nc" id="L532">                            log.debug(String.format(&quot;Index %d: new id for application layer %d is %d&quot;, i, layers.getInt(i), newId));</span>
+<span class="nc" id="L533">                            layers.put(i, newId.longValue());</span>
+                        } else {
+<span class="nc" id="L535">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid application layer in original&quot;, i, layers.getInt(i)));</span>
+<span class="nc" id="L536">                            layers.put(i, -1);</span>
+                        }
+<span class="nc" id="L538">                        changed = true;</span>
+                    }
+                }
+<span class="nc bnc" id="L541" title="All 2 branches missed.">                if (cfg.has(&quot;levels&quot;)) {</span>
+<span class="nc" id="L542">                    JSONArray levels = cfg.getJSONArray(&quot;levels&quot;);</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">                    for (int i = 0; i &lt; levels.length(); i++) {</span>
+<span class="nc" id="L544">                        Long newId = idMap.get(Level.class + &quot;_&quot; + levels.getInt(i));</span>
+<span class="nc bnc" id="L545" title="All 2 branches missed.">                        if (newId != null) {</span>
+<span class="nc" id="L546">                            log.debug(String.format(&quot;Index %d: new id for level %d is %d&quot;, i, levels.getInt(i), newId));</span>
+<span class="nc" id="L547">                            levels.put(i, newId.longValue());</span>
+                        } else {
+<span class="nc" id="L549">                            log.debug(String.format(&quot;Index %d: old id %d was not a valid level in original&quot;, i, levels.getInt(i)));</span>
+<span class="nc" id="L550">                            levels.put(i, -1);</span>
+                        }
+<span class="nc" id="L552">                        changed = true;</span>
+                    }
+                }
+<span class="nc bnc" id="L555" title="All 2 branches missed.">                if (changed) {</span>
+<span class="nc" id="L556">                    log.debug(&quot;Old config: &quot; + comp.getConfig());</span>
+<span class="nc" id="L557">                    comp.setConfig(cfg.toString());</span>
+<span class="nc" id="L558">                    log.debug(&quot;New config: &quot; + comp.getConfig());</span>
+                }
+
+<span class="nc" id="L561">            } catch (Exception ex) {</span>
+<span class="nc" id="L562">                log.error(String.format(&quot;Cannot update persistent object id's &quot;</span>
+                        + &quot;in component config on application copy, &quot;
+                        + &quot;copied application=%s, component class=%s, component name=%s&quot;,
+<span class="nc" id="L565">                        getNameWithVersion(),</span>
+<span class="nc" id="L566">                        comp.getClassName(),</span>
+<span class="nc" id="L567">                        comp.getName()), ex);</span>
+<span class="nc" id="L568">            }</span>
+<span class="nc" id="L569">        }</span>
+<span class="nc" id="L570">    }</span>
+
+    private Map&lt;String, Long&gt; getIdMap() {
+<span class="nc" id="L573">        Map&lt;String, Long&gt; idMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L574" title="All 2 branches missed.">        for (Object e : originalToCopy.entrySet()) {</span>
+<span class="nc" id="L575">            Map.Entry&lt;Object, Object&gt; entry = (Map.Entry&lt;Object, Object&gt;) e;</span>
+<span class="nc" id="L576">            Object original = entry.getKey();</span>
+<span class="nc" id="L577">            Object copy = entry.getValue();</span>
+<span class="nc" id="L578">            log.debug(String.format(&quot;postPersist(): original=%s, copy=%s&quot;, original, copy));</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">            if (original instanceof Level) {</span>
+<span class="nc" id="L580">                Level oL = (Level) original;</span>
+<span class="nc" id="L581">                Level cL = (Level) copy;</span>
+<span class="nc" id="L582">                idMap.put(original.getClass() + &quot;_&quot; + oL.getId(), cL.getId());</span>
+<span class="nc bnc" id="L583" title="All 2 branches missed.">            } else if (original instanceof ApplicationLayer) {</span>
+<span class="nc" id="L584">                ApplicationLayer oAl = (ApplicationLayer) original;</span>
+<span class="nc" id="L585">                ApplicationLayer cAl = (ApplicationLayer) copy;</span>
+<span class="nc" id="L586">                idMap.put(original.getClass() + &quot;_&quot; + oAl.getId(), cAl.getId());</span>
+            }
+<span class="nc" id="L588">        }</span>
+<span class="nc" id="L589">        return idMap;</span>
+    }
+
+
+    public void removeOldProperties() {
+        // In previous versions maxHeight and maxWidth where assigned to details directly
+        // Now these settings are saved in globalLayout. We are removing these settings from
+        // details (when present) to migrate from old layout to new layout
+<span class="nc" id="L597">        this.details.remove(&quot;maxWidth&quot;);</span>
+<span class="nc" id="L598">        this.details.remove(&quot;maxHeight&quot;);</span>
+<span class="nc" id="L599">    }</span>
+
+    public void setGlobalLayout(String globalLayout) {
+<span class="nc" id="L602">        this.details.put(&quot;globalLayout&quot;, new ClobElement(globalLayout));</span>
+<span class="nc" id="L603">    }</span>
+
+    public JSONObject getGlobalLayout() throws JSONException {
+<span class="nc" id="L606">        JSONObject globalLayout = new JSONObject();</span>
+<span class="nc bnc" id="L607" title="All 2 branches missed.">        if (this.getDetails().containsKey(&quot;globalLayout&quot;)) {</span>
+<span class="nc" id="L608">            globalLayout = new JSONObject(this.getDetails().get(&quot;globalLayout&quot;).getValue());</span>
+        }
+        // Legacy properties
+<span class="nc bnc" id="L611" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxWidth&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxWidth&quot;)) {</span>
+<span class="nc" id="L612">            globalLayout.put(&quot;maxWidth&quot;, this.getDetails().get(&quot;maxWidth&quot;).getValue());</span>
+        }
+<span class="nc bnc" id="L614" title="All 4 branches missed.">        if (!globalLayout.has(&quot;maxHeight&quot;) &amp;&amp; this.getDetails().containsKey(&quot;maxHeight&quot;)) {</span>
+<span class="nc" id="L615">            globalLayout.put(&quot;maxHeight&quot;, this.getDetails().get(&quot;maxHeight&quot;).getValue());</span>
+        }
+<span class="nc" id="L617">        return globalLayout;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

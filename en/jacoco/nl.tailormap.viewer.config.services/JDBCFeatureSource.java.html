@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JDBCFeatureSource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">JDBCFeatureSource.java</span></div><h1>JDBCFeatureSource.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2011-2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.util.Map;
+
+/**
+ *
+ * @author jytte
+ * @author Matthijs Laan
+ */
+@Entity
+@DiscriminatorValue(JDBCFeatureSource.PROTOCOL)
+public class JDBCFeatureSource extends FeatureSource{
+
+    public static final String PROTOCOL = &quot;jdbc&quot;;
+
+    @Column(name=&quot;db_schema&quot;)
+    public String schema;
+
+    public String getSchema() {
+<span class="nc" id="L42">        return schema;</span>
+    }
+
+    public void setSchema(String schema) {
+<span class="nc" id="L46">        this.schema = schema;</span>
+<span class="nc" id="L47">    }</span>
+
+    public JDBCFeatureSource(){
+<span class="fc" id="L50">        super();</span>
+<span class="fc" id="L51">    }</span>
+
+    public JDBCFeatureSource(Map&lt;String, String&gt; params) throws JSONException {
+<span class="nc" id="L54">        super();</span>
+
+<span class="nc" id="L56">        JSONObject urlObj = new JSONObject();</span>
+<span class="nc" id="L57">        urlObj.put(&quot;dbtype&quot;, params.get(&quot;dbtype&quot;));</span>
+<span class="nc" id="L58">        urlObj.put(&quot;host&quot;, params.get(&quot;host&quot;));</span>
+<span class="nc" id="L59">        urlObj.put(&quot;port&quot;, params.get(&quot;port&quot;));</span>
+<span class="nc" id="L60">        urlObj.put(&quot;database&quot;, params.get(&quot;database&quot;));</span>
+<span class="nc" id="L61">        setUrl(urlObj.toString());</span>
+
+<span class="nc" id="L63">        schema = params.get(&quot;schema&quot;);</span>
+<span class="nc" id="L64">        setUsername(params.get(&quot;user&quot;));</span>
+<span class="nc" id="L65">        setPassword(params.get(&quot;passwd&quot;));</span>
+<span class="nc" id="L66">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

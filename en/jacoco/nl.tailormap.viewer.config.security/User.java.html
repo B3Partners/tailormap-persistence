@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.security</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.security;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@Table(name=&quot;user_&quot;)
+<span class="nc" id="L31">public class User implements Principal{</span>
+    // See edituser.jsp
+    public static final String DETAIL_EMAIL = &quot;email&quot;;
+    
+    public static final int MIN_PASSWORD_LENGTH = 8;
+
+    private static final String DIGEST_ALGORITM = &quot;SHA-1&quot;;
+    private static final String DIGEST_CHARSET = &quot;UTF-8&quot;;
+
+    @Id
+    private String username;
+
+    private String password;
+
+<span class="nc" id="L45">    @ManyToMany</span>
+    @JoinTable(name=&quot;user_groups&quot;, joinColumns=@JoinColumn(name=&quot;username&quot;), inverseJoinColumns=@JoinColumn(name=&quot;group_&quot;))
+    private Set&lt;Group&gt; groups = new HashSet&lt;&gt;();
+
+<span class="nc" id="L49">    @ElementCollection</span>
+    @JoinTable(joinColumns=@JoinColumn(name=&quot;username&quot;))
+    private Map&lt;String,String&gt; details = new HashMap&lt;&gt;();
+    
+    
+<span class="nc" id="L54">    @ElementCollection</span>
+    @Column(name=&quot;ipaddress&quot;, length = 45)
+    @CollectionTable(joinColumns = @JoinColumn(name=&quot;user_&quot;))
+    private Set&lt;String&gt; ips = new HashSet&lt;&gt;();
+    
+<span class="nc" id="L59">    @Transient</span>
+    private boolean authenticatedByIp = false;
+
+    public void changePassword(String password) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+
+<span class="nc" id="L64">        MessageDigest md = MessageDigest.getInstance(DIGEST_ALGORITM);</span>
+<span class="nc" id="L65">        md.update(password.getBytes(DIGEST_CHARSET));</span>
+<span class="nc" id="L66">        byte[] digest = md.digest();</span>
+
+        /* Converteer byte array naar hex-weergave */
+<span class="nc" id="L69">        StringBuilder sb = new StringBuilder(digest.length*2);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (byte b : digest) {</span>
+<span class="nc" id="L71">            sb.append(Integer.toHexString(b &gt;&gt; 4 &amp; 0xf)); /* and mask met 0xf nodig door sign-extenden van bytes... */</span>
+<span class="nc" id="L72">            sb.append(Integer.toHexString(b &amp; 0xf));</span>
+        }
+<span class="nc" id="L74">        setPassword(sb.toString());</span>
+<span class="nc" id="L75">    }</span>
+    
+    public String getPassword() {
+<span class="nc" id="L78">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="nc" id="L82">        this.password = password;</span>
+<span class="nc" id="L83">    }</span>
+
+    public Map&lt;String, String&gt; getDetails() {
+<span class="nc" id="L86">        return details;</span>
+    }
+
+    public void setDetails(Map&lt;String, String&gt; details) {
+<span class="nc" id="L90">        this.details = details;</span>
+<span class="nc" id="L91">    }</span>
+
+    public Set&lt;Group&gt; getGroups() {
+<span class="nc" id="L94">        return groups;</span>
+    }
+
+    public void setGroups(Set&lt;Group&gt; groups) {
+<span class="nc" id="L98">        this.groups = groups;</span>
+<span class="nc" id="L99">    }</span>
+
+    public String getUsername() {
+<span class="nc" id="L102">        return username;</span>
+    }
+
+    public void setUsername(String username) {
+<span class="nc" id="L106">        this.username = username;</span>
+<span class="nc" id="L107">    }</span>
+
+    public Set&lt;String&gt; getIps() {
+<span class="nc" id="L110">        return ips;</span>
+    }
+
+    public void setIps(Set&lt;String&gt; ips) {
+<span class="nc" id="L114">        this.ips = ips;</span>
+<span class="nc" id="L115">    }</span>
+
+    public boolean checkRole(String role){
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (Group group : groups) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">            if(group.getName().equals(role)){</span>
+<span class="nc" id="L120">                return true;</span>
+            }
+<span class="nc" id="L122">        }</span>
+<span class="nc" id="L123">        return false;</span>
+    }
+
+    public boolean isAuthenticatedByIp() {
+<span class="nc" id="L127">        return authenticatedByIp;</span>
+    }
+
+    public void setAuthenticatedByIp(boolean authenticatedByIp) {
+<span class="nc" id="L131">        this.authenticatedByIp = authenticatedByIp;</span>
+<span class="nc" id="L132">    }</span>
+
+    @Override
+    public String getName() {
+<span class="nc" id="L136">        return username;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

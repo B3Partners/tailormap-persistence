@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RemoveEmptyMapValuesUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config</a> &gt; <span class="el_source">RemoveEmptyMapValuesUtil.java</span></div><h1>RemoveEmptyMapValuesUtil.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+<span class="nc" id="L17">public class RemoveEmptyMapValuesUtil {</span>
+
+    /**
+     * IMPORTANT TO CALL THIS BEFORE SAVING / UPDATING AN ENTITY WITH A DETAILS
+     * MAP. Hibernate fails to remove map entries with a null value when calling
+     * clear() on a map on Oracle. This leads to duplicate key violations when
+     * updating layer details.
+     * &lt;p&gt;
+     * {@code @PreUpdate}/{@code @PrePersist} nor {@code @EntityListeners} do
+     * not work consistenly with cascaded objects in Hibernate, so call this
+     * manually!
+     *
+     * @param map the map to clean up
+     */
+    public static void removeEmptyMapValues(Map map) {
+<span class="nc" id="L32">        List keysToRemove = new ArrayList();</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        for(Map.Entry entry: (Set&lt;Map.Entry&gt;)map.entrySet()) {</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            if(entry.getValue() == null </span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">                || (entry.getValue() instanceof String &amp;&amp; StringUtils.isEmpty((String)entry.getValue()))</span>
+<span class="nc bnc" id="L36" title="All 4 branches missed.">                || (entry.getValue() instanceof ClobElement &amp;&amp; StringUtils.isEmpty(((ClobElement)entry.getValue()).getValue()))) {</span>
+<span class="nc" id="L37">                keysToRemove.add(entry.getKey());</span>
+            }
+<span class="nc" id="L39">        }</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        for(Object key: keysToRemove) {</span>
+<span class="nc" id="L41">            map.remove(key);</span>
+<span class="nc" id="L42">        }</span>
+<span class="nc" id="L43">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

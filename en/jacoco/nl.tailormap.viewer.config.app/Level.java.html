@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Level.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">Level.java</span></div><h1>Level.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import nl.tailormap.viewer.config.services.Document;
+import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+@Table(name=&quot;level_&quot;)
+<span class="fc" id="L41">public class Level implements Comparable&lt;Level&gt; {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;parent&quot;)
+    private Level parent;
+    
+    @Basic(optional=false)
+    private String name;
+
+<span class="fc" id="L53">    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268    </span>
+    @JoinTable(
+            name=&quot;level_children&quot;,
+            joinColumns=@JoinColumn(name = &quot;level_&quot;, referencedColumnName = &quot;id&quot;),
+            inverseJoinColumns=@JoinColumn(name=&quot;child&quot;))
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;Level&gt; children = new ArrayList&lt;&gt;();
+
+    private boolean background;
+
+<span class="fc" id="L63">    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name=&quot;level_layers&quot;,
+            joinColumns=@JoinColumn(name = &quot;level_&quot;, referencedColumnName = &quot;id&quot;),
+            inverseJoinColumns=@JoinColumn(name=&quot;layer&quot;))
+    @OrderColumn(name=&quot;list_index&quot;)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
+    private List&lt;ApplicationLayer&gt; layers = new ArrayList&lt;&gt;();
+
+<span class="fc" id="L72">    @ManyToMany</span>
+    @JoinTable(
+            name=&quot;level_documents&quot;,
+            inverseJoinColumns=@JoinColumn(name=&quot;document&quot;),
+            joinColumns=@JoinColumn(name = &quot;level_&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;Document&gt; documents = new ArrayList&lt;&gt;();
+
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String info;
+
+<span class="fc" id="L85">    @ElementCollection</span>
+    @JoinTable(joinColumns=@JoinColumn(name=&quot;level_&quot;))
+    @Column(name=&quot;role_name&quot;)
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+
+    private String url;
+
+<span class="fc" id="L92">    @OneToMany(mappedBy = &quot;level&quot;,orphanRemoval = true, cascade = CascadeType.ALL)</span>
+    @MapKey(name = &quot;application&quot;)
+    private Map&lt;Application, StartLevel&gt; startLevels = new HashMap&lt;&gt;();
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters and setters&quot;&gt;
+    public Long getId() {
+<span class="nc" id="L98">        return id;</span>
+    }
+    
+    public void setId(Long id) {
+<span class="nc" id="L102">        this.id = id;</span>
+<span class="nc" id="L103">    }</span>
+    
+    public List&lt;Level&gt; getChildren() {
+<span class="fc" id="L106">        return children;</span>
+    }
+    
+    public void setChildren(List&lt;Level&gt; children) {
+<span class="nc" id="L110">        this.children = children;</span>
+<span class="nc" id="L111">    }</span>
+    
+    public String getInfo() {
+<span class="nc" id="L114">        return info;</span>
+    }
+    
+    public void setInfo(String info) {
+<span class="nc" id="L118">        this.info = info;</span>
+<span class="nc" id="L119">    }</span>
+    
+    public List&lt;ApplicationLayer&gt; getLayers() {
+<span class="fc" id="L122">        return layers;</span>
+    }
+    
+    public void setLayers(List&lt;ApplicationLayer&gt; layers) {
+<span class="nc" id="L126">        this.layers = layers;</span>
+<span class="nc" id="L127">    }</span>
+    
+    public Level getParent() {
+<span class="nc" id="L130">        return parent;</span>
+    }
+    
+    public void setParent(Level parent) {
+<span class="fc" id="L134">        this.parent = parent;</span>
+<span class="fc" id="L135">    }</span>
+    
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L138">        return readers;</span>
+    }
+    
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L142">        this.readers = readers;</span>
+<span class="nc" id="L143">    }</span>
+    
+    public boolean isBackground() {
+<span class="nc" id="L146">        return background;</span>
+    }
+    
+    public void setBackground(boolean background) {
+<span class="nc" id="L150">        this.background = background;</span>
+<span class="nc" id="L151">    }</span>
+    
+    public List&lt;Document&gt; getDocuments() {
+<span class="nc" id="L154">        return documents;</span>
+    }
+    
+    public void setDocuments(List&lt;Document&gt; documents) {
+<span class="nc" id="L158">        this.documents = documents;</span>
+<span class="nc" id="L159">    }</span>
+    
+    public String getName() {
+<span class="nc" id="L162">        return name;</span>
+    }
+    
+    public void setName(String name) {
+<span class="fc" id="L166">        this.name = name;</span>
+<span class="fc" id="L167">    }</span>
+
+    public String getUrl() {
+<span class="nc" id="L170">        return url;</span>
+    }
+
+    public void setUrl(String url) {
+<span class="nc" id="L174">        this.url = url;</span>
+<span class="nc" id="L175">    }</span>
+
+    public Map&lt;Application, StartLevel&gt; getStartLevels() {
+<span class="fc" id="L178">        return startLevels;</span>
+    }
+
+    public void setStartLevels(Map&lt;Application, StartLevel&gt; startLevels) {
+<span class="nc" id="L182">        this.startLevels = startLevels;</span>
+<span class="nc" id="L183">    }</span>
+
+    //&lt;/editor-fold&gt;
+
+    
+
+    public String getPath() {
+<span class="nc" id="L190">        Level l = this;</span>
+        
+<span class="nc" id="L192">        String s = &quot;&quot;;</span>
+        do {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            s = l.getName() + (s.length() == 0 ? &quot;&quot; : &quot;/&quot; + s);</span>
+<span class="nc" id="L195">            l = l.getParent();</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        } while(l != null);</span>
+        
+<span class="nc" id="L198">        return s;            </span>
+    }
+    
+    public Level getParentInSubtree(ApplicationLayer appLayer){
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        for(ApplicationLayer al: layers) {</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if(al.equals(appLayer)) {</span>
+<span class="nc" id="L204">                return this;</span>
+            }
+<span class="nc" id="L206">        }</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        for(Level child: children) {</span>
+<span class="nc" id="L208">            Level parent = child.getParentInSubtree(appLayer);</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">            if(parent!=null) {</span>
+<span class="nc" id="L210">                return parent;</span>
+            }
+<span class="nc" id="L212">        }</span>
+<span class="nc" id="L213">        return null;</span>
+    }
+    
+    public Level getParentInSubtree(Level level){
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        for(Level child: children) {</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">            if(child.equals(level)) {</span>
+<span class="nc" id="L219">                return this;</span>
+            }
+<span class="nc" id="L221">            Level parent = child.getParentInSubtree(level);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">            if(parent !=null) {</span>
+<span class="nc" id="L223">                return parent;</span>
+            }
+<span class="nc" id="L225">        }        </span>
+<span class="nc" id="L226">        return null;</span>
+    }
+    
+    public boolean containsLayerInSubtree(ApplicationLayer appLayer) {
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        return this.getParentInSubtree(appLayer)!=null;</span>
+    }
+
+    public boolean containsLevelInSubtree(Level level) {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        return this.getParentInSubtree(level)!=null;</span>
+    }
+    
+    public boolean hasLayerInSubtree(){
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if(!layers.isEmpty()){</span>
+<span class="nc" id="L239">            return true;</span>
+        }else{
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            for (Level level : children) {</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">                if(level.hasLayerInSubtree()){</span>
+<span class="nc" id="L243">                    return true;</span>
+                }
+<span class="nc" id="L245">            }</span>
+        }
+<span class="nc" id="L247">        return false;</span>
+    }
+
+    public boolean isInSubtreeOf(Level level) {
+<span class="nc" id="L251">        Level parentLevel = parent;</span>
+        do {
+<span class="nc bnc" id="L253" title="All 2 branches missed.">            if(parentLevel.equals(level)) {</span>
+<span class="nc" id="L254">                return true;</span>
+            }
+<span class="nc" id="L256">            parentLevel = parentLevel.getParent();</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">        } while(parentLevel != null);</span>
+<span class="nc" id="L258">        return false;</span>
+    }
+
+    public void processForMashup(Application mashup, Application motherApp) throws Exception{
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        for (Level child : children) {</span>
+<span class="nc" id="L263">            child.processForMashup(mashup, motherApp);</span>
+<span class="nc" id="L264">        }</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        for (ApplicationLayer layer : layers) {</span>
+<span class="nc" id="L266">            layer.processStartLayers(mashup, layer, motherApp);</span>
+<span class="nc" id="L267">        }</span>
+<span class="nc" id="L268">        processStartLevels(mashup, this, motherApp);</span>
+<span class="nc" id="L269">    }</span>
+    
+    public void processForWorkversion(Application workversion, Application base) throws Exception{
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        for (Level child : children) {</span>
+<span class="nc" id="L273">            child.processForWorkversion(workversion, base);</span>
+<span class="nc" id="L274">        }</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        for (ApplicationLayer layer : layers) {</span>
+<span class="nc" id="L276">            layer.processStartLayers(workversion, (ApplicationLayer)workversion.originalToCopy.get(layer), base);</span>
+<span class="nc" id="L277">        }</span>
+<span class="nc" id="L278">        processStartLevels(workversion, (Level)workversion.originalToCopy.get(this), base);</span>
+<span class="nc" id="L279">    }</span>
+    
+    private void processStartLevels(Application app, Level original, Application copyFrom) throws Exception{
+<span class="nc" id="L282">       StartLevel sl = original.getStartLevels().get(copyFrom);</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">       if(sl != null){</span>
+<span class="nc" id="L284">           this.getStartLevels().put(app, sl.deepCopy(app, this));</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">       }else if (Objects.equals(app.getId(), copyFrom.getId())){</span>
+<span class="nc" id="L286">            List&lt;StartLevel&gt; sls = new ArrayList&lt;&gt;(original.startLevels.values());</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">           for (StartLevel value : sls) {</span>
+<span class="nc" id="L288">               this.getStartLevels().put(app, value.deepCopy(app, this));</span>
+<span class="nc" id="L289">           }</span>
+        }
+<span class="nc" id="L291">    }</span>
+
+    public Level deepCopy(Level parent, Map originalToCopy, Application app, boolean processStartMap) throws Exception {
+<span class="nc" id="L294">        Level copy = (Level)BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L295">        originalToCopy.put(this, copy);</span>
+<span class="nc" id="L296">        copy.setId(null);</span>
+<span class="nc" id="L297">        copy.setParent(parent);</span>
+        
+<span class="nc" id="L299">        copy.setChildren(new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">        for(Level child: children) {</span>
+<span class="nc" id="L301">            copy.getChildren().add(child.deepCopy(copy, originalToCopy, app,processStartMap));</span>
+<span class="nc" id="L302">        }</span>
+        
+<span class="nc" id="L304">        copy.setLayers(new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for(ApplicationLayer appLayer: layers) {</span>
+<span class="nc" id="L306">            copy.getLayers().add(appLayer.deepCopy(originalToCopy, app,processStartMap));</span>
+<span class="nc" id="L307">        }</span>
+        
+<span class="nc" id="L309">        copy.setStartLevels(new HashMap&lt;&gt;());</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if(processStartMap){</span>
+<span class="nc" id="L311">            copy.processStartLevels(app, this, app);</span>
+        }
+        
+        // do not clone documents, only the list
+<span class="nc" id="L315">        copy.setDocuments(new ArrayList&lt;&gt;(documents));</span>
+        
+<span class="nc" id="L317">        copy.setReaders(new HashSet&lt;&gt;(readers));</span>
+        
+<span class="nc" id="L319">        copy.setInfo(info);</span>
+        
+<span class="nc" id="L321">        copy.setUrl(url);</span>
+        
+<span class="nc" id="L323">        return copy;</span>
+    }
+    
+    @Override
+    public String toString() {
+<span class="nc" id="L328">        return String.format(&quot;Level [id=%d, name=%s, parent=%d]&quot;,</span>
+                id,
+                name,
+<span class="nc bnc" id="L331" title="All 2 branches missed.">                parent == null ? null : parent.getId());</span>
+    }    
+
+    @Override
+    public int compareTo(Level level) {
+<span class="nc" id="L336">        return this.getName().compareTo(level.getName());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

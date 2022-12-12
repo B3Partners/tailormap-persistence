@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Authorizations.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.security</a> &gt; <span class="el_source">Authorizations.java</span></div><h1>Authorizations.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.security;
+
+import nl.tailormap.viewer.config.forms.Form;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.persistence.EntityManager;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
+
+/**
+ * Utility class for authorization checking. Because of the inheritence of 
+ * authorizations in tree structures, caches are used for efficient 
+ * authorization checks.
+ * &lt;p&gt;
+ * There are authorizations on these objects:
+ * &lt;p&gt;
+ * &lt;b&gt;Geo services registry:&lt;/b&gt;
+ * &lt;ul&gt;
+ * &lt;li&gt;Categories: currently disabled, not accessible via user interface&lt;/li&gt;
+ * &lt;li&gt;Layers of GeoServices: with inheritence, read/write authorizations&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * &lt;b&gt;Application:&lt;/b&gt;
+ * &lt;ul&gt;
+ * &lt;li&gt;Levels: with inheritence, read authorization only&lt;/li&gt;
+ * &lt;li&gt;ApplicationLayers of Levels: inherits from Level &lt;i&gt;and&lt;/i&gt; the referenced Layer, read/write authorizations&lt;/li&gt;
+ * &lt;li&gt;ConfiguredComponents&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * Authorizations are based on role names which are Group names.
+ * &lt;p&gt;
+ * &lt;b&gt;Inheritence and authorization rules:&lt;/b&gt;
+ * &lt;ol&gt;
+ * &lt;li&gt;The empty set of authorized role names (EVERYBODY) means
+ * everybody is authorized.&lt;/li&gt;
+ * &lt;li&gt;A non-empty set which is not equal to NOBODY means only users who
+ * are members of the named Groups in the set are authorized&lt;/li&gt;
+ * &lt;li&gt;NOBODY is the set containing a single value which is null.&lt;/li&gt;
+ * &lt;li&gt;Inheritence processing starts at the root with everybody authorized.&lt;/li&gt;
+ * &lt;li&gt;When inheriting authorizations, the set of authorized roles can only be
+ * reduced and not expanded. When a parent is authorized for roles A and B and
+ * the set of authorized roles for a child is B and C, only B is authorized. When
+ * the child is only authorized for role C, nobody will be authorized for the child.&lt;/li&gt;
+ * &lt;li&gt;Because of the default access for everybody, denying editing for example is done
+ * by only authorizing write access to a group which has no members.&lt;/li&gt;
+ * &lt;/ol&gt;
+ * &lt;b&gt;Caching&lt;/b&gt;
+ * &lt;ul&gt;
+ * &lt;li&gt;Layer authorizations are cached and invalidated when authorizations are 
+ * changed for a GeoService by updating the GeoService.authorizationsModified timestamp.&lt;/li&gt;
+ * &lt;li&gt;Level and ApplicationLayer authorizations are cached and invalidated when
+ * authorizations on a Level or ApplicationLayer are changed by updating the 
+ * Application.authorizationsModified timestamp.&lt;/li&gt;
+ * &lt;li&gt;Because ApplicationLayer authorizations inherit from Layer authorizations,
+ * Application caches are invalidated when any authorization on a Layer changes. 
+ * &lt;/ul&gt;
+ * Although when authorizations are changed for an object only the cached object
+ * and its inheriting objects could be refreshed in the cache, the entire set of
+ * cached Layers of a GeoService or cached Levels and ApplicationLayers of an 
+ * Application are invalidated because:
+ * &lt;ol&gt;
+ * &lt;li&gt;The viewer-admin webapp is isolated from the viewer webapp so it cannot 
+ * access its application-scope cache without extra cross-webapp communication.&lt;/li&gt;
+ * &lt;li&gt;The viewer-admin webapp communicates with the viewer webapp to refresh
+ * its cache by updating the above mentioned authorizationChanged database columns.&lt;/li&gt;
+ * &lt;li&gt;The cache for an Application is invalidated when the maximum authorization 
+ * changed date (for all GeoServices) column is later than the Application authorization 
+ * changed date.&lt;/li&gt;
+ * &lt;li&gt;These database columns are the simplest method to refresh the cache, and no
+ * partial updates are required to maintain performance because authorizations are
+ * modified infrequently.&lt;/li&gt;
+ * &lt;li&gt;Applying inherited authorizations is optimized by loading a tree in a single
+ * query using hierarchical queries.&lt;/li&gt;
+ * &lt;/ol&gt;
+ * &lt;p&gt;
+ * Group membership for a User is not cached and read from the database for
+ * the first authorization check in a Transaction. So authorization changes by
+ * an administrator should always be directly applied except authorization checks
+ * which use HttpServletRequest.isUserInRole(), which is cached by the servlet
+ * container. Currently only viewer-admin checks roles this way.
+ * @author Matthijs Laan
+ */
+public class Authorizations {
+    public static final String AUTHORIZATIONS_KEY = &quot;authorizations&quot;;
+
+<span class="nc" id="L94">    private static final Log log = LogFactory.getLog(Authorizations.class);</span>
+
+    public static boolean isFormAuthorized(Form f, Set&lt;String&gt; userRoles, EntityManager em) {
+<span class="nc" id="L97">        Set&lt;String&gt; formRoles = f.getReaders();</span>
+<span class="nc bnc" id="L98" title="All 4 branches missed.">        return !Collections.disjoint(userRoles, formRoles) || formRoles.isEmpty();</span>
+    }
+
+
+    public static boolean isUserExpired(User u) {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if(u == null){</span>
+<span class="nc" id="L104">            return false;</span>
+        }
+        Date today;
+        Date expire;
+        try {
+<span class="nc" id="L109">            DateFormat formatter = new SimpleDateFormat(&quot;dd-MM-yyyy&quot;);</span>
+<span class="nc" id="L110">            expire = formatter.parse(u.getDetails().getOrDefault(&quot;expiry_date&quot;,formatter.format(new Date())));</span>
+<span class="nc" id="L111">            today = formatter.parse(formatter.format(new Date()));</span>
+<span class="nc" id="L112">        } catch (ParseException e){</span>
+<span class="nc" id="L113">            log.error(&quot;Error parsing expiry_date for user: &quot; + u.getUsername(), e);</span>
+<span class="nc" id="L114">            return  true;</span>
+<span class="nc" id="L115">        }</span>
+<span class="nc" id="L116">        return today.after(expire);</span>
+    }
+
+    private Authorizations(){}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

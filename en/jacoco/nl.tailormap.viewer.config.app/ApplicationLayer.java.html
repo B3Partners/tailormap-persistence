@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApplicationLayer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">ApplicationLayer.java</span></div><h1>ApplicationLayer.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import nl.tailormap.viewer.config.ClobElement;
+import nl.tailormap.viewer.config.services.ArcGISFeatureSource;
+import nl.tailormap.viewer.config.services.ArcGISService;
+import nl.tailormap.viewer.config.services.AttributeDescriptor;
+import nl.tailormap.viewer.config.services.FeatureTypeRelation;
+import nl.tailormap.viewer.config.services.GeoService;
+import nl.tailormap.viewer.config.services.Layer;
+import nl.tailormap.viewer.config.services.SimpleFeatureType;
+import nl.tailormap.viewer.config.services.WMSService;
+import org.apache.commons.beanutils.BeanUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+<span class="fc" id="L50">public class ApplicationLayer {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;service&quot;)
+    private GeoService service;
+
+    /**
+     * Not direct association to a layer but the name of the layer. No foreign
+     * key so the GeoService layers can be refreshed without breaking relations.
+     * Although the name of a layer is not guaranteed unique, ignore this for
+     * now.
+     */
+    @Basic(optional=false)
+    private String layerName;
+    
+<span class="fc" id="L68">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;application_layer&quot;))
+    @Column(name=&quot;role_name&quot;)
+    private Set&lt;String&gt; readers = new HashSet&lt;&gt;();
+
+<span class="fc" id="L73">    @ElementCollection</span>
+    @CollectionTable(joinColumns = @JoinColumn(name = &quot;application_layer&quot;))
+    @Column(name=&quot;role_name&quot;)
+    private Set&lt;String&gt; writers = new HashSet&lt;&gt;();
+
+<span class="fc" id="L78">    @ElementCollection</span>
+    @JoinTable(joinColumns=@JoinColumn(name=&quot;application_layer&quot;))
+    // Element wrapper required because of http://opensource.atlassian.com/projects/hibernate/browse/JPA-11    
+    private Map&lt;String, ClobElement&gt; details = new HashMap&lt;&gt;();
+
+<span class="fc" id="L83">    @ManyToMany(cascade=CascadeType.ALL) // Actually @OneToMany, workaround for HHH-1268</span>
+    @JoinTable(
+            name=&quot;application_layer_attributes&quot;,
+            inverseJoinColumns=@JoinColumn(name=&quot;attribute_&quot;),
+            joinColumns=@JoinColumn(name = &quot;application_layer&quot;, referencedColumnName = &quot;id&quot;)
+    )
+    @OrderColumn(name=&quot;list_index&quot;)
+    private List&lt;ConfiguredAttribute&gt; attributes = new ArrayList&lt;&gt;();
+
+
+<span class="fc" id="L93">    @OneToMany(mappedBy = &quot;applicationLayer&quot;,orphanRemoval = true, cascade = CascadeType.ALL)</span>
+    @MapKey(name = &quot;application&quot;)
+    private Map&lt;Application, StartLayer&gt; startLayers = new HashMap&lt;&gt;();
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters en setters&quot;&gt;
+    public List&lt;ConfiguredAttribute&gt; getAttributes() {
+<span class="nc" id="L99">        return attributes;</span>
+    }
+    
+    public void setAttributes(List&lt;ConfiguredAttribute&gt; attributes) {
+<span class="fc" id="L103">        this.attributes = attributes;</span>
+<span class="fc" id="L104">    }</span>
+
+    public Map&lt;String, ClobElement&gt; getDetails() {
+<span class="nc" id="L107">        return details;</span>
+    }
+    
+    public void setDetails(Map&lt;String, ClobElement&gt; details) {
+<span class="nc" id="L111">        this.details = details;</span>
+<span class="nc" id="L112">    }</span>
+    
+    public Long getId() {
+<span class="fc" id="L115">        return id;</span>
+    }
+    
+    public void setId(Long id) {
+<span class="nc" id="L119">        this.id = id;</span>
+<span class="nc" id="L120">    }</span>
+    
+    public Set&lt;String&gt; getReaders() {
+<span class="nc" id="L123">        return readers;</span>
+    }
+    
+    public void setReaders(Set&lt;String&gt; readers) {
+<span class="nc" id="L127">        this.readers = readers;</span>
+<span class="nc" id="L128">    }</span>
+    
+    public Set&lt;String&gt; getWriters() {
+<span class="nc" id="L131">        return writers;</span>
+    }
+    
+    public void setWriters(Set&lt;String&gt; writers) {
+<span class="nc" id="L135">        this.writers = writers;</span>
+<span class="nc" id="L136">    }</span>
+    
+    
+    public GeoService getService() {
+<span class="nc" id="L140">        return service;</span>
+    }
+    
+    public void setService(GeoService service) {
+<span class="fc" id="L144">        this.service = service;</span>
+<span class="fc" id="L145">    }</span>
+    
+    public String getLayerName() {
+<span class="nc" id="L148">        return layerName;</span>
+    }
+    
+    public void setLayerName(String layerName) {
+<span class="fc" id="L152">        this.layerName = layerName;</span>
+<span class="fc" id="L153">    }</span>
+
+    public Map&lt;Application, StartLayer&gt; getStartLayers() {
+<span class="fc" id="L156">        return startLayers;</span>
+    }
+
+    public void setStartLayers(Map&lt;Application, StartLayer&gt; startLayers) {
+<span class="nc" id="L160">        this.startLayers = startLayers;</span>
+<span class="nc" id="L161">    }</span>
+
+    //&lt;/editor-fold&gt;
+    
+    /**
+     * Get all the attributes from this applicationLayer that are from the given
+     * SimpleFeatureType (or the SimpleFeatureType == null, for configured
+     * attributes that don't have a SimpleFeatureType set yet). Optional the
+     * joined SimpleFeatureType attributes that are joined can be added
+     * (includeJoined=true)
+     *
+     * @param sft the type to get the attributes
+     * @return list of configured attributes
+     */
+    public List&lt;ConfiguredAttribute&gt; getAttributes(SimpleFeatureType sft){
+<span class="nc" id="L176">        return getAttributes(sft, false, new ArrayList&lt;&gt;());</span>
+    }
+    public List&lt;ConfiguredAttribute&gt; getAttributes(SimpleFeatureType sft, boolean includeJoined){
+<span class="nc" id="L179">        return getAttributes(sft, includeJoined, new ArrayList&lt;&gt;());</span>
+    }
+    private List&lt;ConfiguredAttribute&gt; getAttributes(SimpleFeatureType sft,boolean includeJoined, List&lt;ConfiguredAttribute&gt; attri){
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        for(ConfiguredAttribute att: this.attributes) {</span>
+<span class="nc bnc" id="L183" title="All 4 branches missed.">            if(att.getFeatureType()==null || att.getFeatureType().getId().equals(sft.getId())) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (attri.contains(att)){</span>
+<span class="nc" id="L185">                    return attri;</span>
+                }
+<span class="nc" id="L187">                attri.add(att);</span>
+            }
+<span class="nc" id="L189">        }</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if (includeJoined){</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">            for (FeatureTypeRelation rel : sft.getRelations()){</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                if (FeatureTypeRelation.JOIN.equals(rel.getType())){</span>
+<span class="nc" id="L193">                    attri = getAttributes(rel.getForeignFeatureType(),true,attri);                                        </span>
+                }
+<span class="nc" id="L195">            }</span>
+        }
+<span class="nc" id="L197">        return attri;</span>
+    }
+    public ConfiguredAttribute getAttribute(SimpleFeatureType sft,String name){
+<span class="nc bnc" id="L200" title="All 2 branches missed.">         for(ConfiguredAttribute att: attributes) {</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">            if(att.getAttributeName().equals(name) &amp;&amp; </span>
+<span class="nc bnc" id="L202" title="All 4 branches missed.">                    (att.getFeatureType()==null || att.getFeatureType().getId().equals(sft.getId()))) {</span>
+<span class="nc" id="L203">                return att;</span>
+            }
+<span class="nc" id="L205">        }</span>
+<span class="nc" id="L206">        return null;</span>
+    }
+    public String getDisplayName(EntityManager em) {
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if(ClobElement.isNotBlank(getDetails().get(&quot;titleAlias&quot;))) {</span>
+<span class="nc" id="L210">            return getDetails().get(&quot;titleAlias&quot;).getValue();</span>
+        } else {
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            Layer l = getService() == null ? null : getService().getLayer(getLayerName(),em);</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">            if(l != null) {</span>
+<span class="nc" id="L214">                return l.getDisplayName();</span>
+            } else {
+<span class="nc" id="L216">                return getLayerName();</span>
+            }
+        }
+    }
+
+    public JSONObject toJSONObject(EntityManager em) throws JSONException {
+<span class="nc" id="L222">        return toJSONObject(false, false, em, null);</span>
+    }
+    
+    public JSONObject toJSONObject(boolean includeAttributes, boolean includeRelations,EntityManager em, Application app) throws JSONException {
+
+<span class="nc" id="L227">        JSONObject o = new JSONObject();</span>
+<span class="nc" id="L228">        o.put(&quot;id&quot;, getId());</span>
+<span class="nc" id="L229">        o.put(&quot;layerName&quot;, getLayerName());</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if(getService() != null) {</span>
+<span class="nc" id="L231">            o.put(&quot;serviceId&quot;, getService().getId());</span>
+        }
+<span class="nc" id="L233">        o.put(&quot;alias&quot;, getDisplayName(em));</span>
+
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        Layer l = getService() == null ? null : getService().getLayer(getLayerName(), em);</span>
+<span class="nc bnc" id="L236" title="All 4 branches missed.">        if(l != null &amp;&amp; l.getFeatureType() != null) {</span>
+<span class="nc" id="L237">            o.put(&quot;featureType&quot;, l.getFeatureType().getId());</span>
+<span class="nc" id="L238">            o.put(&quot;featureTypeName&quot;, l.getFeatureType().getTypeName());</span>
+        }
+        /* TODO add attribute if writeable according to al.getWriters() */
+
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if(!getDetails().isEmpty()) {</span>
+<span class="nc" id="L243">            JSONObject d = new JSONObject();</span>
+<span class="nc" id="L244">            o.put(&quot;details&quot;, d);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">            for(Map.Entry&lt;String,ClobElement&gt; e: getDetails().entrySet()) {</span>
+<span class="nc" id="L246">                d.put(e.getKey(), e.getValue().getValue());</span>
+<span class="nc" id="L247">            }</span>
+        }
+        
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if(includeAttributes) {</span>
+<span class="nc" id="L251">            addAttributesJSON(o, includeRelations, em);</span>
+        }
+
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        if(l != null) {</span>
+<span class="nc" id="L255">            addLayerListDetails(o, l);</span>
+        }
+<span class="nc" id="L257">        StartLayer sl = getStartLayers().get(app);</span>
+<span class="nc bnc" id="L258" title="All 4 branches missed.">        o.put(&quot;checked&quot;, sl != null &amp;&amp; sl.isChecked());</span>
+
+<span class="nc" id="L260">        return o;</span>
+    }
+
+    public void addLayerListDetails(JSONObject json, Layer l){
+<span class="nc" id="L264">        json.put(&quot;layerId&quot;, l.getId());</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        if (l.getService() instanceof WMSService) {</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">            json.put(&quot;filterable&quot;, l.getFeatureType() != null);</span>
+        }else{
+<span class="nc" id="L268">            json.put(&quot;filterable&quot;, l.isFilterable());</span>
+        }
+
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if( l.getService() instanceof ArcGISService){</span>
+<span class="nc bnc" id="L272" title="All 4 branches missed.">            json.put(&quot;filterable&quot;, l.getFeatureType() != null &amp;&amp; !(l.getFeatureType().getFeatureSource() instanceof ArcGISFeatureSource) );</span>
+        }
+
+<span class="nc bnc" id="L275" title="All 2 branches missed.">        boolean userLayer = l.isUserlayer() != null ? l.isUserlayer() : false;</span>
+
+<span class="nc" id="L277">        json.put(&quot;userlayer&quot;, userLayer);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if(userLayer){</span>
+<span class="nc" id="L279">            json.put(Layer.DETAIL_USERLAYER_ORIGINAL_LAYERNAME, l.getDetails().get(Layer.DETAIL_USERLAYER_ORIGINAL_LAYERNAME) );</span>
+<span class="nc" id="L280">            json.put(Layer.DETAIL_USERLAYER_ORIGINAL_FEATURE_TYPE_NAME, l.getDetails().get(Layer.DETAIL_USERLAYER_ORIGINAL_FEATURE_TYPE_NAME) );</span>
+        }
+<span class="nc" id="L282">        json.put(&quot;bufferable&quot;, l.isBufferable());</span>
+<span class="nc bnc" id="L283" title="All 4 branches missed.">        json.put(&quot;editable&quot;, l.getFeatureType() != null &amp;&amp; l.getFeatureType().isWriteable());</span>
+<span class="nc" id="L284">        json.put(&quot;influence&quot;, this.getDetails().containsKey(&quot;influenceradius&quot;));</span>
+<span class="nc" id="L285">        json.put(&quot;arc&quot;, l.getService().getProtocol().startsWith(&quot;arc&quot;));</span>
+<span class="nc bnc" id="L286" title="All 4 branches missed.">        json.put(&quot;wfs&quot;, l.getFeatureType() != null &amp;&amp; l.getFeatureType().getFeatureSource().getProtocol().equals(&quot;wfs&quot;));</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        json.put(&quot;attribute&quot;, !this.getAttributes().isEmpty());</span>
+<span class="nc" id="L288">    }</span>
+    
+    public void addAttributesJSON(JSONObject json, boolean includeRelations, EntityManager em) throws JSONException {
+<span class="nc" id="L291">        Layer layer = getService().getSingleLayer(getLayerName(),em);</span>
+<span class="nc" id="L292">        Map&lt;String,AttributeDescriptor&gt; featureTypeAttributes = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L293">        SimpleFeatureType ft = null;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        if(layer != null) {</span>
+<span class="nc" id="L295">            ft = layer.getFeatureType();</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">            if(ft != null) {</span>
+<span class="nc" id="L297">                featureTypeAttributes = makeAttributeDescriptorList(ft);</span>
+            }            
+        }
+
+<span class="nc" id="L301">        Integer geometryAttributeIndex = null;</span>
+<span class="nc" id="L302">        JSONArray jattributes = new JSONArray();</span>
+<span class="nc" id="L303">        json.put(&quot;attributes&quot;, jattributes);</span>
+
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        for(ConfiguredAttribute ca: getAttributes()) {</span>
+<span class="nc" id="L306">            JSONObject j = ca.toJSONObject();                </span>
+<span class="nc" id="L307">            AttributeDescriptor ad = featureTypeAttributes.get(ca.getFullName());</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">            if(ad != null) {</span>
+<span class="nc" id="L309">                j.put(&quot;alias&quot;, ad.getAlias());</span>
+<span class="nc" id="L310">                j.put(&quot;type&quot;, ad.getType());</span>
+
+<span class="nc bnc" id="L312" title="All 6 branches missed.">                if(ft != null &amp;&amp; ca.getAttributeName().equals(ft.getGeometryAttribute()) &amp;&amp; ca.getFeatureType().getId() == ft.getId() ) {</span>
+<span class="nc" id="L313">                    geometryAttributeIndex = jattributes.length();</span>
+                }
+            }
+<span class="nc" id="L316">            jattributes.put(j);</span>
+<span class="nc" id="L317">        }</span>
+
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        if(ft != null) {</span>
+<span class="nc" id="L320">            json.put(&quot;geometryAttribute&quot;, ft.getGeometryAttribute());</span>
+<span class="nc" id="L321">            json.put(&quot;featureType&quot;, ft.getId());</span>
+<span class="nc" id="L322">            json.put(&quot;featureTypeName&quot;, ft.getTypeName());</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">            if(includeRelations) {</span>
+
+<span class="nc" id="L325">                json.put(&quot;relations&quot;, getRelationsJSON(layer));</span>
+<span class="nc" id="L326">                json.put(&quot;invertedRelations&quot;, getInvertedRelationsJSON(layer, em));</span>
+            }
+        }
+<span class="nc bnc" id="L329" title="All 2 branches missed.">        if(geometryAttributeIndex != null) {</span>
+<span class="nc" id="L330">            json.put(&quot;geometryAttributeIndex&quot;, geometryAttributeIndex);</span>
+        }        
+<span class="nc" id="L332">    }</span>
+
+    /**
+     * Get relations of this applayer to other featuretypes: 1-n (1 = current applayer, n are the relations
+     * @param layer Layer for which relations must be retrievd
+     * @return JSONArray with relations
+     * @throws JSONException when an exception occurs
+     */
+    public JSONArray getRelationsJSON(Layer layer) throws JSONException {
+<span class="nc" id="L341">        JSONArray j = new JSONArray();</span>
+
+<span class="nc bnc" id="L343" title="All 4 branches missed.">        if(layer != null &amp;&amp; layer.getFeatureType() != null) {</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            for(FeatureTypeRelation rel: layer.getFeatureType().getRelations()){</span>
+<span class="nc" id="L345">                JSONObject jRel = rel.toJSONObject(layer.getFeatureType());</span>
+<span class="nc" id="L346">                j.put(jRel);</span>
+<span class="nc" id="L347">            }</span>
+        }
+<span class="nc" id="L349">        return j;</span>
+    }
+
+    /**
+     * Get all the relations of featuretypes that have this applayer as dependend n - 1 (n are other featuretypes, 1 = current layer)
+     *
+     * @param layer Layer for which relations must be retrievd
+     * @param em EntityManager used for retrieving the inverted relations
+     * @return JSONArray with relations
+     * @throws JSONException when an exception occurs
+     */
+    public JSONArray getInvertedRelationsJSON(Layer layer, EntityManager em) throws JSONException {
+<span class="nc" id="L361">        JSONArray relations = new JSONArray();</span>
+
+<span class="nc bnc" id="L363" title="All 4 branches missed.">        if(layer != null &amp;&amp; layer.getFeatureType() != null) {</span>
+<span class="nc" id="L364">            List&lt;FeatureTypeRelation&gt; frs = em.createQuery(&quot;from FeatureTypeRelation where foreignFeatureType = :ft&quot;, FeatureTypeRelation.class)</span>
+<span class="nc" id="L365">                    .setParameter(&quot;ft&quot;, layer.getFeatureType())</span>
+<span class="nc" id="L366">                    .getResultList();</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">            for (FeatureTypeRelation fr : frs) {</span>
+<span class="nc" id="L368">                relations.put(fr.toJSONObject(layer.getFeatureType()));</span>
+<span class="nc" id="L369">            }</span>
+        }
+<span class="nc" id="L371">        return relations;</span>
+    }
+
+    /**
+     * Makes a list of al the attributeDescriptors of the given FeatureType and
+     * all the child FeatureTypes (related by join/relate)
+     */
+    private Map&lt;String, AttributeDescriptor&gt; makeAttributeDescriptorList(SimpleFeatureType ft) {
+<span class="nc" id="L379">        Map&lt;String,AttributeDescriptor&gt; featureTypeAttributes = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">        for(AttributeDescriptor ad: ft.getAttributes()) {</span>
+<span class="nc" id="L381">            String name=ft.getId()+&quot;:&quot;+ad.getName();</span>
+            //stop when already added. Stop a infinite configurated loop
+<span class="nc bnc" id="L383" title="All 2 branches missed.">            if (featureTypeAttributes.containsKey(name)){</span>
+<span class="nc" id="L384">                return featureTypeAttributes;</span>
+            }
+<span class="nc" id="L386">            featureTypeAttributes.put(name, ad);</span>
+<span class="nc" id="L387">        }</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        if (ft.getRelations()!=null){</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">            for (FeatureTypeRelation rel : ft.getRelations()){</span>
+<span class="nc" id="L390">                featureTypeAttributes.putAll(makeAttributeDescriptorList(rel.getForeignFeatureType()));                </span>
+<span class="nc" id="L391">            }</span>
+        }
+<span class="nc" id="L393">        return featureTypeAttributes;</span>
+    }
+    
+    void processStartLayers(Application app, ApplicationLayer original, Application copyFrom) throws Exception{
+<span class="nc" id="L397">        StartLayer sl = original.getStartLayers().get(copyFrom);</span>
+       
+<span class="nc bnc" id="L399" title="All 2 branches missed.">       if(sl != null){</span>
+<span class="nc" id="L400">           this.getStartLayers().put(app, sl.deepCopy(this, app));</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">        } else if (Objects.equals(app.getId(), copyFrom.getId())) {</span>
+<span class="nc" id="L402">            List&lt;StartLayer&gt; al = new ArrayList&lt;&gt;(original.startLayers.values());</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">           for (StartLayer sl2 : al) {</span>
+<span class="nc" id="L404">               this.getStartLayers().put(app, sl2.deepCopy(this, app));</span>
+<span class="nc" id="L405">           }</span>
+        }
+<span class="nc" id="L407">    }</span>
+
+    ApplicationLayer deepCopy(Map originalToCopy, Application app, boolean processStartLayers) throws Exception {
+<span class="nc" id="L410">        ApplicationLayer copy = (ApplicationLayer) BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L411">        originalToCopy.put(this, copy);</span>
+<span class="nc" id="L412">        copy.setId(null);</span>
+        
+        // service reference is not deep copied, of course
+<span class="nc" id="L415">        copy.setReaders(new HashSet&lt;&gt;(readers));</span>
+<span class="nc" id="L416">        copy.setWriters(new HashSet&lt;&gt;(writers));</span>
+<span class="nc" id="L417">        copy.setDetails(new HashMap&lt;&gt;(details));</span>
+        
+<span class="nc" id="L419">        copy.setAttributes( new ArrayList&lt;&gt;());</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">        for(ConfiguredAttribute a: attributes) {</span>
+<span class="nc" id="L421">            copy.getAttributes().add(a.deepCopy());</span>
+<span class="nc" id="L422">        }</span>
+<span class="nc" id="L423">        copy.setStartLayers(new HashMap&lt;&gt;());</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        if(processStartLayers){</span>
+<span class="nc" id="L425">            copy.processStartLayers(app,this, app);</span>
+        }
+        
+<span class="nc" id="L428">        return copy;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L433">        return String.format(&quot;Application layer [id=%d, service id=%d, layer=%s]&quot;,</span>
+                id,
+<span class="nc bnc" id="L435" title="All 2 branches missed.">                service == null ? null : service.getId(),</span>
+                layerName);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

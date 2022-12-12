@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfiguredAttribute.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.app</a> &gt; <span class="el_source">ConfiguredAttribute.java</span></div><h1>ConfiguredAttribute.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2012-2021 B3Partners B.V.
+ */
+package nl.tailormap.viewer.config.app;
+
+import nl.tailormap.viewer.config.services.FeatureSource;
+import nl.tailormap.viewer.config.services.SimpleFeatureType;
+import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.annotations.Type;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+
+/**
+ *
+ * @author Matthijs Laan
+ */
+@Entity
+<span class="fc" id="L27">public class ConfiguredAttribute {</span>
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * Not a direct association but like ApplicationLayer.layerName
+     */
+    private String attributeName;
+    /** 
+     * link with feature type
+     */
+    @ManyToOne
+    @JoinColumn(name = &quot;feature_type&quot;)
+    private SimpleFeatureType featureType;
+    
+    private boolean visible;
+    private boolean editable;
+    private boolean selectable;
+    private boolean filterable;
+
+    private String editAlias;
+    private String editHeight;
+
+    /**
+     * JSON array
+     */
+    @Lob
+    @Type(type = &quot;org.hibernate.type.TextType&quot;)
+    private String editValues;
+
+    private String defaultValue;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;value_list_feature_source&quot;)
+    private FeatureSource valueListFeatureSource;
+
+    @ManyToOne
+    @JoinColumn(name = &quot;value_list_feature_type&quot;)
+    private SimpleFeatureType valueListFeatureType;
+
+    private String valueListLabelName;
+
+    private String valueListValueName;
+
+    private String valueList;
+
+    private boolean allowValueListOnly;
+
+    private boolean disallowNullValue;
+
+    private boolean disableUserEdit;
+    
+    private String label;
+    
+    private boolean automaticValue;
+    
+    private String automaticValueType;
+
+    //&lt;editor-fold defaultstate=&quot;collapsed&quot; desc=&quot;getters and setters&quot;&gt;
+    public String getAttributeName() {
+<span class="nc" id="L88">        return attributeName;</span>
+    }
+    
+    public void setAttributeName(String attributeName) {
+<span class="nc" id="L92">        this.attributeName = attributeName;</span>
+<span class="nc" id="L93">    }</span>
+    
+    public String getDefaultValue() {
+<span class="nc" id="L96">        return defaultValue;</span>
+    }
+    
+    public void setDefaultValue(String defaultValue) {
+<span class="nc" id="L100">        this.defaultValue = defaultValue;</span>
+<span class="nc" id="L101">    }</span>
+    
+    public String getEditAlias() {
+<span class="nc" id="L104">        return editAlias;</span>
+    }
+    
+    public void setEditAlias(String editAlias) {
+<span class="nc" id="L108">        this.editAlias = editAlias;</span>
+<span class="nc" id="L109">    }</span>
+    
+    public String getEditHeight() {
+<span class="nc" id="L112">        return editHeight;</span>
+    }
+    
+    public void setEditHeight(String editHeight) {
+<span class="nc" id="L116">        this.editHeight = editHeight;</span>
+<span class="nc" id="L117">    }</span>
+    
+    public String getEditValues() {
+<span class="nc" id="L120">        return editValues;</span>
+    }
+    
+    public void setEditValues(String editValues) {
+<span class="nc" id="L124">        this.editValues = editValues;</span>
+<span class="nc" id="L125">    }</span>
+    
+    public boolean isEditable() {
+<span class="nc" id="L128">        return editable;</span>
+    }
+    
+    public void setEditable(boolean editable) {
+<span class="nc" id="L132">        this.editable = editable;</span>
+<span class="nc" id="L133">    }</span>
+    
+    public boolean isFilterable() {
+<span class="nc" id="L136">        return filterable;</span>
+    }
+    
+    public void setFilterable(boolean filterable) {
+<span class="nc" id="L140">        this.filterable = filterable;</span>
+<span class="nc" id="L141">    }</span>
+    
+    public Long getId() {
+<span class="nc" id="L144">        return id;</span>
+    }
+    
+    public void setId(Long id) {
+<span class="nc" id="L148">        this.id = id;</span>
+<span class="nc" id="L149">    }</span>
+    
+    public boolean isSelectable() {
+<span class="nc" id="L152">        return selectable;</span>
+    }
+    
+    public void setSelectable(boolean selectable) {
+<span class="nc" id="L156">        this.selectable = selectable;</span>
+<span class="nc" id="L157">    }</span>
+    
+    public boolean isVisible() {
+<span class="nc" id="L160">        return visible;</span>
+    }
+    
+    public void setVisible(boolean visible) {
+<span class="nc" id="L164">        this.visible = visible;</span>
+<span class="nc" id="L165">    }</span>
+    
+    public SimpleFeatureType getFeatureType() {
+<span class="nc" id="L168">        return featureType;</span>
+    }
+
+    public void setFeatureType(SimpleFeatureType featureType) {
+<span class="nc" id="L172">        this.featureType = featureType;</span>
+<span class="nc" id="L173">    }</span>
+
+    public FeatureSource getValueListFeatureSource() {
+<span class="nc" id="L176">        return valueListFeatureSource;</span>
+    }
+
+    public void setValueListFeatureSource(FeatureSource valueListFeatureSource) {
+<span class="nc" id="L180">        this.valueListFeatureSource = valueListFeatureSource;</span>
+<span class="nc" id="L181">    }</span>
+
+    public SimpleFeatureType getValueListFeatureType() {
+<span class="nc" id="L184">        return valueListFeatureType;</span>
+    }
+
+    public void setValueListFeatureType(SimpleFeatureType valueListFeatureType) {
+<span class="nc" id="L188">        this.valueListFeatureType = valueListFeatureType;</span>
+<span class="nc" id="L189">    }</span>
+
+    public String getValueListLabelName() {
+<span class="nc" id="L192">        return valueListLabelName;</span>
+    }
+
+    public void setValueListLabelName(String valueListLabelName) {
+<span class="nc" id="L196">        this.valueListLabelName = valueListLabelName;</span>
+<span class="nc" id="L197">    }</span>
+
+    public String getValueListValueName() {
+<span class="nc" id="L200">        return valueListValueName;</span>
+    }
+
+    public void setValueListValueName(String valueListValueName) {
+<span class="nc" id="L204">        this.valueListValueName = valueListValueName;</span>
+<span class="nc" id="L205">    }</span>
+
+    public String getValueList() {
+<span class="nc" id="L208">        return valueList;</span>
+    }
+
+    public void setValueList(String valueList) {
+<span class="nc" id="L212">        this.valueList = valueList;</span>
+<span class="nc" id="L213">    }</span>
+
+    public boolean getAllowValueListOnly() {
+<span class="nc" id="L216">        return allowValueListOnly;</span>
+    }
+
+    public void setAllowValueListOnly(boolean allowValueListOnly) {
+<span class="nc" id="L220">        this.allowValueListOnly = allowValueListOnly;</span>
+<span class="nc" id="L221">    }</span>
+
+    public boolean getDisAllowNullValue() {
+<span class="nc" id="L224">        return disallowNullValue;</span>
+    }
+
+    public void setDisallowNullValue(boolean disallowNullValue) {
+<span class="nc" id="L228">        this.disallowNullValue = disallowNullValue;</span>
+<span class="nc" id="L229">    }</span>
+
+    public boolean isDisableUserEdit() {
+<span class="nc" id="L232">        return disableUserEdit;</span>
+    }
+
+    public void setDisableUserEdit(boolean disableUserEdit) {
+<span class="nc" id="L236">        this.disableUserEdit = disableUserEdit;</span>
+<span class="nc" id="L237">    }</span>
+
+    public String getLabel() {
+<span class="nc" id="L240">        return label;</span>
+    }
+
+    public void setLabel(String label) {
+<span class="nc" id="L244">        this.label = label;</span>
+<span class="nc" id="L245">    }</span>
+
+    public boolean isAutomaticValue() {
+<span class="nc" id="L248">        return automaticValue;</span>
+    }
+
+    public void setAutomaticValue(boolean automaticValue) {
+<span class="nc" id="L252">        this.automaticValue = automaticValue;</span>
+<span class="nc" id="L253">    }</span>
+
+    public String getAutomaticValueType() {
+<span class="nc" id="L256">        return automaticValueType;</span>
+    }
+
+    public void setAutomaticValueType(String automaticValueType) {
+<span class="nc" id="L260">        this.automaticValueType = automaticValueType;</span>
+<span class="nc" id="L261">    }</span>
+    //&lt;/editor-fold&gt;
+    
+    public JSONObject toJSONObject() throws JSONException {
+<span class="nc" id="L265">        JSONObject o = new JSONObject();     </span>
+<span class="nc" id="L266">        o.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L267">        o.put(&quot;name&quot;, attributeName);</span>
+<span class="nc" id="L268">        o.put(&quot;visible&quot;, visible);</span>
+<span class="nc" id="L269">        o.put(&quot;editable&quot;, editable);</span>
+<span class="nc" id="L270">        o.put(&quot;disableUserEdit&quot;, disableUserEdit);</span>
+<span class="nc" id="L271">        o.put(&quot;filterable&quot;, filterable);</span>
+<span class="nc" id="L272">        o.put(&quot;selectable&quot;, selectable);</span>
+<span class="nc" id="L273">        o.put(&quot;editAlias&quot;, editAlias);</span>
+<span class="nc" id="L274">        o.put(&quot;editHeight&quot;, editHeight);</span>
+<span class="nc" id="L275">        o.put(&quot;allowValueListOnly&quot;, allowValueListOnly);</span>
+<span class="nc" id="L276">        o.put(&quot;disallowNullValue&quot;, disallowNullValue);</span>
+<span class="nc" id="L277">        o.put(&quot;automaticValueType&quot;, automaticValueType);</span>
+<span class="nc" id="L278">        o.put(&quot;automaticValue&quot;, automaticValue);</span>
+<span class="nc" id="L279">        o.put(&quot;folder_label&quot;, label);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">        if(editValues != null) {</span>
+            try {
+<span class="nc bnc" id="L282" title="All 4 branches missed.">                if (valueList == null || !valueList.equalsIgnoreCase(&quot;dynamic&quot;)) {</span>
+<span class="nc" id="L283">                    o.put(&quot;editValues&quot;, new JSONArray(editValues));</span>
+                }
+<span class="nc" id="L285">            } catch(JSONException je) {</span>
+<span class="nc" id="L286">            }</span>
+        }
+<span class="nc" id="L288">        o.put(&quot;defaultValue&quot;, defaultValue);</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">        if (featureType!=null){</span>
+<span class="nc" id="L290">            o.put(&quot;featureType&quot;,featureType.getId());</span>
+<span class="nc" id="L291">            o.put(&quot;longname&quot;,featureType.getTypeName() + &quot;.&quot; + attributeName);</span>
+        }
+
+<span class="nc" id="L294">        o.put(&quot;valueList&quot;, valueList);</span>
+
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if (valueListFeatureSource != null) {</span>
+<span class="nc" id="L297">            o.put(&quot;valueListFeatureSource&quot;, valueListFeatureSource.getId());</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            if (valueListFeatureType != null) {</span>
+<span class="nc" id="L299">                o.put(&quot;valueListFeatureType&quot;, valueListFeatureType.getId());</span>
+<span class="nc" id="L300">                o.put(&quot;valueListLabelName&quot;, valueListLabelName);</span>
+<span class="nc" id="L301">                o.put(&quot;valueListValueName&quot;, valueListValueName);</span>
+            }
+        }
+<span class="nc" id="L304">        return o;</span>
+    }
+
+    public ConfiguredAttribute deepCopy() throws Exception {
+<span class="nc" id="L308">        ConfiguredAttribute copy = (ConfiguredAttribute)BeanUtils.cloneBean(this);</span>
+<span class="nc" id="L309">        copy.setId(null);</span>
+<span class="nc" id="L310">        return copy;</span>
+    }
+    /**
+     * Returns full name.
+     *
+     * @return the id of the featuretype + &quot;:&quot; + attributeName
+     */
+    public String getFullName() {
+<span class="nc" id="L318">        String uniqueName= &quot;&quot;;</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        if (this.getFeatureType()!=null){</span>
+<span class="nc" id="L320">            uniqueName = this.getFeatureType().getId()+&quot;:&quot;; </span>
+        }
+<span class="nc" id="L322">        uniqueName+=this.attributeName;</span>
+<span class="nc" id="L323">        return uniqueName;</span>
+    }
+
+    public String getLongName(){
+<span class="nc" id="L327">         String longName= &quot;&quot;;</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        if (this.getFeatureType()!=null){</span>
+<span class="nc" id="L329">            longName = this.getFeatureType().getTypeName()+&quot;.&quot;; </span>
+        }
+<span class="nc" id="L331">        longName+=this.attributeName;</span>
+<span class="nc" id="L332">        return longName;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

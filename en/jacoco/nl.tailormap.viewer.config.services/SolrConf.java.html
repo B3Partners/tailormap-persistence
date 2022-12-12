@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SolrConf.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Test Coverage</a> &gt; <a href="index.source.html" class="el_package">nl.tailormap.viewer.config.services</a> &gt; <span class="el_source">SolrConf.java</span></div><h1>SolrConf.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2013 B3Partners B.V.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tailormap.viewer.config.services;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ *
+ * @author Meine Toonen
+ */
+@Entity
+<span class="fc" id="L44">public class SolrConf {</span>
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;simple_feature_type&quot;)
+    private SimpleFeatureType simpleFeatureType;
+    
+<span class="fc" id="L54">    @ElementCollection</span>
+    @CollectionTable(
+          name=&quot;solr_conf_index_attributes&quot;,
+          joinColumns=@JoinColumn(name=&quot;solr_conf&quot;)
+    )
+    @Column(name=&quot;attribute_&quot;)
+    private List&lt;String&gt; indexAttributes = new ArrayList&lt;&gt;();
+    
+<span class="fc" id="L62">    @ElementCollection</span>
+    @CollectionTable(
+          name=&quot;solr_conf_result_attributes&quot;,
+          joinColumns=@JoinColumn(name=&quot;solr_conf&quot;)
+    )
+    @Column(name=&quot;attribute_&quot;)
+    private List&lt;String&gt; resultAttributes = new ArrayList&lt;&gt;();
+    
+    private String name;
+    
+    
+<span class="fc" id="L73">    @Temporal(TemporalType.TIMESTAMP)</span>
+    private Date lastUpdated = new Date();
+
+    public Long getId() {
+<span class="nc" id="L77">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L81">        this.id = id;</span>
+<span class="nc" id="L82">    }</span>
+
+    public SimpleFeatureType getSimpleFeatureType() {
+<span class="nc" id="L85">        return simpleFeatureType;</span>
+    }
+
+    public void setSimpleFeatureType(SimpleFeatureType simpleFeatureType) {
+<span class="nc" id="L89">        this.simpleFeatureType = simpleFeatureType;</span>
+<span class="nc" id="L90">    }</span>
+
+    public String getName() {
+<span class="nc" id="L93">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="nc" id="L97">        this.name = name;</span>
+<span class="nc" id="L98">    }</span>
+
+    public List&lt;String&gt; getIndexAttributes() {
+<span class="nc" id="L101">        return indexAttributes;</span>
+    }
+
+    public void setIndexAttributes(List&lt;String&gt; indexAttributes) {
+<span class="nc" id="L105">        this.indexAttributes = indexAttributes;</span>
+<span class="nc" id="L106">    }</span>
+
+    public List&lt;String&gt; getResultAttributes() {
+<span class="nc" id="L109">        return resultAttributes;</span>
+    }
+
+    public void setResultAttributes(List&lt;String&gt; resultAttributes) {
+<span class="nc" id="L113">        this.resultAttributes = resultAttributes;</span>
+<span class="nc" id="L114">    }</span>
+
+    public Date getLastUpdated() {
+<span class="nc" id="L117">        return lastUpdated;</span>
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+<span class="nc" id="L121">        this.lastUpdated = lastUpdated;</span>
+<span class="nc" id="L122">    }</span>
+
+    public JSONObject toJSON() throws JSONException {
+<span class="nc" id="L125">        JSONObject json = new JSONObject();</span>
+<span class="nc" id="L126">        json.put(&quot;id&quot;, id);</span>
+<span class="nc" id="L127">        json.put(&quot;name&quot;, name);</span>
+<span class="nc" id="L128">        String last = &quot;Not read&quot;;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (lastUpdated != null) {</span>
+<span class="nc" id="L130">            SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateInstance();</span>
+<span class="nc" id="L131">            sdf.applyPattern(&quot;HH-mm_dd-MM-yyyy&quot;);</span>
+<span class="nc" id="L132">            last = sdf.format(lastUpdated);</span>
+        }
+<span class="nc" id="L134">        json.put(&quot;lastUpdated&quot;, last);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (simpleFeatureType != null) {</span>
+<span class="nc" id="L136">            json.put(&quot;featureTypeId&quot;, simpleFeatureType.getId());</span>
+<span class="nc" id="L137">            json.put(&quot;featureTypeName&quot;, simpleFeatureType.getTypeName());</span>
+<span class="nc" id="L138">            json.put(&quot;featureSourceName&quot;, simpleFeatureType.getFeatureSource().getName());</span>
+        }
+<span class="nc" id="L140">        return json;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
