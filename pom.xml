@@ -4,7 +4,8 @@ Copyright (C) 2022 B3Partners B.V.
 
 SPDX-License-Identifier: MIT
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>nl.b3p.tailormap</groupId>
   <artifactId>tailormap-persistence</artifactId>
@@ -248,7 +249,7 @@ SPDX-License-Identifier: MIT
             <configuration>
               <target>
                 <!-- run after schema gegeration -->
-                <move file="target/classes/scripts/hsql-schema-export.sql" tofile="target/classes/scripts/hsqldb-schema-export.sql"></move>
+                <move file="target/classes/scripts/hsql-schema-export.sql" tofile="target/classes/scripts/hsqldb-schema-export.sql"/>
               </target>
             </configuration>
           </execution>
@@ -348,6 +349,8 @@ SPDX-License-Identifier: MIT
           <createBackupFile>false</createBackupFile>
           <verifyFail>stop</verifyFail>
           <verifyFailOn>strict</verifyFailOn>
+          <expandEmptyElements>false</expandEmptyElements>
+          <indentSchemaLocation>true</indentSchemaLocation>
         </configuration>
         <executions>
           <execution>
