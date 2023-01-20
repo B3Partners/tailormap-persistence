@@ -427,6 +427,7 @@ SPDX-License-Identifier: MIT
       <!--      </plugin>-->
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
+        <version>3.0.0-M7</version>
         <configuration>
           <pushChanges>true</pushChanges>
           <releaseProfiles>release</releaseProfiles>
